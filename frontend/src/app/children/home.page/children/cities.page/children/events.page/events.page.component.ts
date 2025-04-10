@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiBreadcrumbsComponent } from '../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
 import { TuiOutlineButtonComponent } from './components/tui-components/tui-outline-button/tui-outline-button.component';
 import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-declension.pipe';
@@ -28,15 +29,21 @@ export class EventsPageComponent {
 
     public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [];
 
-    constructor() {
-        this.activatedRoute.params.subscribe((params: Params) => {
-            this.cityId = params['id'] as string;
-        });
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
-        this.activatedRoute.queryParams.subscribe((queryParams: Params) => {
-            this.cityName = queryParams['name'] || 'Неизвестный город';
-            this.updateBreadcrumbs();
-        });
+    constructor() {
+        this.activatedRoute.params
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe((params: Params) => {
+                this.cityId = params['id'] as string;
+            });
+
+        this.activatedRoute.queryParams
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe((queryParams: Params) => {
+                this.cityName = queryParams['name'] || 'Неизвестный город';
+                this.updateBreadcrumbs();
+            });
     }
 
     /**
