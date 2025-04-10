@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TuiBreadcrumbsComponent } from '../../tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
-import { TuiAccentButtonComponent } from '../../tui-components/tui-button/tui-accent-button/tui-accent-button.component';
-import { TuiInputEmailComponent } from '../../tui-components/tui-input-email/tui-input-email.component';
-import { TuiInputTextComponent } from '../../tui-components/tui-input-text/tui-input-text.component';
+import { TuiBreadcrumbsComponent } from '../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
+import { TuiAccentButtonComponent } from '../../../../components/tui-components/tui-button/tui-accent-button/tui-accent-button.component';
+import { TuiInputEmailComponent } from '../../../../components/tui-components/tui-input-email/tui-input-email.component';
+import { TuiInputTextComponent } from '../../../../components/tui-components/tui-input-text/tui-input-text.component';
 
 @Component({
     selector: 'app-feedback-page',

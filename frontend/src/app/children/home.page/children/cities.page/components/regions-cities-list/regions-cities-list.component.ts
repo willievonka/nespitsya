@@ -1,8 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, QueryList, ViewChildren } from '@angular/core';
-import { TuiSecondaryButtonComponent } from '../tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
+import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import * as regionsCitiesListInterface from '../../interfaces/regions-cities-list.interface';
+import { IRegionsGroup } from '../../interfaces/regions-group.interface';
 import { ActivePanelService } from '../../services/active-panel.service';
 
 @Component({
@@ -16,12 +16,12 @@ import { ActivePanelService } from '../../services/active-panel.service';
     styleUrl: './regions-cities-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegionsCitiesListComponent implements regionsCitiesListInterface.IRegionsCitiesList, AfterViewInit {
+export class RegionsCitiesListComponent implements AfterViewInit {
     @ViewChildren('name')
     public name?: QueryList<ElementRef>;
 
     @Input()
-    public groups: regionsCitiesListInterface.IRegionsGroup[] = [];
+    public groups: IRegionsGroup[] = [];
 
     protected activeService: ActivePanelService = inject(ActivePanelService);
 

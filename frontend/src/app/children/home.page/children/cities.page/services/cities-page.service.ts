@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IRegionsGroup } from '../interfaces/regions-cities-list.interface';
+import { IRegionsGroup } from '../interfaces/regions-group.interface';
 
 @Injectable({
     providedIn: 'root',

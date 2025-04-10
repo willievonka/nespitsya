@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICity } from '../interfaces/regions-cities-list.interface';
+import { ICity } from '../interfaces/city.interface';
 import { IEvent } from '../interfaces/event.interface';
 
 @Injectable({

@@ -5,18 +5,18 @@ export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { 
         path: 'home', 
-        loadComponent: () => import('./components/pages/home.page/home.page.component').then(m => m.HomePageComponent)
+        loadComponent: () => import('./children/home.page/home.page.component').then(m => m.HomePageComponent)
     },
     { 
         path: 'home/cities', 
-        loadComponent: () => import('./components/pages/cities.page/cities.page.component').then(m => m.CitiesPageComponent)
+        loadComponent: () => import('./children/home.page/children/cities.page/cities.page.component').then(m => m.CitiesPageComponent)
     },
     { 
         path: 'home/cities/:id', 
-        loadComponent: () => import('./components/pages/events.page/events.page.component').then(m => m.EventsPageComponent)
+        loadComponent: () => import('./children/home.page/children/cities.page/children/events.page/events.page.component').then(m => m.EventsPageComponent)
     },
     { 
         path: 'home/feedback', 
-        loadComponent: () => import('./components/pages/feedback.page/feedback.page.component').then(m => m.FeedbackPageComponent) 
+        loadComponent: () => import('./children/home.page/children/feedback.page/feedback.page.component').then(m => m.FeedbackPageComponent) 
     },
 ];

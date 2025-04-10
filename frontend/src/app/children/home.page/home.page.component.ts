@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TuiBreadcrumbsComponent } from '../../tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
-import { TuiEventCardComponent } from '../../tui-components/tui-event-card/tui-event-card.component';
-import { TuiSecondaryButtonComponent } from '../../tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
-import { CityDeclensionPipe } from '../../../pipes/city-declension/city-declension.pipe';
+import { TuiBreadcrumbsComponent } from '../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
+import { TuiEventCardComponent } from '../../components/tui-components/tui-event-card/tui-event-card.component';
+import { TuiSecondaryButtonComponent } from '../../components/tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
+import { CityDeclensionPipe } from './pipes/city-declension/city-declension.pipe';
 import { RouterLink } from '@angular/router';
-import { ICity } from '../../../interfaces/regions-cities-list.interface';
-import { IEvent } from '../../../interfaces/event.interface';
-import { HomePageService } from '../../../services/home-page.service';
+import { ICity } from './interfaces/city.interface';
+import { IEvent } from './interfaces/event.interface';
+import { HomePageService } from './services/home-page.service';
 
 
 @Component({

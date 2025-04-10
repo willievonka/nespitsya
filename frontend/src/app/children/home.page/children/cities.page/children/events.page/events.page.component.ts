@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TuiBreadcrumbsComponent } from '../../tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CityDeclensionPipe } from '../../../pipes/city-declension/city-declension.pipe';
-import { TuiOutlineButtonComponent } from '../../tui-components/tui-button/tui-outline-button/tui-outline-button.component';
+import { TuiBreadcrumbsComponent } from '../../../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
+import { TuiOutlineButtonComponent } from '../../../../../../components/tui-components/tui-button/tui-outline-button/tui-outline-button.component';
+import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-declension.pipe';
 
 
 @Component({
