@@ -170,7 +170,6 @@ module.exports = tseslint.config(
       '@typescript-eslint/typedef': [
         'error',
         {
-          arrowParameter: true,
           variableDeclaration: true,
           arrayDestructuring: true,
           parameter: true,
