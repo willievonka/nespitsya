@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, 
 import { TuiSecondaryButtonComponent } from '../tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import * as regionsCitiesListInterface from '../../models/regions-cities-list.interface';
+import * as regionsCitiesListInterface from '../../interfaces/regions-cities-list.interface';
 import { ActivePanelService } from '../../services/active-panel.service';
 
 @Component({

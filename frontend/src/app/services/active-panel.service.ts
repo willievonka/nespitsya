@@ -1,14 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, DestroyRef } from '@angular/core';
 import { BehaviorSubject, Observable, Subscriber } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 
 @Injectable()
 export class ActivePanelService extends Observable<number> {
-
     protected activeIndex: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
     constructor() {
         super((subscriber: Subscriber<number>) => {
-            this.activeIndex.subscribe(subscriber);
+            this.activeIndex
+                .pipe(takeUntilDestroyed(this._destroyRef))
+                .subscribe(subscriber);
         });
     }
 

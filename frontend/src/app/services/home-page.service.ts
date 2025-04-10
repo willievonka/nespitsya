@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ICity } from '../models/regions-cities-list.interface';
-import { IEvent } from '../models/event.interface';
+import { ICity } from '../interfaces/regions-cities-list.interface';
+import { IEvent } from '../interfaces/event.interface';
 
 @Injectable({
     providedIn: 'root',

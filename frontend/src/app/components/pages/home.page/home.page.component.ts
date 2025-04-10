@@ -5,8 +5,8 @@ import { TuiEventCardComponent } from '../../tui-components/tui-event-card/tui-e
 import { TuiSecondaryButtonComponent } from '../../tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
 import { CityDeclensionPipe } from '../../../pipes/city-declension/city-declension.pipe';
 import { RouterLink } from '@angular/router';
-import { ICity } from '../../../models/regions-cities-list.interface';
-import { IEvent } from '../../../models/event.interface';
+import { ICity } from '../../../interfaces/regions-cities-list.interface';
+import { IEvent } from '../../../interfaces/event.interface';
 import { HomePageService } from '../../../services/home-page.service';
 
 
