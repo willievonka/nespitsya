@@ -1,9 +1,10 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, QueryList, ViewChildren } from '@angular/core';
-import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-button/tui-secondary-button/tui-secondary-button.component';
+import { TuiSecondaryButtonComponent } from '../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IRegionsGroup } from '../../interfaces/regions-group.interface';
 import { ActivePanelService } from '../../services/active-panel.service';
+
 
 @Component({
     selector: 'app-regions-cities-list',

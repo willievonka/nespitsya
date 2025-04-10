@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import { TuiButton, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { TuiChevron } from '@taiga-ui/kit';
-import { TuiFlatButtonComponent } from '../tui-button/tui-flat-button/tui-flat-button.component';
-import { RouterLink } from '@angular/router';
+import { TuiFlatButtonComponent } from '../tui-flat-button/tui-flat-button.component';
 
 
 @Component({

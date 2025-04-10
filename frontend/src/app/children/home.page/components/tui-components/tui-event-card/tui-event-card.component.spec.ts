@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TuiEventCardComponent } from './tui-event-card.component';
+
 
 describe('TuiEventCardComponent', () => {
     let component: TuiEventCardComponent;
