@@ -1,6 +1,6 @@
 import express from 'express'
 import cityRouter from './routes/city.routes.js'
-import genreRouter from './routes/genre.routes.js'
+import tagRouter from './routes/tag.routes.js'
 import eventRouter from './routes/event.routes.js'
 import artistRouter from './routes/artist.route.js'
 import placeRouter from './routes/place.route.js'
@@ -16,7 +16,7 @@ const app = express()
 
 app.use(express.json())
 app.use('/api', cityRouter)
-app.use('/api', genreRouter)
+app.use('/api', tagRouter)
 app.use('/api', eventRouter)
 app.use('/api', artistRouter)
 app.use('/api', placeRouter)

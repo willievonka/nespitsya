@@ -4,6 +4,11 @@ class PlaceController {
     async createPlace(req, res) {
         try {
             const { name } = req.body;
+
+            if (!name) {
+                return res.status(400).json({ message: "Название места обязательно!" });
+            }
+
             const newPlace = await db.query(
                 "INSERT INTO place (name) VALUES ($1) RETURNING *", 
                 [name]
@@ -44,6 +49,11 @@ class PlaceController {
     async updatePlace(req, res) {
         try {
             const { id, name } = req.body;
+
+            if (!name) {
+                return res.status(400).json({ message: "Название места обязательно для обновления!" });
+            }
+
             const place = await db.query(
                 "UPDATE place SET name = $1 WHERE id = $2 RETURNING *", 
                 [name, id]
