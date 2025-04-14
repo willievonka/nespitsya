@@ -3,10 +3,11 @@ import db from '../db.js'
 class EventController {
     async createEvent(req, res) {
         try {
-            const { descr, name, id_place, id_city, datetime, price, image, artists, tags, organizers } = req.body;
+            const { descr, name, id_place, id_city, datetime, price, image, artists, tags } = req.body;
+            const organizer = req.user.id
 
             if (!descr || !name || !id_place || !id_city || !datetime || !price || !image) {
-                return res.status(400).json({ message: "Все поля, кроме артистов, тэгов и организаторов, обязательны!" });
+                return res.status(400).json({ message: "Все поля, кроме артистов и тэгов обязательны!" });
             }
 
             const eventResult = await db.query(
@@ -33,8 +34,8 @@ class EventController {
                 }
             }
 
-            if (organizers) {
-                const organizerArray = Array.isArray(organizers) ? organizers : [organizers];
+            if (organizer) {
+                const organizerArray = Array.isArray(organizer) ? organizer : [organizer];
                 if (organizerArray.length > 0) {
                     const organizerValues = organizerArray.map(org => `(${id_event}, ${org})`).join(',');
                     await db.query(`INSERT INTO event_organizer (id_event, id_organizer) VALUES ${organizerValues}`);
@@ -111,7 +112,7 @@ class EventController {
                                             JOIN event_tag ea ON e.id = ea.id_event
                                             WHERE ea.id_tag = ${id};`);
             if (events.rows.length === 0) {
-                return res.status(404).json({ message: "Событий этого жанра нет" });
+                return res.status(404).json({ message: "Событий с этим тегом нет" });
             }
             res.json(events.rows);
         } catch (error) {
