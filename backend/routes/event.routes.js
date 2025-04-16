@@ -1,10 +1,11 @@
 import Router from 'express'
 import eventController from '../controller/event.controller.js'
 import { roleMiddleware } from '../middleware/roleMiddleware.js'
+import upload from '../middleware/upload.js'
 
 const router = new Router()
 
-router.post('/event', roleMiddleware(['organizer']), eventController.createEvent)
+router.post('/event', roleMiddleware(['organizer']), upload.single('image'), eventController.createEvent)
 router.get('/event', eventController.getEvents)
 router.get('/event/city/:id', eventController.getEventsFromCity)
 router.get('/event/artist/:id', eventController.getEventsByArtist)

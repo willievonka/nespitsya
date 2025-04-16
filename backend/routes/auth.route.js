@@ -1,7 +1,5 @@
 import Router from 'express'
 import authController from '../controller/auth.controller.js'
-import { authMiddleware } from '../middleware/authMiddleware.js'
-import { roleMiddleware } from '../middleware/roleMiddleware.js'
 
 const router = new Router()
 

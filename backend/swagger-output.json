@@ -5,7 +5,7 @@
     "title": "REST API",
     "description": "Документация API для управления артистами, городами, событиями и другими сущностями."
   },
-  "host": "localhost:3000",
+  "host": "localhost:5000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -17,8 +17,81 @@
     "application/json"
   ],
   "paths": {
+    "/auth/registration": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Регистрация нового пользователя",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для регистрации",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegistrationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешная регистрация",
+            "schema": {
+              "$ref": "#/definitions/RegistrationResponse"
+            }
+          },
+          "400": { "description": "Ошибка валидации" },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Вход пользователя",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для входа",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный вход",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": { "description": "Ошибочные учетные данные" },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
+    "/auth/users": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Получить всех пользователей",
+        "responses": {
+          "200": {
+            "description": "Список пользователей",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
     "/artist": {
       "post": {
+        "tags": ["Artist"],
         "summary": "Создать нового артиста",
         "parameters": [
           {
@@ -43,6 +116,7 @@
         }
       },
       "get": {
+        "tags": ["Artist"],
         "summary": "Получить список всех артистов",
         "responses": {
           "200": {
@@ -60,6 +134,7 @@
         }
       },
       "put": {
+        "tags": ["Artist"],
         "summary": "Обновить информацию об артисте",
         "parameters": [
           {
@@ -89,6 +164,7 @@
     },
     "/artist/{id}": {
       "get": {
+        "tags": ["Artist"],
         "summary": "Получить информацию об артисте по ID",
         "parameters": [
           {
@@ -114,6 +190,7 @@
         }
       },
       "delete": {
+        "tags": ["Artist"],
         "summary": "Удалить артиста по ID",
         "parameters": [
           {
@@ -138,6 +215,7 @@
     },
     "/cities": {
       "post": {
+        "tags": ["Cities"],
         "summary": "Создание города",
         "description": "Создаёт новый город с указанием названия и региона.",
         "parameters": [
@@ -166,6 +244,7 @@
         }
       },
       "get": {
+        "tags": ["Cities"],
         "summary": "Список регионов с городами",
         "description": "Возвращает список регионов, сгруппированных по первой букве, с вложенными городами.",
         "responses": {
@@ -183,6 +262,7 @@
     },
     "/cities/{id}": {
       "get": {
+        "tags": ["Cities"],
         "summary": "Получить город по ID",
         "description": "Возвращает город по его уникальному идентификатору.",
         "parameters": [
@@ -212,6 +292,7 @@
         }
       },
       "delete": {
+        "tags": ["Cities"],
         "summary": "Удалить город",
         "description": "Удаляет город по его ID.",
         "parameters": [
@@ -243,6 +324,7 @@
     },
     "/event": {
       "post": {
+        "tags": ["Events"],
         "summary": "Создание нового мероприятия",
         "parameters": [
           {
@@ -270,6 +352,7 @@
         }
       },
       "get": {
+        "tags": ["Events"],
         "summary": "Получить список всех мероприятий",
         "responses": {
           "200": {
@@ -287,6 +370,7 @@
         }
       },
       "put": {
+        "tags": ["Events"],
         "summary": "Обновить информацию о мероприятии",
         "parameters": [
           {
@@ -316,6 +400,7 @@
     },
     "/event/city/{id}": {
       "get": {
+        "tags": ["Events"],
         "summary": "Получить мероприятия по городу",
         "parameters": [
           {
@@ -346,6 +431,7 @@
     },
     "/event/artist/{id}": {
       "get": {
+        "tags": ["Events"],
         "summary": "Получить мероприятия по артисту",
         "parameters": [
           {
@@ -376,6 +462,7 @@
     },
     "/event/organizer/{id}": {
       "get": {
+        "tags": ["Events"],
         "summary": "Получить мероприятия по организатору",
         "parameters": [
           {
@@ -406,6 +493,7 @@
     },
     "/event/tag/{id}": {
       "get": {
+        "tags": ["Events"],
         "summary": "Получить мероприятия по тегу",
         "parameters": [
           {
@@ -436,6 +524,7 @@
     },
     "/event/{id}": {
       "get": {
+        "tags": ["Events"],
         "summary": "Получить информацию о мероприятии по ID",
         "parameters": [
           {
@@ -461,6 +550,7 @@
         }
       },
       "delete": {
+        "tags": ["Events"],
         "summary": "Удалить мероприятие по ID",
         "parameters": [
           {
@@ -483,36 +573,10 @@
         }
       }
     },
-    "/organizer": {
-      "post": {
-        "summary": "Создание нового организатора",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OrganizerCreateRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Организатор успешно создан",
-            "schema": {
-              "$ref": "#/definitions/Organizer"
-            }
-          },
-          "400": {
-            "description": "Имя организатора обязательно"
-          },
-          "500": {
-            "description": "Ошибка сервера"
-          }
-        }
-      },
+    "/organizer":{
       "get": {
-        "summary": "Получить список всех организаторов",
+        "tags": ["Organizer"],
+        "summary": "Получить всех организаторов",
         "responses": {
           "200": {
             "description": "Список организаторов",
@@ -527,87 +591,11 @@
             "description": "Ошибка сервера"
           }
         }
-      },
-      "put": {
-        "summary": "Обновить информацию об организаторе",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OrganizerUpdateRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Информация об организаторе обновлена",
-            "schema": {
-              "$ref": "#/definitions/Organizer"
-            }
-          },
-          "404": {
-            "description": "Организатор не найден"
-          },
-          "500": {
-            "description": "Ошибка сервера"
-          }
-        }
       }
     },
-    "/organizer/{id}": {
-      "get": {
-        "summary": "Получить информацию об организаторе по ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Информация об организаторе",
-            "schema": {
-              "$ref": "#/definitions/Organizer"
-            }
-          },
-          "404": {
-            "description": "Организатор не найден"
-          },
-          "500": {
-            "description": "Ошибка сервера"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Удалить организатора по ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Организатор удалён"
-          },
-          "404": {
-            "description": "Организатор не найден"
-          },
-          "500": {
-            "description": "Ошибка сервера"
-          }
-        }
-      }
-    },
-
     "/place": {
       "post": {
+        "tags": ["Place"],
         "summary": "Создание нового места",
         "parameters": [
           {
@@ -635,6 +623,7 @@
         }
       },
       "get": {
+        "tags": ["Place"],
         "summary": "Получить список всех мест",
         "responses": {
           "200": {
@@ -652,6 +641,7 @@
         }
       },
       "put": {
+        "tags": ["Place"],
         "summary": "Обновить информацию о месте",
         "parameters": [
           {
@@ -681,6 +671,7 @@
     },
     "/place/{id}": {
       "get": {
+        "tags": ["Place"],
         "summary": "Получить информацию о месте по ID",
         "parameters": [
           {
@@ -706,6 +697,7 @@
         }
       },
       "delete": {
+        "tags": ["Place"],
         "summary": "Удалить место по ID",
         "parameters": [
           {
@@ -731,6 +723,7 @@
 
     "/tag": {
       "post": {
+        "tags": ["Tag"],
         "summary": "Создание нового тега",
         "parameters": [
           {
@@ -755,6 +748,7 @@
         }
       },
       "get": {
+        "tags": ["Tag"],
         "summary": "Получить список всех тэгов",
         "responses": {
           "200": {
@@ -772,6 +766,7 @@
         }
       },
       "put": {
+        "tags": ["Tag"],
         "summary": "Обновить информацию о теге",
         "parameters": [
           {
@@ -801,6 +796,7 @@
     },
     "/tag/{id}": {
       "get": {
+        "tags": ["Tag"],
         "summary": "Получить информацию о теге по ID",
         "parameters": [
           {
@@ -826,6 +822,7 @@
         }
       },
       "delete": {
+        "tags": ["Tag"],
         "summary": "Удалить тэг по ID",
         "parameters": [
           {
@@ -854,8 +851,7 @@
       "type": "object",
       "required": [
         "id",
-        "name",
-        "followers"
+        "name"
       ],
       "properties": {
         "id": {
@@ -865,27 +861,18 @@
         "name": {
           "type": "string",
           "example": "The Rolling Stones"
-        },
-        "followers": {
-          "type": "integer",
-          "example": 1000000
         }
       }
     },
     "ArtistInput": {
       "type": "object",
       "required": [
-        "name",
-        "followers"
+        "name"
       ],
       "properties": {
         "name": {
           "type": "string",
           "example": "The Rolling Stones"
-        },
-        "followers": {
-          "type": "integer",
-          "example": 1000000
         }
       }
     },
@@ -956,9 +943,12 @@
       "required": [
         "id",
         "name",
-        "description",
-        "cityId",
-        "date"
+        "descr",
+        "id_place",
+        "id_city",
+        "datetime",
+        "price",
+        "image"
       ],
       "properties": {
         "id": {
@@ -967,15 +957,27 @@
         "name": {
           "type": "string"
         },
-        "description": {
+        "descr": {
           "type": "string"
         },
-        "cityId": {
+        "id_place": {
           "type": "integer"
         },
-        "date": {
+        "id_city": {
+          "type": "integer"
+        },
+        "datetime": {
           "type": "string",
           "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "image": {
+          "type": "string",
+          "format": "binary",
+          "description": "Изображение мероприятия"
         }
       }
     },
@@ -983,65 +985,55 @@
       "type": "object",
       "required": [
         "name",
-        "description",
-        "cityId",
-        "date"
+        "descr",
+        "id_place",
+        "id_city",
+        "datetime",
+        "price"
       ],
       "properties": {
         "name": {
           "type": "string"
         },
-        "description": {
+        "descr": {
           "type": "string"
         },
-        "cityId": {
+        "id_place": {
           "type": "integer"
         },
-        "date": {
+        "id_city": {
+          "type": "integer"
+        },
+        "datetime": {
           "type": "string",
           "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "artists": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Список ID артистов"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Список ID тегов"
         }
       }
     },
     "Organizer": {
       "type": "object",
-      "required": [
-        "id",
-        "name"
-      ],
       "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "OrganizerCreateRequest": {
-      "type": "object",
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "OrganizerUpdateRequest": {
-      "type": "object",
-      "required": [
-        "id",
-        "name"
-      ],
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        }
+        "id": { "type": "integer" },
+        "username": { "type": "string" },
+        "role": {"type": "string"}
       }
     },
     "Place": {
@@ -1088,6 +1080,48 @@
       "properties": {
         "id": { "type": "integer" },
         "name": { "type": "string" }
+      }
+    },
+    "RegistrationRequest": {
+      "type": "object",
+      "required": ["username", "password", "role"],
+      "properties": {
+        "username": { "type": "string", "example": "testuser" },
+        "password": { "type": "string", "example": "123456" },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "organizer", "user"],
+          "example": "user"
+        }
+      }
+    },
+    "RegistrationResponse": {
+      "type": "object",
+      "properties": {
+        "message": { "type": "string", "example": "Регистрация прошла успешно" },
+        "user": { "$ref": "#/definitions/User" }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": { "type": "string", "example": "testuser" },
+        "password": { "type": "string", "example": "123456" }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR..." }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "example": 1 },
+        "username": { "type": "string", "example": "testuser" },
+        "role": { "type": "string", "example": "user" }
       }
     }
   }
