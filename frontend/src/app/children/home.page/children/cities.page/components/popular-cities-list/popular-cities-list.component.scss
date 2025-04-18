@@ -2,6 +2,15 @@
     box-sizing: border-box;
 
     &__title {
-        margin: 0;
+        margin: 13px 0;
+        margin-bottom: 26px;
+        font-size: 52px;
+        line-height: 44px;
+        text-transform: uppercase;
+    }
+
+    &__city {
+        font-size: 40px;
+        line-height: 44px;
     }
 }
