@@ -9,7 +9,22 @@
         text-transform: uppercase;
     }
 
+    &__cities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        max-width: 1000px;
+    }
+
     &__city {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 250px;
+        height: 140px;
+        background-image: url('../../../../../../../../public/image.png');
+        background-size: cover;
+        border-radius: 16px;
         font-size: 40px;
         line-height: 44px;
     }
