@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiBreadcrumbsComponent } from '../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
+import { PopularCitiesListComponent } from './components/popular-cities-list/popular-cities-list.component';
 import { RegionsCitiesListComponent } from './components/regions-cities-list/regions-cities-list.component';
 import { IRegionsGroup } from './interfaces/regions-group.interface';
 import { TuiTabsComponent } from '../../components/tui-components/tui-tabs/tui-tabs.component';
@@ -14,6 +15,7 @@ import { ActivePanelService } from './services/active-panel.service';
     imports: [
         CommonModule,
         TuiBreadcrumbsComponent,
+        PopularCitiesListComponent,
         RegionsCitiesListComponent,
         TuiTabsComponent,
     ],
