@@ -2,7 +2,7 @@
     <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"></app-tui-breadcrumbs>
     <h1 class="home-page__title">
         Популярные<br>события в<br>
-        <span class="home-page__city-location">{{ city.name | cityDeclension }}</span>
+        <span class="home-page__city-location" routerLink="/home/cities">{{ city.name | cityDeclension }}</span>
     </h1>
     <div class="home-page__events-list">
         <app-tui-event-card
