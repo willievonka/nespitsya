@@ -9,4 +9,8 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+
+  &__popular-cities-list {
+    margin-bottom: 30px;
+  }
 }
