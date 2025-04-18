@@ -1,7 +1,8 @@
-<tui-textfield
-tuiTextfieldSize="m">
-    <input [tuiInputSearch]="results" [(ngModel)]="value"
-    placeholder="Поиск артистов, событий и т.д."
+<tui-textfield tuiTextfieldSize="m">
+    <input 
+        [tuiInputSearch]="results" 
+        [(ngModel)]="value"
+        placeholder="Поиск артистов, событий и т.д."
     />
     <ng-template #results>
         <!-- ... -->

@@ -28,37 +28,37 @@ export class CitiesPageService {
                 id: 10,
                 name: 'Москва',
                 shortName: 'МСК',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
             {
                 id: 11,
                 name: 'Санкт-Петербург',
                 shortName: 'СПБ',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
             {
                 id: 12,
                 name: 'Новосибирск',
                 shortName: 'НСК',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
             {
                 id: 13,
                 name: 'Екатеринбург',
                 shortName: 'ЕКБ',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
             {
                 id: 14,
                 name: 'Нижний Новгород',
                 shortName: 'ННВ',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
             {
                 id: 15,
                 name: 'Казань',
                 shortName: 'КЗН',
-                backgroundUrl: '#'
+                backgroundUrl: 'image.png',
             },
         ];
     }
