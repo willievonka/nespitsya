@@ -1,12 +1,12 @@
 import Router from 'express'
 import cityController from '../controller/city.controller.js'
+import { roleMiddleware } from '../middleware/roleMiddleware.js'
 
 const router = new Router()
 
-router.post('/city', cityController.createCity)
-router.get('/city', cityController.getCities)
-router.get('/city/:id', cityController.getOneCity)
-router.put('/city/', cityController.updateCity)
-router.delete('/city/:id', cityController.deleteCity)
+router.post('/cities', roleMiddleware('admin'), cityController.createCity);
+router.get('/cities', cityController.getRegionsList);
+router.get('/cities/:id', cityController.getCityById);
+router.delete('/cities/:id', roleMiddleware('admin'), cityController.deleteCity);
 
 export default router

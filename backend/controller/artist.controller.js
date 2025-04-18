@@ -4,10 +4,16 @@ class ArtistController {
     async createArtist(req, res) {
         try {
             const { name, followers } = req.body;
+
+            if (!name || !followers) {
+                return res.status(400).json({ message: "Поля 'name' и 'followers' обязательны" });
+            }
+
             const newArtist = await db.query(
                 "INSERT INTO artist (name, followers) VALUES ($1, $2) RETURNING *", 
                 [name, followers]
             );
+
             res.json(newArtist.rows[0]);
         } catch (error) {
             console.error("Ошибка при создании артиста:", error);
@@ -44,6 +50,11 @@ class ArtistController {
     async updateArtist(req, res) {
         try {
             const { id, name, followers } = req.body;
+
+            if (!id || !name || !followers) {
+                return res.status(400).json({ message: "Поля 'id', 'name' и 'followers' обязательны" });
+            }
+
             const artist = await db.query(
                 "UPDATE artist SET name = $1, followers = $2 WHERE id = $3 RETURNING *", 
                 [name, followers, id]
@@ -63,6 +74,11 @@ class ArtistController {
     async deleteArtist(req, res) {
         try {
             const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).json({ message: "Поле 'id' обязательно" });
+            }
+
             const artist = await db.query("DELETE FROM artist WHERE id = $1 RETURNING *", [id]);
 
             if (artist.rows.length === 0) {

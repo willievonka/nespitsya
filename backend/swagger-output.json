@@ -3,92 +3,169 @@
   "info": {
     "version": "1.0.0",
     "title": "REST API",
-    "description": ""
+    "description": "Документация API для управления артистами, городами, событиями и другими сущностями."
   },
-  "host": "localhost:3000",
+  "host": "localhost:5000",
   "basePath": "/",
   "schemes": [
     "http"
   ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
-    "/artist": {
+    "/auth/registration": {
       "post": {
-        "description": "",
+        "tags": ["Auth"],
+        "summary": "Регистрация нового пользователя",
         "parameters": [
           {
-            "name": "body",
             "in": "body",
+            "name": "body",
+            "description": "Данные для регистрации",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "followers": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/RegistrationRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Успешная регистрация",
+            "schema": {
+              "$ref": "#/definitions/RegistrationResponse"
+            }
+          },
+          "400": { "description": "Ошибка валидации" },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Вход пользователя",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Данные для входа",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный вход",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": { "description": "Ошибочные учетные данные" },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
+    "/auth/users": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Получить всех пользователей",
+        "responses": {
+          "200": {
+            "description": "Список пользователей",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "500": { "description": "Ошибка сервера" }
+        }
+      }
+    },
+    "/artist": {
+      "post": {
+        "tags": ["Artist"],
+        "summary": "Создать нового артиста",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ArtistInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Артист успешно создан",
+            "schema": {
+              "$ref": "#/definitions/Artist"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Внутренняя ошибка сервера"
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": ["Artist"],
+        "summary": "Получить список всех артистов",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список артистов",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Artist"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Внутренняя ошибка сервера"
           }
         }
       },
       "put": {
-        "description": "",
+        "tags": ["Artist"],
+        "summary": "Обновить информацию об артисте",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "followers": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Artist"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Информация об артисте обновлена",
+            "schema": {
+              "$ref": "#/definitions/Artist"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Артист не найден"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Внутренняя ошибка сервера"
           }
         }
       }
     },
     "/artist/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Artist"],
+        "summary": "Получить информацию об артисте по ID",
         "parameters": [
           {
             "name": "id",
@@ -99,18 +176,22 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Информация об артисте",
+            "schema": {
+              "$ref": "#/definitions/Artist"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Артист не найден"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Внутренняя ошибка сервера"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Artist"],
+        "summary": "Удалить артиста по ID",
         "parameters": [
           {
             "name": "id",
@@ -121,727 +202,926 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Артист успешно удалён"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Артист не найден"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Внутренняя ошибка сервера"
           }
         }
       }
     },
-    "/city": {
+    "/cities": {
       "post": {
-        "description": "",
+        "tags": ["Cities"],
+        "summary": "Создание города",
+        "description": "Создаёт новый город с указанием названия и региона.",
         "parameters": [
           {
-            "name": "body",
             "in": "body",
+            "name": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/CityCreateRequest"
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Город успешно создан",
+            "schema": {
+              "$ref": "#/definitions/City"
+            }
+          },
+          "400": {
+            "description": "Некорректные данные запроса"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": ["Cities"],
+        "summary": "Список регионов с городами",
+        "description": "Возвращает список регионов, сгруппированных по первой букве, с вложенными городами.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список регионов с городами",
+            "schema": {
+              "$ref": "#/definitions/RegionList"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
-    "/city/{id}": {
+    "/cities/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Cities"],
+        "summary": "Получить город по ID",
+        "description": "Возвращает город по его уникальному идентификатору.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Город найден",
+            "schema": {
+              "$ref": "#/definitions/City"
+            }
+          },
+          "400": {
+            "description": "Отсутствует параметр ID"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Город не найден"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Cities"],
+        "summary": "Удалить город",
+        "description": "Удаляет город по его ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/city/": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
+            "description": "Город удалён",
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/City"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
+          },
+          "400": {
+            "description": "Отсутствует параметр ID"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Город не найден"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/event": {
       "post": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Создание нового мероприятия",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "descr": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "id_place": {
-                  "example": "any"
-                },
-                "id_city": {
-                  "example": "any"
-                },
-                "datetime": {
-                  "example": "any"
-                },
-                "price": {
-                  "example": "any"
-                },
-                "image": {
-                  "example": "any"
-                },
-                "artists": {
-                  "example": "any"
-                },
-                "genres": {
-                  "example": "any"
-                },
-                "organizers": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/EventCreateRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Мероприятие успешно создано",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          },
+          "400": {
+            "description": "Некорректные данные запроса"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить список всех мероприятий",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мероприятий",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "put": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Обновить информацию о мероприятии",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "descr": {
-                  "example": "any"
-                },
-                "id_city": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/EventUpdateRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Информация о мероприятии обновлена",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Мероприятие не найдено"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/event/city/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить мероприятия по городу",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мероприятий по городу",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "В этом городе нет событий"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/event/artist/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить мероприятия по артисту",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мероприятий по артисту",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "У этого артиста нет событий"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/event/organizer/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить мероприятия по организатору",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мероприятий по организатору",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "У этого организатора нет событий"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
-    "/event/genre/{id}": {
+    "/event/tag/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить мероприятия по тегу",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мероприятий по тегу",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Событий с этим тегом нет"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/event/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Получить информацию о мероприятии по ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Информация о мероприятии",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Мероприятие не найдено"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Events"],
+        "summary": "Удалить мероприятие по ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Мероприятие удалено"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Мероприятие не найдено"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
-    "/genre": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
+    "/organizer":{
+      "get": {
+        "tags": ["Organizer"],
+        "summary": "Получить всех организаторов",
+        "responses": {
+          "200": {
+            "description": "Список организаторов",
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Organizer"
               }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
           "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/genre/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/genre/": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/organizer": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/organizer/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/organizer/": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/place": {
       "post": {
-        "description": "",
+        "tags": ["Place"],
+        "summary": "Создание нового места",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/PlaceCreateRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Место успешно создано",
+            "schema": {
+              "$ref": "#/definitions/Place"
+            }
+          },
+          "400": {
+            "description": "Название места обязательно"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": ["Place"],
+        "summary": "Получить список всех мест",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Список мест",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Place"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Place"],
+        "summary": "Обновить информацию о месте",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PlaceUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о месте обновлена",
+            "schema": {
+              "$ref": "#/definitions/Place"
+            }
+          },
+          "404": {
+            "description": "Место не найдено"
+          },
+          "500": {
+            "description": "Ошибка сервера"
           }
         }
       }
     },
     "/place/{id}": {
       "get": {
-        "description": "",
+        "tags": ["Place"],
+        "summary": "Получить информацию о месте по ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Информация о месте",
+            "schema": {
+              "$ref": "#/definitions/Place"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Место не найдено"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": ["Place"],
+        "summary": "Удалить место по ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Место удалено"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Место не найдено"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
       }
     },
-    "/place/": {
-      "put": {
-        "description": "",
+
+    "/tag": {
+      "post": {
+        "tags": ["Tag"],
+        "summary": "Создание нового тега",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/TagCreateRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
+            "description": "Тэг успешно создан",
+            "schema": {
+              "$ref": "#/definitions/Tag"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Ошибка сервера"
           }
         }
+      },
+      "get": {
+        "tags": ["Tag"],
+        "summary": "Получить список всех тэгов",
+        "responses": {
+          "200": {
+            "description": "Список тэгов",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Tag"
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Tag"],
+        "summary": "Обновить информацию о теге",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TagUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о теге обновлена",
+            "schema": {
+              "$ref": "#/definitions/Tag"
+            }
+          },
+          "404": {
+            "description": "Тэг не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/tag/{id}": {
+      "get": {
+        "tags": ["Tag"],
+        "summary": "Получить информацию о теге по ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о теге",
+            "schema": {
+              "$ref": "#/definitions/Tag"
+            }
+          },
+          "404": {
+            "description": "Тэг не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Tag"],
+        "summary": "Удалить тэг по ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Тэг удален"
+          },
+          "404": {
+            "description": "Тэг не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Artist": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "artist123"
+        },
+        "name": {
+          "type": "string",
+          "example": "The Rolling Stones"
+        }
+      }
+    },
+    "ArtistInput": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "The Rolling Stones"
+        }
+      }
+    },
+    "City": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "CityCreateRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "RegionList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "cities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Event": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "descr",
+        "id_place",
+        "id_city",
+        "datetime",
+        "price",
+        "image"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "descr": {
+          "type": "string"
+        },
+        "id_place": {
+          "type": "integer"
+        },
+        "id_city": {
+          "type": "integer"
+        },
+        "datetime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "image": {
+          "type": "string",
+          "format": "binary",
+          "description": "Изображение мероприятия"
+        }
+      }
+    },
+    "EventCreateRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "descr",
+        "id_place",
+        "id_city",
+        "datetime",
+        "price"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "descr": {
+          "type": "string"
+        },
+        "id_place": {
+          "type": "integer"
+        },
+        "id_city": {
+          "type": "integer"
+        },
+        "datetime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "artists": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Список ID артистов"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Список ID тегов"
+        }
+      }
+    },
+    "Organizer": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "username": { "type": "string" },
+        "role": {"type": "string"}
+      }
+    },
+    "Place": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" }
+      }
+    },
+    "PlaceCreateRequest": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" }
+      }
+    },
+    "PlaceUpdateRequest": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" }
+      }
+    },
+    "Tag": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" }
+      }
+    },
+    "TagCreateRequest": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" }
+      }
+    },
+    "TagUpdateRequest": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" }
+      }
+    },
+    "RegistrationRequest": {
+      "type": "object",
+      "required": ["username", "password", "role"],
+      "properties": {
+        "username": { "type": "string", "example": "testuser" },
+        "password": { "type": "string", "example": "123456" },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "organizer", "user"],
+          "example": "user"
+        }
+      }
+    },
+    "RegistrationResponse": {
+      "type": "object",
+      "properties": {
+        "message": { "type": "string", "example": "Регистрация прошла успешно" },
+        "user": { "$ref": "#/definitions/User" }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": { "type": "string", "example": "testuser" },
+        "password": { "type": "string", "example": "123456" }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR..." }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "example": 1 },
+        "username": { "type": "string", "example": "testuser" },
+        "role": { "type": "string", "example": "user" }
       }
     }
   }
