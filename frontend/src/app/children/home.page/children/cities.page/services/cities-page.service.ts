@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IRegionsGroup } from '../interfaces/regions-group.interface';
+import { IPopularCity } from '../interfaces/popular-city.interface';
+
 
 @Injectable({
     providedIn: 'root',
@@ -13,6 +15,51 @@ export class CitiesPageService {
         return [
             { caption: 'Главная', routerLink: '/home' },
             { caption: 'Города', routerLink: '/home/cities' },
+        ];
+    }
+
+    /**
+     * Retrieves the list of popular cities.
+     * @returns An array of popular city objects.
+     */
+    public getPopularCitiesList(): IPopularCity[] {
+        return [
+            {
+                id: 10,
+                name: 'Москва',
+                shortName: 'МСК',
+                backgroundUrl: '#'
+            },
+            {
+                id: 11,
+                name: 'Санкт-Петербург',
+                shortName: 'СПБ',
+                backgroundUrl: '#'
+            },
+            {
+                id: 12,
+                name: 'Новосибирск',
+                shortName: 'НСК',
+                backgroundUrl: '#'
+            },
+            {
+                id: 13,
+                name: 'Екатеринбург',
+                shortName: 'ЕКБ',
+                backgroundUrl: '#'
+            },
+            {
+                id: 14,
+                name: 'Нижний Новгород',
+                shortName: 'ННВ',
+                backgroundUrl: '#'
+            },
+            {
+                id: 15,
+                name: 'Казань',
+                shortName: 'КЗН',
+                backgroundUrl: '#'
+            },
         ];
     }
 

@@ -1,6 +1,14 @@
 <div class="list">
     <h1 class="list__title">Популярные города</h1>
     <div class="list__cities">
-
+        <app-tui-secondary-button 
+            class="list__city" 
+            *ngFor="let city of cities"
+            [buttonText]="city.shortName"
+            size="l"
+            [routerLink]="['/home/cities', city.id]"
+            [queryParams]="{ name: city.name }"
+        >
+        </app-tui-secondary-button>
     </div>
 </div>
