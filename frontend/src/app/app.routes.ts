@@ -4,6 +4,10 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { 
+        path: 'auth', 
+        loadComponent: () => import('./children/auth.page/auth.page.component').then(m => m.AuthPageComponent)
+    },
+    { 
         path: 'home', 
         loadComponent: () => import('./children/home.page/home.page.component').then(m => m.HomePageComponent)
     },
