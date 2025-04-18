@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { TuiTabs } from '@taiga-ui/kit';
 import { CommonModule } from '@angular/common';
-import { ActivePanelService } from '../../../children/home.page/children/cities.page/services/active-panel.service';
+import { ActivePanelService } from '../../../../../children/home.page/children/cities.page/services/active-panel.service';
 
 
 @Component({
