@@ -4,18 +4,21 @@
         События в<br>
         <span class="events-page__city-location">{{ cityName | cityDeclension }}</span>
     </h1>
-    <div class="events-page__center-title">
-    <div class="events-page__search-results" [ngPlural]="searchResultsCount">
-        <ng-template ngPluralCase="=0">Нет результатов</ng-template>
-        <ng-template ngPluralCase="one">{{ searchResultsCount }} результат</ng-template>
-        <ng-template ngPluralCase="few">{{ searchResultsCount }} результата</ng-template>
-        <ng-template ngPluralCase="many">{{ searchResultsCount }} результатов</ng-template>
+    <div class="events-page__results-container">
+        <div class="events-page__search-results" [ngPlural]="searchResultsCount">
+            <ng-template ngPluralCase="=0">Нет результатов</ng-template>
+            <ng-template ngPluralCase="one">{{ searchResultsCount }} результат</ng-template>
+            <ng-template ngPluralCase="few">{{ searchResultsCount }} результата</ng-template>
+            <ng-template ngPluralCase="many">{{ searchResultsCount }} результатов</ng-template>
+        </div>
+        <app-tui-outline-button
+            buttonText="ДОБАВИТЬ"
+            buttonSize="xs"
+            buttonIconRight="@tui.arrow-up-right"
+        >
+        </app-tui-outline-button>
     </div>
-    <app-tui-outline-button
-        buttonText="ДОБАВИТЬ"
-        buttonSize="xs"
-        buttonIconRight="@tui.arrow-up-right"
-    ></app-tui-outline-button>
+    <div class="events-page__filter">
     </div>
     <!-- <div class="events-page__events-list">
         <app-tui-event-card

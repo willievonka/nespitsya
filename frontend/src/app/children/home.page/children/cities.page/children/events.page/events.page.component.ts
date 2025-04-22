@@ -13,7 +13,7 @@ import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-decle
         CommonModule,
         TuiBreadcrumbsComponent,
         CityDeclensionPipe,
-        TuiOutlineButtonComponent
+        TuiOutlineButtonComponent,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',

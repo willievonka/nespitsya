@@ -3,11 +3,13 @@ import { RouterLink } from '@angular/router';
 import { TuiInputSearchComponent } from '../tui-components/tui-input-search/tui-input-search.component';
 import { TuiAccentButtonComponent } from '../tui-components/tui-accent-button/tui-accent-button.component';
 import { TuiDropdownComponent } from '../tui-components/tui-dropdown/tui-dropdown.component';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
     selector: 'app-header',
     imports: [
+        CommonModule,
         RouterLink,
         TuiInputSearchComponent,
         TuiAccentButtonComponent,
