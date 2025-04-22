@@ -1,11 +1,12 @@
 <div class="main">
   <div class="main__nav">
     <app-tui-flat-button
-    buttonIconLeft="chevron-left"
-    buttonText="Назад"
-    buttonSize="xs"
-    routerLink=""/>
-    <!-- [] TODO: Сделать редирект на предыдущую страницу -->
+      buttonIconLeft="chevron-left"
+      buttonText="Назад"
+      buttonSize="xs"
+      (click)="goBack()"
+    />
+    <!-- [x] TODO: Сделать редирект на предыдущую страницу -->
   </div>
   <div class="main__content">
     <app-login-form/>
