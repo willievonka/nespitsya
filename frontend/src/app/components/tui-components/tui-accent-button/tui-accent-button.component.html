@@ -5,9 +5,10 @@
     type="button"
 >
     <tui-icon
-        *ngIf="buttonIcon" 
-        icon={{buttonIcon}} 
+        *ngIf="buttonIcon"
+        [icon]="buttonIcon"
         [style.height.rem]="2" 
-    />
+    >
+    </tui-icon>
     {{ buttonText }}
 </button>

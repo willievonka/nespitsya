@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-tui-accent-button',
     imports: [
+        CommonModule,
         TuiButton, 
         TuiIcon,
     ],
