@@ -16,4 +16,6 @@ export class TuiAccentButtonComponent {
     public buttonIcon: string = '';
     @Input() 
     public buttonText: string = '';
+    @Input()
+    public buttonSize: 's' | 'm' | 'l' | 'xl' | 'xs' = 'm';
 }
