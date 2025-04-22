@@ -8,7 +8,7 @@
         routerLink=""
       >
     </a>
-    <div class="header__nav">
+    <div class="header__nav" *ngIf="!isAuthPage">
       <app-tui-input-search class="header__input-search"></app-tui-input-search>
       <app-tui-dropdown 
         class="header__dropdown" 

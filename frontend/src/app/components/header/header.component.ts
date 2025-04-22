@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { TuiInputSearchComponent } from '../tui-components/tui-input-search/tui-input-search.component';
 import { TuiAccentButtonComponent } from '../tui-components/tui-accent-button/tui-accent-button.component';
 import { TuiDropdownComponent } from '../tui-components/tui-dropdown/tui-dropdown.component';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -22,6 +23,15 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent {
     public loginButtonIcon: string = '@tui.user';
     public loginButtonText: string = 'ВОЙТИ';
-
     public dropdownIcon: string = '@tui.text';
+
+    public isAuthPage: boolean = false;
+
+    private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+    constructor(private _router: Router, private _cdr: ChangeDetectorRef) {
+        this._router.events.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => {
+            this.isAuthPage = this._router.url.includes('/auth');
+            this._cdr.detectChanges();
+        });
+    }
 }
