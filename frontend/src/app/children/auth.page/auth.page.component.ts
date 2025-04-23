@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { TuiFlatButtonComponent } from '../../components/tui-components/tui-flat-button/tui-flat-button.component';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -15,13 +16,23 @@ import { Location } from '@angular/common';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthPageComponent {
-    constructor(private _location: Location) {}
+    private _canGoBack: boolean = true;
+    
+    constructor(private _location: Location, private _router: Router) {
+        this._canGoBack = !!(this._router.getCurrentNavigation()?.previousNavigation);
+    }
+    
 
     /**
-     * Navigates the user to the previous location in the browser's history.
+     * Navigates back to the previous page if possible, otherwise redirects to the home page.
      */
     public goBack(): void {
-        this._location.back();
+        if (this._canGoBack) {
+            this._location.back();
+        } 
+        else {
+            this._router.navigate(['/']);
+        }
     }
 }
 
