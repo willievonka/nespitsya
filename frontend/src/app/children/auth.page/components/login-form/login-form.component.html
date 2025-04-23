@@ -1,16 +1,35 @@
-<h1>Войти в аккаунт</h1>
-<div>
-    <tui-textfield>
-        <input 
-            formControlName="password" 
-            tuiTextfield type="password" 
+<div class="login">
+  <h1>Войти в аккаунт</h1>
+  <form [formGroup]="loginForm">
+      <tui-textfield>
+        <input
+            formControlName="email"
+            placeholder="Электронная почта"
+            tuiTextfield type="email"
         />
-        <tui-icon tuiPassword />
-    </tui-textfield>
+      </tui-textfield>
 
-    <tui-error 
-        formControlName="password" 
-        [error]="[] | tuiFieldError | async" 
-    />
+        <tui-error
+            formControlName="email"
+            [error]="[] | tuiFieldError | async"
+        />
+
+      <tui-textfield>
+          <input
+              formControlName="password"
+              placeholder="Пароль"
+              tuiTextfield type="password"
+          />
+          <tui-icon tuiPassword />
+      </tui-textfield>
+
+      <tui-error
+          formControlName="password"
+          [error]="[] | tuiFieldError | async"
+      />
+
+  </form>
+
+  <app-tui-accent-button buttonText="Войти" />
+  <b>Нет аккаунта? <a routerLink="">Создать</a></b>
 </div>
-<app-tui-accent-button buttonText="Войти" />
