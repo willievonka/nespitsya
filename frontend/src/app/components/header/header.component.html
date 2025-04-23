@@ -11,12 +11,11 @@
         >
       </a>
       <div class="header__nav">
-        <app-tui-input-search class="header__input-search"></app-tui-input-search>
+        <app-tui-input-search class="header__input-search"/>
         <app-tui-dropdown 
           class="header__dropdown" 
           [dropdownIcon]="'@tui.text'"
-        >
-        </app-tui-dropdown>
+        />
       </div>
     </div>
     <app-tui-accent-button 
@@ -24,8 +23,7 @@
       [buttonIcon]="'@tui.user'" 
       [buttonText]="'ВОЙТИ'"
       routerLink="/auth"
-    >
-    </app-tui-accent-button>
+    />
   </div>
 </ng-template>
 
