@@ -21,10 +21,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-    public loginButtonIcon: string = '@tui.user';
-    public loginButtonText: string = 'ВОЙТИ';
-    public dropdownIcon: string = '@tui.text';
-
     public isAuthPage: boolean = false;
 
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);

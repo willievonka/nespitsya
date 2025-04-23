@@ -14,15 +14,15 @@
         <app-tui-input-search class="header__input-search"></app-tui-input-search>
         <app-tui-dropdown 
           class="header__dropdown" 
-          [dropdownIcon]="dropdownIcon"
+          [dropdownIcon]="'@tui.text'"
         >
         </app-tui-dropdown>
       </div>
     </div>
     <app-tui-accent-button 
       class="header__login-button" 
-      [buttonIcon]="loginButtonIcon" 
-      [buttonText]="loginButtonText"
+      [buttonIcon]="'@tui.user'" 
+      [buttonText]="'ВОЙТИ'"
       routerLink="/auth"
     >
     </app-tui-accent-button>
