@@ -1,9 +1,31 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 40px 0;
+  justify-content: space-between;
 
+  &__title {
+    margin: 0 auto;
+    font-size: 48px;
+    line-height: 60px;
+  }
 
-h1 {
-  font-size: 48px;
+  &__footer {
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+  }
 }
 
-a {
-  color:#FF8D3B;
+.form {
+  display: flex;
+  flex-direction: column;
+
+
+  &__error {
+    margin-bottom: 24px;
+  }
 }

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiAccentButtonComponent } from '../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
-import { TuiTextfield, TuiError, TuiIcon } from '@taiga-ui/core';
+import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
         TuiTextfield,
         TuiError,
         TuiIcon,
+        TuiLink,
         TuiFieldErrorPipe,
         AsyncPipe,
         RouterLink,
