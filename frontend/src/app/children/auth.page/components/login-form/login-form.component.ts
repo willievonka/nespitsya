@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { TuiAccentButtonComponent } from '../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
 
 @Component({
@@ -19,8 +18,6 @@ import { RouterLink } from '@angular/router';
         TuiLink,
         TuiFieldErrorPipe,
         AsyncPipe,
-        RouterLink,
-
     ],
     templateUrl: './login-form.component.html',
     styleUrl: './login-form.component.scss',
@@ -33,8 +30,18 @@ import { RouterLink } from '@angular/router';
     ],
 })
 export class LoginFormComponent {
+    @Output() 
+    public switchToRegister: EventEmitter<void> = new EventEmitter<void>();
+
     protected readonly loginForm: FormGroup = new FormGroup({
         email: new FormControl('', Validators.compose([Validators.required,  Validators.email])),
         password: new FormControl('', Validators.required)
     });
+
+    /**
+     * Emits an event to switch the view to the registration form.
+     */
+    public onSwitchToRegister(): void {
+        this.switchToRegister.emit();
+    }
 }

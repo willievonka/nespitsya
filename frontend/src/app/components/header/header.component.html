@@ -1,4 +1,4 @@
-<div *ngIf="!isAuthPage; then header else header_authPage"></div>
+<div *ngIf="!isAuthPage; then header else headerAuthPage"></div>
 
 <ng-template #header>
   <div class="header">
@@ -29,7 +29,7 @@
   </div>
 </ng-template>
 
-<ng-template #header_authPage>
+<ng-template #headerAuthPage>
   <div class="header header_auth-page">
       <a routerLink="">
         <img 

@@ -1,36 +1,44 @@
 <div class="main">
-  <h1 class="main__title">Войти в аккаунт</h1>
-  <form class="form" [formGroup]="loginForm">
-    <tui-textfield class="form__input">
-      <input
-        formControlName="email"
-        placeholder="Электронная почта"
-        tuiTextfield 
-        type="email"
-      />
-    </tui-textfield>
-    <tui-error
-      class="form__error"
-      formControlName="email"
-      [error]="[] | tuiFieldError | async"
-    />
-    <tui-textfield class="form__input">
-      <input
-        formControlName="password"
-        placeholder="Пароль"
-        tuiTextfield 
-        type="password"
-      />
-      <tui-icon tuiPassword />
-    </tui-textfield>
-    <tui-error
-      class="form__error"
-      formControlName="password"
-      [error]="[] | tuiFieldError | async"
-    />
-    <app-tui-accent-button buttonText="Войти"/>
-  </form>
-  <div class="main__footer">
-    Нет аккаунта? <a tuiLink routerLink="">Создать</a>
-  </div>
+    <h1 class="main__title">Войти в аккаунт</h1>
+    <form class="form" [formGroup]="loginForm">
+        <tui-textfield class="form__input">
+            <input
+                formControlName="email"
+                placeholder="Электронная почта"
+                tuiTextfield 
+                type="email"
+            />
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="email"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield class="form__input">
+            <input
+                formControlName="password"
+                placeholder="Пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="password"
+            [error]="[] | tuiFieldError | async"
+        />
+        <app-tui-accent-button buttonText="Войти"/>
+    </form>
+    <div class="main__footer">
+        Нет аккаунта? 
+        <a 
+            tuiLink 
+            tabindex="0" 
+            (click)="onSwitchToRegister()" 
+            (keydown.enter)="onSwitchToRegister()"
+        >
+            Создать
+        </a>
+    </div>
 </div>
