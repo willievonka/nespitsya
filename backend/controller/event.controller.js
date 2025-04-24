@@ -1,11 +1,18 @@
 import db from '../db.js'
+import { fileURLToPath } from 'url';
+import { dirname} from 'path';
+import path from 'path';
+import fs from 'fs/promises'; // обязательно использовать промис-версию fs для await
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 class EventController {
     async createEvent(req, res) {
         try {
             const { descr, name, id_place, id_city, datetime, price, artists, tags } = req.body;
-            const organizer = req.user.id
+            // const organizer = req.user.id
+            const organizer = 1 // ВРЕМЕННО!!!
             const image = req.file?.filename;
 
             if (!descr || !name || !id_place || !id_city || !datetime || !price || !image) {
@@ -250,11 +257,28 @@ class EventController {
     async deleteEvent(req, res) {
         try {
             const id = req.params.id;
+    
+            // Удаляем и получаем удалённую запись
             const result = await db.query("DELETE FROM event WHERE id = $1 RETURNING *", [id]);
+    
             if (result.rows.length === 0) {
                 return res.status(404).json({ message: "Событие не найдено" });
             }
+    
+            const imageFilename = result.rows[0].image;
+    
+            if (imageFilename) {
+                const imagePath = path.join(__dirname, '..', 'static', imageFilename);
+                try {
+                    await fs.unlink(imagePath);
+                    console.log(`Изображение ${imageFilename} удалено`);
+                } catch (err) {
+                    console.warn(`Не удалось удалить изображение: ${err.message}`);
+                }
+            }
+    
             res.json({ message: "Событие удалено" });
+    
         } catch (error) {
             console.error("Ошибка при удалении события:", error);
             res.status(500).json({ message: "Ошибка сервера" });
