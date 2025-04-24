@@ -10,6 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
+import cors from 'cors'
 
 const swaggerFile = JSON.parse(fs.readFileSync('./swagger-output.json', 'utf8'))
 
@@ -21,6 +22,9 @@ app.use(express.json())
 
 const start = () => {
     try {
+        app.use(cors(
+            { origin:'*'} 
+        ))
         app.use('/static', express.static(path.join(__dirname, 'static')));
         app.use('/api', cityRouter)
         app.use('/api', tagRouter)
