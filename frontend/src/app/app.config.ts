@@ -5,10 +5,12 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
+import { provideHttpClient } from '@angular/common/http';
 
 
 export const appConfig: ApplicationConfig = {
     providers: [
+        provideHttpClient(),
         provideAnimations(), 
         provideZoneChangeDetection({ eventCoalescing: true }), 
         provideRouter(routes), 

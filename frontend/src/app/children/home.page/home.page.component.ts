@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiBreadcrumbsComponent } from './components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
@@ -8,11 +8,13 @@ import { CityDeclensionPipe } from './pipes/city-declension/city-declension.pipe
 import { ICity } from './interfaces/city.interface';
 import { IEvent } from './interfaces/event.interface';
 import { HomePageService } from './services/home-page.service';
+import { map, Observable } from 'rxjs';
 
 
 @Component({
     selector: 'app-home-page',
     imports: [
+        AsyncPipe,
         CommonModule,
         TuiBreadcrumbsComponent,
         TuiEventCardComponent,
@@ -25,13 +27,15 @@ import { HomePageService } from './services/home-page.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePageComponent {
-    public city!: ICity;
-    public events!: IEvent[];
-    public moreEventsButtonText!: string;
+    public city$: Observable<ICity>;
+    public events$: Observable<IEvent[]>;
+    public moreEventsButtonText: string;
 
     constructor(private _homePageService: HomePageService) {
-        this.city = this._homePageService.getCity();
-        this.events = this._homePageService.getEvents();
-        this.moreEventsButtonText = `Больше событий в ${this.city.name}`;
+        this.city$ = this._homePageService.city$;
+        this.events$ = this._homePageService.events$;
+        this.moreEventsButtonText = `Больше событий в ${this.city$.pipe(
+            map(city => city.name)
+        )}`;
     }
 }

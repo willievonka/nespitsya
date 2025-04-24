@@ -1,55 +1,59 @@
 import { Injectable } from '@angular/core';
 import { ICity } from '../interfaces/city.interface';
 import { IEvent } from '../interfaces/event.interface';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable, switchMap } from 'rxjs';
+
 
 @Injectable({
     providedIn: 'root',
 })
 export class HomePageService {
     /**
-     * Retrieves the city information.
-     * @returns {ICity} The city object containing id and name.
+     * Observable stream of the current city data.
+     * @returns {Observable<ICity>} An observable of the city.
      */
-    public getCity(): ICity {
-        return {
-            id: 6,
-            name: 'Екатеринбург',
-        };
+    public get city$() : Observable<ICity> {
+        return this._city$;
     }
 
     /**
-     * Retrieves a list of events.
-     * @returns {IEvent[]} An array of event objects.
+     * Observable stream of the events data.
+     * @returns {Observable<IEvent[]>} An observable of the events.
      */
-    public getEvents(): IEvent[] {
-        return [
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-        ];
+    public get events$() : Observable<IEvent[]> {
+        return this._events$;
+    }
+    
+    // [ ] TODO: сделать получение города по координатам из апи геолокации
+    private _city$: Observable<ICity>;
+    private _events$: Observable<IEvent[]>;
+
+    //private readonly _apiUrl: string = 'https://pointedly-exultant-monarch.cloudpub.ru'; - тру апи
+    private readonly _apiUrl: string = 'mock-data'; // - фейк апи
+
+    constructor(private _http: HttpClient) {
+        this._city$ = this.loadCity();
+        this._events$ = this.city$.pipe(
+            map(city => city.id),
+            switchMap(cityId => this.loadEvents(cityId))
+        );
+    }
+
+    /**
+     * Loads the city data from the API.
+     * @returns {Observable<ICity>} An observable of the city data.
+     */
+    private loadCity(): Observable<ICity> {
+        return this._http.get<ICity>(`${this._apiUrl}/city.json`);
+    }
+
+    /**
+     * Loads the events data for a specific city from the API.
+     * @param {number} cityId - The ID of the city.
+     * @returns {Observable<IEvent[]>} An observable of the events data.
+     */
+    private loadEvents(cityId: number): Observable<IEvent[]> {
+        return this._http.get<IEvent[]>(`${this._apiUrl}/${cityId}/events.json`);
     }
 }
