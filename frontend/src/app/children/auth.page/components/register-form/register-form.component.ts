@@ -36,7 +36,9 @@ export class RegisterFormComponent {
 
     protected readonly registerForm: FormGroup = new FormGroup({
         email: new FormControl('', Validators.compose([Validators.required,  Validators.email])),
-        password: new FormControl('', Validators.required)
+        username: new FormControl('', Validators.required),
+        password: new FormControl('', Validators.required),
+        passwordRepeat: new FormControl('', Validators.required),
     });
 
     /**
