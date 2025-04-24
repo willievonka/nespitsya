@@ -8,7 +8,7 @@ import { CityDeclensionPipe } from './pipes/city-declension/city-declension.pipe
 import { ICity } from './interfaces/city.interface';
 import { IEvent } from './interfaces/event.interface';
 import { HomePageService } from './services/home-page.service';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -29,13 +29,9 @@ import { map, Observable } from 'rxjs';
 export class HomePageComponent {
     public city$: Observable<ICity>;
     public events$: Observable<IEvent[]>;
-    public moreEventsButtonText: string;
 
     constructor(private _homePageService: HomePageService) {
         this.city$ = this._homePageService.city$;
         this.events$ = this._homePageService.events$;
-        this.moreEventsButtonText = `Больше событий в ${this.city$.pipe(
-            map(city => city.name)
-        )}`;
     }
 }
