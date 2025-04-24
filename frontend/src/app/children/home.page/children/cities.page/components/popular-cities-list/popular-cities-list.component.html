@@ -1,0 +1,14 @@
+<div class="list">
+    <h1 class="list__title">Популярные города</h1>
+    <div class="list__cities">
+        <app-popular-city-button 
+            class="list__city" 
+            *ngFor="let city of cities"
+            [text]="city.shortName"
+            [backgroundUrl]="city.backgroundUrl"
+            [routerLink]="['/home/cities', city.id]"
+            [queryParams]="{ name: city.name }"
+        >
+        </app-popular-city-button>
+    </div>
+</div>

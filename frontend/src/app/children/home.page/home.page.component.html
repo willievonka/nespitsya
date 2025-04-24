@@ -1,10 +1,19 @@
 <div class="home-page">
-    <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"></app-tui-breadcrumbs>
+    <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"/>
     <h1 class="home-page__title">
         Популярные<br>события в<br>
-        <span class="home-page__city-location">{{ city.name | cityDeclension }}</span>
+        <span 
+            class="home-page__city-location" 
+            routerLink="/home/cities"
+            *ngIf="city$ | async as city"
+        >
+            {{ city.name | cityDeclension }}
+        </span>
     </h1>
-    <div class="home-page__events-list">
+    <div 
+        class="home-page__events-list"
+        *ngIf="events$ | async as events"
+    >
         <app-tui-event-card
             class="home-page__event-card"
             *ngFor="let event of events"
@@ -15,14 +24,15 @@
             [price]="event.price"
             [tags]="event.tags"
             [routerLink]="event.routerLink"
-        ></app-tui-event-card>
+        />
     </div>
     <app-tui-secondary-button
         class="home-page__more-events-button"
         size="l"
-        [buttonText]="moreEventsButtonText | cityDeclension"
+        *ngIf="city$ | async as city"
+        [buttonText]="`Больше событий в ${city.name | cityDeclension}`"
         [buttonIconRight]="'@tui.corner-down-right'"
         [routerLink]="['/home/cities', city.id]"
         [queryParams]="{ name: city.name }"
-    ></app-tui-secondary-button>
+    />
 </div>

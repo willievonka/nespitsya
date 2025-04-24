@@ -8,6 +8,7 @@ import { CityDeclensionPipe } from './pipes/city-declension/city-declension.pipe
 import { ICity } from './interfaces/city.interface';
 import { IEvent } from './interfaces/event.interface';
 import { HomePageService } from './services/home-page.service';
+import { map, Observable, switchMap } from 'rxjs';
 
 
 @Component({
@@ -25,13 +26,14 @@ import { HomePageService } from './services/home-page.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePageComponent {
-    public city!: ICity;
-    public events!: IEvent[];
-    public moreEventsButtonText!: string;
+    public city$: Observable<ICity>;
+    public events$: Observable<IEvent[]>;
 
     constructor(private _homePageService: HomePageService) {
-        this.city = this._homePageService.getCity();
-        this.events = this._homePageService.getEvents();
-        this.moreEventsButtonText = `Больше событий в ${this.city.name}`;
+        this.city$ = this._homePageService.getCity();
+        this.events$ = this.city$.pipe(
+            map(city => city.id),
+            switchMap(cityId => this._homePageService.getEvents(cityId))
+        );
     }
 }

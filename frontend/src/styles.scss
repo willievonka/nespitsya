@@ -15,12 +15,16 @@
     --tui-font-heading-4: 'Space Grotesk, sans-serif';
     --tui-font-heading-5: 'Space Grotesk, sans-serif';
     --tui-font-heading-6: 'Space Grotesk, sans-serif';
+}
 
-
+:root [tuiTheme=dark] {
     --tui-background-accent-1: #ff7043;
     --tui-background-accent-1-hover: #FF8D69;
     --tui-background-accent-1-pressed: #ed7147;
     --tui-background-accent-2: #ff7043;
     --tui-background-accent-2-hover: #FF8D69;
     --tui-background-accent-2-pressed: #ed7147;
+
+    --tui-text-action: #FF8D3B;
+    --tui-text-action-hover: #FFB37D;
 }

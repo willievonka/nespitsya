@@ -14,7 +14,18 @@
 
     &__city-location {
         display: flex;
+        width:fit-content;
         color: rgb(255, 112, 67);
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+    }
+
+    &__city-location:hover {
+        color: #FF8D69;
+    }
+
+    &__city-location:active {
+        color: #ed7147;
     }
 
     &__events-list {

@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
 import { IRegionsGroup } from '../interfaces/regions-group.interface';
+import { IPopularCity } from '../interfaces/popular-city.interface';
+import { environment } from '../../../../../../environment';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 
 @Injectable({
     providedIn: 'root',
 })
 export class CitiesPageService {
+    private readonly _apiUrl: string = environment.apiUrl;
+
+    constructor(private _http: HttpClient) {}
+
     /**
      * Retrieves the breadcrumbs for the cities page.
      * @returns An array of breadcrumb objects with captions and router links.
@@ -17,58 +26,29 @@ export class CitiesPageService {
     }
 
     /**
-     * Retrieves the list of regions and their respective cities.
-     * @returns An array of region groups with their cities.
+     *
      */
-    public getRegionsList(): IRegionsGroup[] {
-        return [
-            {
-                name: 'М',
-                regions: [
-                    {
-                        name: 'Московская область',
-                        cities: [
-                            { id: 1, name: 'Красногорск' },
-                            { id: 2, name: 'Химки' },
-                            { id: 3, name: 'Зеленоград' },
-                        ],
-                    },
-                ],
-            },
-            {
-                name: 'Л',
-                regions: [
-                    {
-                        name: 'Ленинградская область',
-                        cities: [
-                            { id: 4, name: 'Пушкин' },
-                            { id: 5, name: 'Петергоф' },
-                        ],
-                    },
-                ],
-            },
-            {
-                name: 'С',
-                regions: [
-                    {
-                        name: 'Свердловская область',
-                        cities: [
-                            { id: 6, name: 'Екатеринбург' },
-                            { id: 7, name: 'Ревда' },
-                            { id: 8, name: 'Первоуральск' },
-                            { id: 9, name: 'Верхняя Пышма' },
-                        ],
-                    },
-                ],
-            },
-        ];
+    public getPopularCitiesList(): Observable<IPopularCity[]> {
+        //[ ] TODO: сделать получение списка популярных городов из апи
+        return this._http.get<IPopularCity[]>(`mock-data/popular-cities.json`);
     }
 
+    
     /**
-     * Retrieves the list of region tab names.
-     * @returns An array of region group names.
+     * Retrieves the list of regions grouped by categories.
+     * @returns An observable of an array of region groups.
      */
-    public getRegionsTabs(): string[] {
-        return this.getRegionsList().map((group: IRegionsGroup) => group.name);
+    public getRegionsList(): Observable<IRegionsGroup[]> {
+        return this._http.get<IRegionsGroup[]>(`${this._apiUrl}/cities`);
+    }
+
+    
+    /**
+     * Extracts the names of regions from the provided list of region groups.
+     * @param regionsList - An array of region groups.
+     * @returns An array of region names.
+     */
+    public getRegionsTabs(regionsList: IRegionsGroup[]): string[] {
+        return regionsList.map((group: IRegionsGroup) => group.name);
     }
 }

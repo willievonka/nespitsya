@@ -1,55 +1,37 @@
 import { Injectable } from '@angular/core';
 import { ICity } from '../interfaces/city.interface';
 import { IEvent } from '../interfaces/event.interface';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environment';
+
 
 @Injectable({
     providedIn: 'root',
 })
 export class HomePageService {
+    // [ ] TODO: сделать получение города по координатам из апи геолокации
+    private _cityId: number = 14; // - заглушка, пока не сделаем получение города по координатам из апи геолокации
+
+    private readonly _apiUrl: string = environment.apiUrl; // - тру апи
+    //private readonly _apiUrl: string = 'mock-data'; // - фейк апи
+
+    constructor(private _http: HttpClient) {}
+
     /**
-     * Retrieves the city information.
-     * @returns {ICity} The city object containing id and name.
+     * Gets the city data from the API.
+     * @returns {Observable<ICity>} An observable of the city data.
      */
-    public getCity(): ICity {
-        return {
-            id: 6,
-            name: 'Екатеринбург',
-        };
+    public getCity(): Observable<ICity> {
+        return this._http.get<ICity>(`${this._apiUrl}/cities/${this._cityId}`);
     }
 
     /**
-     * Retrieves a list of events.
-     * @returns {IEvent[]} An array of event objects.
+     * Gets the events data for a specific city from the API.
+     * @param {number} cityId - The ID of the city.
+     * @returns {Observable<IEvent[]>} An observable of the events data.
      */
-    public getEvents(): IEvent[] {
-        return [
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-            {
-                image: 'https://i.imgur.com/5qSSGHi.jpeg',
-                title: 'Оркестр CAGMO | Концерт при свечах',
-                place: 'Детская филармония',
-                date: new Date('2025-03-12T12:00:00'),
-                price: 'от 1500₽',
-                tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-                routerLink: '#',
-            },
-        ];
+    public getEvents(cityId: number): Observable<IEvent[]> {
+        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`);
     }
 }

@@ -1,26 +1,40 @@
-<div class="header">
-  <div class="header__left-part">
-    <a>
-      <img 
-        class="header__logo" 
-        src="logo.svg" 
-        alt="logo" 
-        routerLink=""
-      >
-    </a>
-    <div class="header__nav">
-      <app-tui-input-search class="header__input-search"></app-tui-input-search>
-      <app-tui-dropdown 
-        class="header__dropdown" 
-        [dropdownIcon]="dropdownIcon"
-      >
-      </app-tui-dropdown>
+<div *ngIf="!isAuthPage; then header else headerAuthPage"></div>
+
+<ng-template #header>
+  <div class="header">
+    <div class="header__left-part">
+      <a routerLink="">
+        <img 
+          class="header__logo" 
+          src="logo.svg" 
+          alt="logo" 
+        >
+      </a>
+      <div class="header__nav">
+        <app-tui-input-search class="header__input-search"/>
+        <app-tui-dropdown 
+          class="header__dropdown" 
+          [dropdownIcon]="'@tui.text'"
+        />
+      </div>
     </div>
+    <app-tui-accent-button 
+      class="header__login-button" 
+      [buttonIcon]="'@tui.user'" 
+      [buttonText]="'ВОЙТИ'"
+      routerLink="/auth"
+    />
   </div>
-  <app-tui-accent-button 
-    class="header__login-button" 
-    [buttonIcon]="loginButtonIcon" 
-    [buttonText]="loginButtonText"
-  >
-  </app-tui-accent-button>
-</div>
+</ng-template>
+
+<ng-template #headerAuthPage>
+  <div class="header header_auth-page">
+      <a routerLink="">
+        <img 
+          class="header__logo" 
+          src="logo.svg" 
+          alt="logo" 
+        >
+      </a>
+  </div>
+</ng-template>

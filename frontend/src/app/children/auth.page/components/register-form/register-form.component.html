@@ -1,0 +1,71 @@
+<div class="main">
+    <h1 class="main__title">Создать аккаунт</h1>
+    <form class="form" [formGroup]="registerForm">
+        <tui-textfield class="form__input">
+            <input
+                formControlName="email"
+                placeholder="Электронная почта"
+                tuiTextfield 
+                type="email"
+            />
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="email"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield class="form__input">
+            <input
+                formControlName="username"
+                placeholder="Имя"
+                tuiTextfield 
+                type="text"
+            />
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="username"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield class="form__input">
+            <input
+                formControlName="password"
+                placeholder="Пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="password"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield class="form__input">
+            <input
+                formControlName="passwordRepeat"
+                placeholder="Повторите пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="form__error"
+            formControlName="passwordRepeat"
+            [error]="[] | tuiFieldError | async"
+        />
+        <app-tui-accent-button buttonText="Зарегистрироваться"/>
+    </form>
+    <div class="main__footer">
+        Уже есть аккаунт? 
+        <a 
+            tuiLink 
+            tabindex="0" 
+            (click)="onSwitchToLogin()" 
+            (keydown.enter)="onSwitchToLogin()"
+        >
+            Войти
+        </a>
+    </div>
+</div>

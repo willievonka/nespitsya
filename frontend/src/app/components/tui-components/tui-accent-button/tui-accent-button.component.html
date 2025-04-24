@@ -1,4 +1,14 @@
-<button tuiButton appearance="accent" size="m" type="button">
-    <tui-icon icon={{buttonIcon}} [style.height.rem]="2" />
+<button 
+    tuiButton 
+    appearance="accent" 
+    [size]="buttonSize" 
+    type="button"
+>
+    <tui-icon
+        *ngIf="buttonIcon"
+        [icon]="buttonIcon"
+        [style.height.rem]="2" 
+    >
+    </tui-icon>
     {{ buttonText }}
 </button>

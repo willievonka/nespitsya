@@ -1,0 +1,19 @@
+<div class="main">
+  <app-tui-flat-button
+    class="main__back-button"
+    buttonIconLeft="chevron-left"
+    buttonText="Назад"
+    buttonSize="xs"
+    (click)="goBack()"
+  />
+  <!-- [x] TODO: Сделать редирект на предыдущую страницу -->
+  <div class="main__form">
+    <div *ngIf="hasAccount; then login else register"></div>
+    <ng-template #login>
+      <app-login-form (switchToRegister)="toggleForm()"/>
+    </ng-template>
+    <ng-template #register>
+      <app-register-form (switchToLogin)="toggleForm()"/>
+    </ng-template>  
+  </div>
+</div>

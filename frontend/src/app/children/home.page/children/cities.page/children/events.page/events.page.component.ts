@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiBreadcrumbsComponent } from '../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
 import { TuiOutlineButtonComponent } from './components/tui-components/tui-outline-button/tui-outline-button.component';
 import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-declension.pipe';
+import { TuiFilterComponent } from './components/tui-components/tui-filter/tui-filter.component';
 
 
 @Component({
@@ -13,7 +14,8 @@ import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-decle
         CommonModule,
         TuiBreadcrumbsComponent,
         CityDeclensionPipe,
-        TuiOutlineButtonComponent
+        TuiOutlineButtonComponent,
+        TuiFilterComponent,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',
