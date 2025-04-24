@@ -8,6 +8,7 @@ import { TuiTabsComponent } from '../../components/tui-components/tui-tabs/tui-t
 import { CitiesPageService } from './services/cities-page.service';
 import { ActivePanelService } from './services/active-panel.service';
 import { IPopularCity } from './interfaces/popular-city.interface';
+import { map, Observable } from 'rxjs';
 
 
 @Component({
@@ -28,14 +29,16 @@ import { IPopularCity } from './interfaces/popular-city.interface';
 })
 export class CitiesPageComponent {
     public breadcrumbsItems: Array<{ caption: string; routerLink: string }>;
-    public popularCitiesList: IPopularCity[];
-    public regionsTabs: string[];
-    public regionsList: IRegionsGroup[];
-
-    constructor(private readonly _citiesPageService: CitiesPageService) {
-        this.popularCitiesList = this._citiesPageService.getPopularCitiesList();
-        this.regionsTabs = this._citiesPageService.getRegionsTabs();
-        this.regionsList = this._citiesPageService.getRegionsList();
+    public popularCitiesList$: Observable<IPopularCity[]>;
+    public regionsList$: Observable<IRegionsGroup[]>;
+    public regionsTabs$: Observable<string[]>;
+    
+    constructor(private _citiesPageService: CitiesPageService) {
         this.breadcrumbsItems = this._citiesPageService.getBreadcrumbs();
+        this.popularCitiesList$ = this._citiesPageService.getPopularCitiesList();
+        this.regionsList$ = this._citiesPageService.getRegionsList();
+        this.regionsTabs$ = this.regionsList$.pipe(
+            map((regionsList) => this._citiesPageService.getRegionsTabs(regionsList))
+        );
     }
 }

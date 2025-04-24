@@ -3,6 +3,7 @@ import { ICity } from '../interfaces/city.interface';
 import { IEvent } from '../interfaces/event.interface';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environment';
 
 
 @Injectable({
@@ -10,9 +11,10 @@ import { Observable } from 'rxjs';
 })
 export class HomePageService {
     // [ ] TODO: сделать получение города по координатам из апи геолокации
+    private _cityId: number = 14; // - заглушка, пока не сделаем получение города по координатам из апи геолокации
 
-    //private readonly _apiUrl: string = 'https://pointedly-exultant-monarch.cloudpub.ru'; - тру апи
-    private readonly _apiUrl: string = 'mock-data'; // - фейк апи
+    private readonly _apiUrl: string = environment.apiUrl; // - тру апи
+    //private readonly _apiUrl: string = 'mock-data'; // - фейк апи
 
     constructor(private _http: HttpClient) {}
 
@@ -21,7 +23,7 @@ export class HomePageService {
      * @returns {Observable<ICity>} An observable of the city data.
      */
     public getCity(): Observable<ICity> {
-        return this._http.get<ICity>(`${this._apiUrl}/city.json`);
+        return this._http.get<ICity>(`${this._apiUrl}/cities/${this._cityId}`);
     }
 
     /**
@@ -30,6 +32,6 @@ export class HomePageService {
      * @returns {Observable<IEvent[]>} An observable of the events data.
      */
     public getEvents(cityId: number): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._apiUrl}/${cityId}/events.json`);
+        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`);
     }
 }
