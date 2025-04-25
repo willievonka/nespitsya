@@ -5,6 +5,7 @@ import { OrganizerCardComponent } from './components/organizer-card/organizer-ca
 import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
+import { TuiIcon } from '@taiga-ui/core';
 
 
 @Component({
@@ -13,7 +14,8 @@ import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
         TuiBreadcrumbsComponent,
         EventCardComponent,
         OrganizerCardComponent,
-        TuiSecondaryButtonComponent
+        TuiSecondaryButtonComponent,
+        TuiIcon,
     ],
     templateUrl: './event.page.component.html',
     styleUrl: './event.page.component.scss',
@@ -41,6 +43,8 @@ export class EventPageComponent {
         subsCount: 9,
         eventsCount: 7
     };
+
+    public regionCityLocation: string = 'Свердловская область, Екатеринбург';
 
 
     public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [

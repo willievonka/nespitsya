@@ -8,18 +8,18 @@
         margin-bottom: 12px;
     }
 
-    &__event-card {
+    &__card {
         margin-top: 12px;
         margin-bottom: 24px;
     }
 
-    &__info {
+    &__content {
         display: flex;
         gap: 24px;
     }
 
-    &__left {
-        p {
+    &__description {
+        &-text {
             display: flex;
             max-width: 590px;
             white-space: pre-wrap;
@@ -31,14 +31,33 @@
         }
     }
 
-    &__organizer-info {
+    &__details {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        gap: 24px;
     }
 
-    &__organizer-button {
-        font-size: 12px;
-        font-weight: bold;
+    &__organizer {
+        &-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    
+        &-button {
+            font-size: 12px;
+            font-weight: bold;
+        }
+    }
+    
+    &__location {
+        &-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: bold;
+        }
     }
 }
