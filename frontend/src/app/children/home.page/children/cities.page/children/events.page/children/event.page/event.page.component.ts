@@ -31,7 +31,6 @@ export class EventPageComponent {
         date: new Date('2025-05-14T19:00:00'),
         price: 'от 1500₽',
         tags:  ['Классическая музыка', 'Саундтрек', 'Неоклассика', 'Шоу', 'Концерт'],
-        routerLink: '#'
     };
 
     public organizer: IOrganizer = {

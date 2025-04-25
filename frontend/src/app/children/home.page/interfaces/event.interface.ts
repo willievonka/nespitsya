@@ -9,5 +9,4 @@ export interface IEvent {
     date: Date;
     price: string;
     tags: string[];
-    routerLink: string;
 }
