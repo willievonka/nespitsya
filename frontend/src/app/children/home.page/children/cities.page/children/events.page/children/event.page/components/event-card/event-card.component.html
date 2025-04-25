@@ -1,0 +1,31 @@
+<div class="background" style.backgroundImage="url({{ backgroundUrl }})">
+    <div class="main">
+        <h1 class="main__title">{{ title }}</h1>
+        <h2 class="main__place">{{ place }}</h2>
+        <div class="main__date">
+            <tui-icon icon="calendar"/>
+            <!-- [ ] TODO: доделать ссылку, чтобы корректно открывала мероприятие -->
+            <a 
+                class="main__date-link" 
+                [href]="'https://calendar.google.com/calendar/render?action=TEMPLATE&dates=' + (date | date:'yyyyMMddTHHmmss') + '&text=' + title"
+                target="_blank"
+                tuiLink
+            >
+                {{ date | date:'EE, d MMMM | HH:mm' | titlecase }}
+            </a>
+        </div>
+        <div class="main__tags">
+            <app-tui-chip
+                class="main__tag"
+                size="xs"
+                *ngFor="let tag of tags" 
+                [value]="tag"
+            />
+        </div>
+        <div class="main__buttons">
+            <app-tui-accent-button buttonText="Найти билеты {{ price }}"/>
+            <app-tui-secondary-button buttonIconLeft="heart" size="m"/>
+        </div>
+    </div>
+</div>
+

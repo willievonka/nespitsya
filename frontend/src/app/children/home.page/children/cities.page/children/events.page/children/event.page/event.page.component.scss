@@ -1,0 +1,32 @@
+.event-page {
+    display: flex;
+    flex-direction: column;
+    padding: 0 50px;
+
+    h2 {
+        margin: 0;
+        margin-bottom: 12px;
+    }
+
+    &__event-card {
+        margin-top: 12px;
+        margin-bottom: 24px;
+    }
+
+    &__info {
+        display: flex;
+        gap: 24px;
+    }
+
+    &__left {
+        p {
+            display: flex;
+            max-width: 590px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 16px;
+            line-height: 16px;
+            font-weight: bold;
+        }
+    }
+}

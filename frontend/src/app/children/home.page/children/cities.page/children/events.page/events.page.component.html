@@ -1,5 +1,5 @@
 <div class="events-page">
-    <app-tui-breadcrumbs [items]="breadcrumbsItems"></app-tui-breadcrumbs>
+    <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
     <h1 class="events-page__title">
         События в<br>
         <span class="events-page__city-location">{{ cityName | cityDeclension }}</span>
@@ -15,11 +15,10 @@
             buttonText="ДОБАВИТЬ"
             buttonSize="xs"
             buttonIconRight="@tui.arrow-up-right"
-        >
-        </app-tui-outline-button>
+        />
     </div>
     <div class="events-page__filter-wrapper">
-        <app-tui-filter></app-tui-filter>
+        <app-tui-filter/>
     </div>
     <!-- <div class="events-page__events-list">
         <app-tui-event-card

@@ -23,7 +23,6 @@ import { TuiFilterComponent } from './components/tui-components/tui-filter/tui-f
 })
 export class EventsPageComponent {
     public cityName: string = '';
-    public cityId: string = '';
 
     public activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
@@ -34,12 +33,6 @@ export class EventsPageComponent {
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
     constructor() {
-        this.activatedRoute.params
-            .pipe(takeUntilDestroyed(this._destroyRef))
-            .subscribe((params: Params) => {
-                this.cityId = params['id'] as string;
-            });
-
         this.activatedRoute.queryParams
             .pipe(takeUntilDestroyed(this._destroyRef))
             .subscribe((queryParams: Params) => {

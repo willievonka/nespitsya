@@ -1,0 +1,25 @@
+<div class="event-page">
+    <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    <app-event-card
+        class="event-page__event-card"
+        [backgroundUrl]="event.image"
+        [title]="event.title"
+        [place]="event.place"
+        [date]="event.date"
+        [price]="event.price"
+        [tags]="event.tags"
+    />
+    <div class="event-page__info">
+        <div class="event-page__left">
+            <h2>Описание</h2>
+            <p>{{ event.description }}</p>
+        </div>
+        <div class="event-page__right">
+            <div class="event-page__organizer">
+                <h2>Организатор</h2>
+            </div>
+            <div class="event-page__location">
+                <h2>Место</h2>
+        </div>
+    </div>
+</div>
