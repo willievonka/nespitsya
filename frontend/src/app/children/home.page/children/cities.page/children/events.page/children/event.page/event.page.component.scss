@@ -61,8 +61,11 @@
         }
 
         &-map {
+            margin-top: 12px;
+            border-radius: 12px;
             width: 726px;
             height: 504px;
+            overflow: hidden;
         }
     }
 }

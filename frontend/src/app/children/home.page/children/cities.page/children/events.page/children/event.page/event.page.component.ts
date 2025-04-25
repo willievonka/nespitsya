@@ -6,7 +6,7 @@ import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-co
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
 import { TuiIcon } from '@taiga-ui/core';
-import { YMapComponent, YMapDefaultSchemeLayerDirective } from 'angular-yandex-maps-v3';
+import { YMapComponent, YMapDefaultFeaturesLayerDirective, YMapDefaultMarkerDirective, YMapDefaultSchemeLayerDirective } from 'angular-yandex-maps-v3';
 
 
 @Component({
@@ -19,6 +19,8 @@ import { YMapComponent, YMapDefaultSchemeLayerDirective } from 'angular-yandex-m
         TuiIcon,
         YMapComponent,
         YMapDefaultSchemeLayerDirective,
+        YMapDefaultFeaturesLayerDirective,
+        YMapDefaultMarkerDirective,
     ],
     templateUrl: './event.page.component.html',
     styleUrl: './event.page.component.scss',
