@@ -12,11 +12,19 @@
     <div class="event-page__info">
         <div class="event-page__left">
             <h2>Описание</h2>
-            <p>{{ event.description }}</p>
+            <p>
+                {{ event.description }} 
+            </p>
         </div>
         <div class="event-page__right">
             <div class="event-page__organizer">
                 <h2>Организатор</h2>
+                <app-organizer-card
+                    [image]="organizer.image"
+                    [name]="organizer.name"
+                    [subsCount]="organizer.subsCount"
+                    [eventsCount]="organizer.eventsCount"
+                />
             </div>
             <div class="event-page__location">
                 <h2>Место</h2>

@@ -1,0 +1,21 @@
+<div class="main">
+    <tui-avatar
+        class="main__avatar" 
+        [src]="image| tuiFallbackSrc: '@tui.user' | async"
+    />
+    <div class="main__info">
+        <h3 class="main__title">{{ name }}</h3>
+        <div class="main__subs-count info-count" [ngPlural]="subsCount">
+            <ng-template ngPluralCase="=0">Нет подписчиков</ng-template>
+            <ng-template ngPluralCase="one">{{ subsCount }} подписчик</ng-template>
+            <ng-template ngPluralCase="few">{{ subsCount }} подписчика</ng-template>
+            <ng-template ngPluralCase="many">{{ subsCount }} подписчиков</ng-template>
+        </div>
+        <div class="main__events-count info-count" [ngPlural]="eventsCount">
+            <ng-template ngPluralCase="=0">Нет событий</ng-template>
+            <ng-template ngPluralCase="one">{{ eventsCount }} событие</ng-template>
+            <ng-template ngPluralCase="few">{{ eventsCount }} события</ng-template>
+            <ng-template ngPluralCase="many">{{ eventsCount }} событий</ng-template>
+        </div>
+    </div>
+</div>
