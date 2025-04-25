@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { CommonModule } from '@angular/common';
-import { TuiFallbackSrcPipe } from '@taiga-ui/core';
+import { TuiFallbackSrcPipe, TuiLink } from '@taiga-ui/core';
 
 
 @Component({
@@ -9,6 +9,7 @@ import { TuiFallbackSrcPipe } from '@taiga-ui/core';
     imports: [
         CommonModule,
         TuiAvatar,
+        TuiLink,
         TuiFallbackSrcPipe,
     ],
     templateUrl: './organizer-card.component.html',

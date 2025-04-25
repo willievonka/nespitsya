@@ -19,15 +19,24 @@
         <div class="event-page__right">
             <div class="event-page__organizer">
                 <h2>Организатор</h2>
-                <app-organizer-card
-                    [image]="organizer.image"
-                    [name]="organizer.name"
-                    [subsCount]="organizer.subsCount"
-                    [eventsCount]="organizer.eventsCount"
-                />
+                <div class="event-page__organizer-info">
+                    <app-organizer-card
+                        class="event-page__organizer-card"
+                        [image]="organizer.image"
+                        [name]="organizer.name"
+                        [subsCount]="organizer.subsCount"
+                        [eventsCount]="organizer.eventsCount"
+                    />
+                    <app-tui-secondary-button
+                        class="event-page__organizer-button"
+                        buttonText="Подписаться"
+                        size="xs"
+                    />               
+                </div>
             </div>
             <div class="event-page__location">
                 <h2>Место</h2>
+            </div>
         </div>
     </div>
 </div>

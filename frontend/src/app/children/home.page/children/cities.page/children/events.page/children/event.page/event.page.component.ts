@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiBreadcrumbsComponent } from '../../../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { OrganizerCardComponent } from './components/organizer-card/organizer-card.component';
+import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
 
@@ -12,6 +13,7 @@ import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
         TuiBreadcrumbsComponent,
         EventCardComponent,
         OrganizerCardComponent,
+        TuiSecondaryButtonComponent
     ],
     templateUrl: './event.page.component.html',
     styleUrl: './event.page.component.scss',
