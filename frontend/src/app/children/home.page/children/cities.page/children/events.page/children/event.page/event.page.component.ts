@@ -6,6 +6,7 @@ import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-co
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
 import { TuiIcon } from '@taiga-ui/core';
+import { YMapComponent, YMapDefaultSchemeLayerDirective } from 'angular-yandex-maps-v3';
 
 
 @Component({
@@ -16,6 +17,8 @@ import { TuiIcon } from '@taiga-ui/core';
         OrganizerCardComponent,
         TuiSecondaryButtonComponent,
         TuiIcon,
+        YMapComponent,
+        YMapDefaultSchemeLayerDirective,
     ],
     templateUrl: './event.page.component.html',
     styleUrl: './event.page.component.scss',
@@ -24,7 +27,7 @@ import { TuiIcon } from '@taiga-ui/core';
 export class EventPageComponent {
     public event: IEvent = {
         id: 1,
-        cityId: 6,
+        cityId: 14,
         placeId: 1,
         image: 'https://i.imgur.com/5qSSGHi.jpeg',
         title: 'Оркестр CAGMO | Концерт при свечах',
@@ -50,7 +53,7 @@ export class EventPageComponent {
     public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [
         { caption: 'Главная', routerLink: '/home' }, 
         { caption: 'Города', routerLink: '/home/cities' }, 
-        { caption: 'Город', routerLink: '/home/cities/1' }, 
-        { caption: 'Событие', routerLink: '/home/cities/1/1' }
+        { caption: 'Город', routerLink: `/home/cities/${this.event.cityId}` }, 
+        { caption: this.event.title, routerLink: `/home/cities/${this.event.cityId}/${this.event.id}` }
     ];
 }

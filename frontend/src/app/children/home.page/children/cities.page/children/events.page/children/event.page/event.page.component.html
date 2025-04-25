@@ -38,6 +38,19 @@
                     <tui-icon icon="map-pin"/>
                     <span class="event-page__location-name">{{ regionCityLocation }}</span>
                 </div>
+                <div class="event-page__location-map">
+                    <y-map
+                        [props]="{
+                            location: {
+                                center: [37.6173, 55.7558],
+                                zoom: 10,
+                            },
+                            theme: 'dark',
+                        }"
+                    >
+                        <y-map-default-scheme-layer/>
+                    </y-map>
+                </div>
             </div>
         </div>
     </div>
