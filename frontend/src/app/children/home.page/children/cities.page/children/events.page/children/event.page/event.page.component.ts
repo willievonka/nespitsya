@@ -49,7 +49,7 @@ export class EventPageComponent {
         eventsCount: 7
     };
 
-    public regionCityLocation: string = 'Свердловская область, Екатеринбург';
+    public regionCityLocation: string = 'Свердловская область, Екатеринбург, улица 8 Марта, 36';
 
 
     public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [
