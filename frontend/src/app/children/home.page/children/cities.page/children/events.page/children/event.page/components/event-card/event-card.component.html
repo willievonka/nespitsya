@@ -4,7 +4,7 @@
         <h2 class="main__place">{{ place }}</h2>
         <div class="main__date">
             <tui-icon icon="calendar"/>
-            <!-- [ ] TODO: доделать ссылку, чтобы корректно открывала мероприятие -->
+            <!-- [x] TODO: доделать ссылку, чтобы корректно открывала мероприятие -->
             <a 
                 class="main__date-link" 
                 [href]="`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${(dateStart| date:'yyyyMMddTHHmmss')}/${(dateEnd| date:'yyyyMMddTHHmmss')}&text=${title}&location=${location}`"
