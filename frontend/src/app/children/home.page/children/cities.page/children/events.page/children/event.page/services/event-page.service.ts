@@ -63,8 +63,11 @@ export class EventPageService {
         return this._http.get<IOrganizer>(`${this._apiUrl}/organizer/${organizerId}`);
     }
 
+    
     /**
-     *
+     * Fetches a place by its ID.
+     * @param placeId - The ID of the place to fetch.
+     * @returns Observable emitting the place details.
      */
     public getPlace(placeId: number): Observable<IPlace> {
         return this._http.get<IPlace>(`${this._apiUrl}/place/${placeId}`);
@@ -79,10 +82,10 @@ export class EventPageService {
     public getAddress(place: Observable<IPlace>): Observable<string> {
         return place.pipe(
             map(p => ({
-                lat: p.lat,
                 lon: p.lon,
+                lat: p.lat,
             })),
-            switchMap(({ lat, lon }: { lat: number; lon: number }) => {
+            switchMap(({ lon, lat  }: { lon: number; lat: number }) => {
                 const apiUrl: string = `https://geocode-maps.yandex.ru/v1/?apikey=${environment.yaMapsApiKey}&geocode=${lon},${lat}&format=json`;
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
