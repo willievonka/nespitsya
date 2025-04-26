@@ -10,6 +10,7 @@
             {{ city.name | cityDeclension }}
         </span>
     </h1>
+    <!-- [ ] TODO: превратить список ивентов в карусель -->
     <div 
         class="home-page__events-list"
         *ngIf="events$ | async as events"
