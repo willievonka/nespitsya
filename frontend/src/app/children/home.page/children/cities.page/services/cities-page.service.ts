@@ -25,12 +25,13 @@ export class CitiesPageService {
         ];
     }
 
+    
     /**
-     *
+     * Retrieves the list of popular cities.
+     * @returns An observable of an array of popular cities.
      */
     public getPopularCitiesList(): Observable<IPopularCity[]> {
-        //[ ] TODO: сделать получение списка популярных городов из апи
-        return this._http.get<IPopularCity[]>(`mock-data/popular-cities.json`);
+        return this._http.get<IPopularCity[]>(`${this._apiUrl}/cities/top`);
     }
 
     
