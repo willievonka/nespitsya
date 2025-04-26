@@ -42,26 +42,11 @@
                 </div>
                 <!-- [ ] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
                 <div class="event-page__location-map">
-                    <y-map
-                        [props]="{
-                            location: {
-                                center: [60.600834, 56.829429],
-                                zoom: 15,
-                            },
-                            theme: 'dark',
-                        }"
-                    >
-                        <y-map-default-scheme-layer/>
-                        <y-map-default-features-layer/>
-                        <y-map-default-marker
-                            [props]="{
-                                coordinates: [60.600834, 56.829429],
-                                title: event.title,
-                                subtitle: event.place,
-                                color: '#ff7043',
-                            }"
-                        />
-                    </y-map>
+                    <app-map
+                        [coordinates]="[60.600834, 56.829429]"
+                        [title]="event.title"
+                        [place]="event.place"
+                    />
                 </div>
             </div>
         </div>

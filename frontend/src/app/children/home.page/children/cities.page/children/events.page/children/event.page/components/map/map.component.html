@@ -1,0 +1,20 @@
+<y-map
+    [props]="{
+        location: {
+            center: coordinates,
+            zoom: 15,
+        },
+        theme: 'dark',
+    }"
+>
+    <y-map-default-scheme-layer/>
+    <y-map-default-features-layer/>
+    <y-map-default-marker
+        [props]="{
+            coordinates: coordinates,
+            title: title,
+            subtitle: place,
+            color: '#ff7043',
+        }"
+    />
+</y-map>
