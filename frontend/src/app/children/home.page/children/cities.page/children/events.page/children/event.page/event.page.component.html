@@ -21,7 +21,7 @@
         <div class="event-page__details">
             <div class="event-page__organizer">
                 <h2>Организатор</h2>
-                <div class="event-page__organizer-info">
+                <div class="event-page__organizer-info" *ngIf="organizer$ | async as organizer">
                     <app-organizer-card
                         class="event-page__organizer-card"
                         [image]="organizer.image"

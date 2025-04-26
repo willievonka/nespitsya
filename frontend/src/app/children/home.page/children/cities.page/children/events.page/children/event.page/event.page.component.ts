@@ -9,9 +9,10 @@ import { TuiAppearance, TuiIcon } from '@taiga-ui/core';
 import { MapComponent } from './components/map/map.component';
 import { EventPageService } from './services/event-page.service';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ICity } from '../../../../../../interfaces/city.interface';
+import { IPlace } from '../../../../../../interfaces/place.interface';
 
 
 @Component({
@@ -34,14 +35,8 @@ export class EventPageComponent {
     public event$: Observable<IEvent>;
     public city$: Observable<ICity>;
     public breadcrumbsItems$: Observable<Array<{ caption: string, routerLink: string }>>;
-    public organizer: IOrganizer = {
-        id: 1,
-        name: 'Oleg Tinkoff',
-        image: 'https://i.imgur.com/5qSSGHi.jpeg',
-        role: 'organizer',
-        subsCount: 9,
-        eventsCount: 7
-    };
+    public organizer$: Observable<IOrganizer>;
+    public place$: Observable<IPlace>;
 
     public regionCityLocation: string = 'Свердловская область, Екатеринбург, улица 8 Марта, 36';
 
@@ -55,5 +50,13 @@ export class EventPageComponent {
         this.event$ = this._eventPageService.getEvent(eventId);
         this.city$ = this._eventPageService.getCity(cityId);
         this.breadcrumbsItems$ = this._eventPageService.getBreadcrumbs(this.city$, this.event$);
+        this.organizer$ = this.event$.pipe(
+            map(event => event.organizerId),
+            switchMap(organizerId => this._eventPageService.getOrganizer(organizerId))
+        );
+        this.place$ = this.event$.pipe(
+            map(event => event.placeId),
+            switchMap(placeId => this._eventPageService.getPlace(placeId))
+        );
     }
 }
