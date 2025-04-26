@@ -29,9 +29,11 @@ export class EventCardComponent {
     @Input()
     public place: string = '';
     @Input()
-    public date: Date = new Date();
+    public dateStart: Date = new Date();
     @Input()
-    public tags: string[] = [];
+    public dateEnd: Date = new Date();
     @Input()
-    public price: string = '';
+    public tags: Array<{id: number, name: string}> = [];
+    @Input()
+    public price: number = 0;
 }

@@ -5,7 +5,8 @@
         [backgroundUrl]="event.image"
         [title]="event.title"
         [place]="event.place"
-        [date]="event.date"
+        [dateStart]="event.dateStart"
+        [dateEnd]="event.dateEnd"
         [price]="event.price"
         [tags]="event.tags"
     />
@@ -36,7 +37,8 @@
                 <h2>Место</h2>
                 <div class="event-page__location-wrapper">
                     <tui-icon icon="map-pin"/>
-                    <span class="event-page__location-name">{{ regionCityLocation }}</span>
+                    <!-- [ ] TODO: сделать адрес копируемым в буфер обмена/ссылку на яндекс карты прикрутить -->
+                    <span tuiAppearance="link" class="event-page__location-name">{{ regionCityLocation }}</span>
                 </div>
                 <!-- [ ] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
                 <div class="event-page__location-map">

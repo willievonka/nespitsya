@@ -30,9 +30,7 @@ export class TuiEventCardComponent {
     @Input()
     public date: Date = new Date ();
     @Input()
-    public price: string = '';
+    public price: number = 0;
     @Input()
-    public tags: string[] = [];
-    @Input()
-    public routerLink: string = '';
+    public tags: Array<{id: number, name: string}> = [];
 }
