@@ -1,5 +1,7 @@
-<div class="event-page">
-    <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+<div class="event-page" *ngIf="event$ | async as event">
+    <div *ngIf="breadcrumbsItems$ | async as breadcrumbsItems">
+        <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    </div>
     <app-event-card
         class="event-page__card"
         [backgroundUrl]="event.image"
