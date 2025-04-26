@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../../../../../environment';
 import { ICity } from '../../../../../interfaces/city.interface';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { IEvent } from '../../../../../interfaces/event.interface';
 
 
@@ -30,7 +30,14 @@ export class EventsPageService {
      * @returns An observable containing an array of events.
      */
     public getEvents(cityId: string): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`);
+        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`).pipe(
+            catchError(e => {
+                if (e.status === 404) {
+                    return of([]);
+                }
+                throw e;
+            })
+        );
     }
 
 
