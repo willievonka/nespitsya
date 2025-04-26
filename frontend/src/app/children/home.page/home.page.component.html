@@ -2,13 +2,14 @@
     <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"/>
     <h1 class="home-page__title">
         Популярные<br>события в<br>
-        <span 
+        <a 
             class="home-page__city-location" 
             routerLink="/home/cities"
+            tuiLink
             *ngIf="city$ | async as city"
         >
             {{ city.name | cityDeclension }}
-        </span>
+        </a>
     </h1>
     <!-- [ ] TODO: превратить список ивентов в карусель -->
     <div 
