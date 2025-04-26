@@ -1,8 +1,8 @@
 import db from '../db.js'
 import { fileURLToPath } from 'url';
-import { dirname} from 'path';
+import { dirname } from 'path';
 import path from 'path';
-import fs from 'fs/promises'; // обязательно использовать промис-версию fs для await
+import fs from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,80 +10,77 @@ const __dirname = dirname(__filename);
 class EventController {
     async createEvent(req, res) {
         try {
-            const { descr, name, id_place, id_city, datetime, price, artists, tags } = req.body;
+            const { description, title, placeId, cityId, dateStart, dateEnd, price, artists, tags } = req.body;
             // const organizer = req.user.id
-            const organizer = 1 // ВРЕМЕННО!!!
+            const organizer = 7 // ВРЕМЕННО!!!
             const image = req.file?.filename;
 
-            if (!descr || !name || !id_place || !id_city || !datetime || !price || !image) {
+            if (!description || !title || !placeId || !cityId || !dateStart || !dateEnd || !price || !image) {
                 return res.status(400).json({ message: "Все поля, кроме артистов и тэгов обязательны!" });
             }
 
             // Проверка существования города
-            const cityCheck = await db.query('SELECT 1 FROM city WHERE id = $1', [id_city]);
+            const cityCheck = await db.query('SELECT 1 FROM city WHERE id = $1', [cityId]);
             if (cityCheck.rowCount === 0) {
                 return res.status(400).json({ message: "Указанный город не существует" });
             }
 
             // Проверка существования места
-            const placeCheck = await db.query('SELECT 1 FROM place WHERE id = $1', [id_place]);
+            const placeCheck = await db.query('SELECT 1 FROM place WHERE id = $1', [placeId]);
             if (placeCheck.rowCount === 0) {
                 return res.status(400).json({ message: "Указанное место не существует" });
             }
 
+            // Проверка существования артистов и тэгов
             const checkExistence = async (items, table, column, label) => {
                 const array = Array.isArray(items) ? items : [items];
+                if (!array.length) return array;
                 const check = await db.query(`SELECT ${column} FROM ${table} WHERE ${column} = ANY($1::int[])`, [array]);
                 if (check.rowCount !== array.length) {
                     throw new Error(`Один или несколько ${label} не существуют`);
                 }
                 return array;
             };
-    
+
             let artistArray = [];
             let tagArray = [];
-    
             try {
-                if (artists) {
-                    artistArray = await checkExistence(artists, 'artist', 'id', 'артистов');
-                }
-                if (tags) {
-                    tagArray = await checkExistence(tags, 'tag', 'id', 'тэгов');
-                }
+                if (artists) artistArray = await checkExistence(artists, 'artist', 'id', 'артистов');
+                if (tags) tagArray = await checkExistence(tags, 'tag', 'id', 'тэгов');
             } catch (err) {
                 return res.status(400).json({ message: err.message });
             }
 
+            // Создание события
             const eventResult = await db.query(
-                `INSERT INTO event (descr, name, id_place, id_city, datetime, price, image)
-                VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-                [descr, name, id_place, id_city, datetime, price, image]
+                `INSERT INTO event (description, title, "placeId", "cityId", "dateStart", "dateEnd", price, image)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+                [description, title, placeId, cityId, dateStart, dateEnd, price, image]
             );
-
             const id_event = eventResult.rows[0].id;
 
-            if (artists) {
-                const artistArray = Array.isArray(artists) ? artists : [artists];
-                if (artistArray.length > 0) {
-                    const artistValues = artistArray.map(artist => `(${id_event}, ${artist})`).join(',');
-                    await db.query(`INSERT INTO event_artist (id_event, id_artist) VALUES ${artistValues}`);
-                }
+            // Связывание с артистами
+            if (artistArray.length) {
+                const vals = artistArray.map(a => `(${id_event}, ${a})`).join(',');
+                await db.query(`INSERT INTO event_artist (id_event, id_artist) VALUES ${vals}`);
             }
 
-            if (tags) {
-                const tagArray = Array.isArray(tags) ? tags : [tags];
-                if (tagArray.length > 0) {
-                    const tagValues = tagArray.map(tag => `(${id_event}, ${tag})`).join(',');
-                    await db.query(`INSERT INTO event_tag (id_event, id_tag) VALUES ${tagValues}`);
-                }
+            // Связывание с тэгами
+            if (tagArray.length) {
+                const vals = tagArray.map(t => `(${id_event}, ${t})`).join(',');
+                await db.query(`INSERT INTO event_tag (id_event, id_tag) VALUES ${vals}`);
             }
 
+            // Связывание с организатором
             if (organizer) {
-                const organizerArray = Array.isArray(organizer) ? organizer : [organizer];
-                if (organizerArray.length > 0) {
-                    const organizerValues = organizerArray.map(org => `(${id_event}, ${org})`).join(',');
-                    await db.query(`INSERT INTO event_organizer (id_event, id_organizer) VALUES ${organizerValues}`);
-                }
+                await db.query(
+                    `INSERT INTO event_organizer (id_event, id_organizer) VALUES ($1, $2)`,
+                    [id_event, organizer]
+                );
+                await db.query(
+                    `UPDATE organizer_info SET eventsCount = eventsCount + 1 WHERE userId = $1`,
+                    [organizer]
+                );
             }
 
             res.json({ message: "Мероприятие создано!", id_event });
@@ -95,17 +92,41 @@ class EventController {
 
     async getEvents(req, res) {
         try {
-            const events = await db.query("SELECT * FROM event");
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN place p ON e."placeId" = p.id
+                LEFT JOIN event_organizer eo ON e.id = eo.id_event
+            `);
+            if (!rows.length) return res.json([]);
 
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
+            const ids = rows.map(e => e.id);
+            const { rows: tagsRes } = await db.query(
+                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = ANY($1::int[])
+                 GROUP BY et.id_event`,
+                [ids]
+            );
+            const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
+
+            const enriched = rows.map(e => {
+                const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
-                    ...event,
-                    image: `${host}/static/${event.image}`,
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: `${host}/static/${e.image}`,
+                    place: e.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[e.id] || []
                 };
             });
 
-            res.json(enrichedEvents);
+            res.json(enriched);
         } catch (error) {
             console.error("Ошибка при получении событий:", error);
             res.status(500).json({ message: "Ошибка сервера" });
@@ -114,21 +135,43 @@ class EventController {
 
     async getEventsFromCity(req, res) {
         try {
-            const id = req.params.id;
-            const events = await db.query(`SELECT * FROM event WHERE id_city = ${id};`);
-            if (events.rows.length === 0) {
-                return res.status(404).json({ message: "В этом городе нет событий" });
-            }
+            const { id } = req.params;
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN place p ON e."placeId" = p.id
+                LEFT JOIN event_organizer eo ON e.id = eo.id_event
+                WHERE e."cityId" = $1
+            `, [id]);
+            if (!rows.length) return res.status(404).json({ message: "В этом городе нет событий" });
 
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
+            const ids = rows.map(e => e.id);
+            const { rows: tagsRes } = await db.query(
+                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = ANY($1::int[])
+                 GROUP BY et.id_event`,
+                [ids]
+            );
+            const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
+
+            const enriched = rows.map(e => {
+                const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
-                    ...event,
-                    image: `${host}/static/${event.image}`
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: `${host}/static/${e.image}`,
+                    place: e.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[e.id] || []
                 };
             });
 
-            res.json(enrichedEvents);
+            res.json(enriched);
         } catch (error) {
             console.error("Ошибка при получении событий:", error);
             res.status(500).json({ message: "Ошибка сервера" });
@@ -137,95 +180,172 @@ class EventController {
 
     async getEventsByArtist(req, res) {
         try {
-            const id = req.params.id;
-            const events = await db.query(`SELECT e.* FROM event e
-                                            JOIN event_artist ea ON e.id = ea.id_event
-                                            WHERE ea.id_artist = ${id};`);
-            if (events.rows.length === 0) {
-                return res.status(404).json({ message: "У этого артиста нет событий" });
-            }
+            const { id } = req.params;
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN event_artist ea ON e.id = ea.id_event
+                JOIN place p ON e."placeId" = p.id
+                LEFT JOIN event_organizer eo ON e.id = eo.id_event
+                WHERE ea.id_artist = $1
+            `, [id]);
+            if (!rows.length) return res.status(404).json({ message: "У этого артиста нет событий" });
 
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
+            const ids = rows.map(e => e.id);
+            const { rows: tagsRes } = await db.query(
+                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = ANY($1::int[])
+                 GROUP BY et.id_event`,
+                [ids]
+            );
+            const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
+
+            const enriched = rows.map(e => {
+                const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
-                    ...event,
-                    image: `${host}/static/${event.image}`
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: `${host}/static/${e.image}`,
+                    place: e.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[e.id] || []
                 };
             });
 
-            res.json(enrichedEvents);
+            res.json(enriched);
         } catch (error) {
             console.error('Ошибка при получении событий:', error);
-            res.status(500).json({ message: "Ошибка" });
+            res.status(500).json({ message: "Ошибка сервера" });
         }
     }
 
     async getEventsByOrganizer(req, res) {
         try {
-            const id = req.params.id;
-            const events = await db.query(`SELECT e.* FROM event e
-                                            JOIN event_organizer ea ON e.id = ea.id_event
-                                            WHERE ea.id_organizer = ${id};`);
-            if (events.rows.length === 0) {
-                return res.status(404).json({ message: "У этого организатора нет событий" });
-            }
+            const { id } = req.params;
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN event_organizer eo ON e.id = eo.id_event
+                JOIN place p ON e."placeId" = p.id
+                WHERE eo.id_organizer = $1
+            `, [id]);
+            if (!rows.length) return res.status(404).json({ message: "У этого организатора нет событий" });
 
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
+            const ids = rows.map(e => e.id);
+            const { rows: tagsRes } = await db.query(
+                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = ANY($1::int[])
+                 GROUP BY et.id_event`,
+                [ids]
+            );
+            const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
+
+            const enriched = rows.map(e => {
+                const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
-                    ...event,
-                    image: `${host}/static/${event.image}`
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: `${host}/static/${e.image}`,
+                    place: e.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[e.id] || []
                 };
             });
 
-            res.json(enrichedEvents);
+            res.json(enriched);
         } catch (error) {
             console.error('Ошибка при получении событий:', error);
-            res.status(500).json({ message: "Ошибка" });
+            res.status(500).json({ message: "Ошибка сервера" });
         }
     }
 
     async getEventsByTag(req, res) {
         try {
-            const id = req.params.id;
-            const events = await db.query(`SELECT e.* FROM event e
-                                            JOIN event_tag ea ON e.id = ea.id_event
-                                            WHERE ea.id_tag = ${id};`);
-            if (events.rows.length === 0) {
-                return res.status(404).json({ message: "Событий с этим тегом нет" });
-            }
+            const { id } = req.params;
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN event_tag et ON e.id = et.id_event
+                JOIN place p ON e."placeId" = p.id
+                LEFT JOIN event_organizer eo ON e.id = eo.id_event
+                WHERE et.id_tag = $1
+            `, [id]);
+            if (!rows.length) return res.status(404).json({ message: "Событий с этим тегом нет" });
 
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
+            const ids = rows.map(e => e.id);
+            const { rows: tagsRes } = await db.query(
+                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
+                 FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = ANY($1::int[])
+                 GROUP BY et.id_event`,
+                [ids]
+            );
+            const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
+
+            const enriched = rows.map(e => {
+                const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
-                    ...event,
-                    image: `${host}/static/${event.image}`
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: `${host}/static/${e.image}`,
+                    place: e.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[e.id] || []
                 };
             });
 
-            res.json(enrichedEvents);
+            res.json(enriched);
         } catch (error) {
             console.error('Ошибка при получении событий:', error);
-            res.status(500).json({ message: "Ошибка" });
+            res.status(500).json({ message: "Ошибка сервера" });
         }
     }
 
     async getOneEvent(req, res) {
         try {
-            const id = req.params.id;
-            const events = await db.query("SELECT * FROM event WHERE id = $1", [id]);
-            if (events.rows.length === 0) {
-                return res.status(404).json({ message: "Событие не найдено" });
-            }
+            const { id } = req.params;
+            const { rows } = await db.query(`
+                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+                FROM event e
+                JOIN place p ON e."placeId" = p.id
+                LEFT JOIN event_organizer eo ON e.id = eo.id_event
+                WHERE e.id = $1
+            `, [id]);
+            if (!rows.length) return res.status(404).json({ message: "Событие не найдено" });
 
+            const event = rows[0];
             const host = req.protocol + '://' + req.get('host');
-            const enrichedEvents = events.rows.map(event => {
-                return {
-                    ...event,
-                    image: `${host}/static/${event.image}`
-                };
-            });
-            res.json(enrichedEvents);
+            const { organizerid, dateStart, dateEnd, ...rest } = event;
+            const { rows: tagsRes } = await db.query(
+                `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
+                [id]
+            );
+            const enrichedEvent = {
+                ...rest,
+                dateStart,
+                dateEnd,
+                image: `${host}/static/${event.image}`,
+                place: event.place,
+                organizerId: organizerid,
+                tags: tagsRes
+            };
+
+            res.json(enrichedEvent);
         } catch (error) {
             console.error("Ошибка при получении события:", error);
             res.status(500).json({ message: "Ошибка сервера" });
@@ -234,20 +354,16 @@ class EventController {
 
     async updateEvent(req, res) {
         try {
-            const { id, name, descr, id_city } = req.body;
-
-            if (!name || !descr || !id_city) {
-                return res.status(400).json({ message: "Название, описание и город обязательны для обновления события" });
+            const { id, description, title, placeId, cityId, dateStart, dateEnd, price } = req.body;
+            if (!id || !description || !title || !placeId || !cityId || !dateStart || !dateEnd || !price) {
+                return res.status(400).json({ message: "Все поля обязательны для обновления" });
             }
-
-            const event = await db.query(
-                "UPDATE event SET name = $1, descr = $2, id_city = $3 WHERE id = $4 RETURNING *",
-                [name, descr, id_city, id]
+            const { rows } = await db.query(
+                `UPDATE event SET description=$1, title=$2, placeId=$3, cityId=$4, dateStart=$5, dateEnd=$6, price=$7 WHERE id=$8 RETURNING *`,
+                [description, title, placeId, cityId, dateStart, dateEnd, price, id]
             );
-            if (event.rows.length === 0) {
-                return res.status(404).json({ message: "Событие не найдено" });
-            }
-            res.json(event.rows[0]);
+            if (!rows.length) return res.status(404).json({ message: "Событие не найдено" });
+            res.json(rows[0]);
         } catch (error) {
             console.error("Ошибка при обновлении события:", error);
             res.status(500).json({ message: "Ошибка сервера" });
@@ -256,29 +372,20 @@ class EventController {
 
     async deleteEvent(req, res) {
         try {
-            const id = req.params.id;
-    
-            // Удаляем и получаем удалённую запись
-            const result = await db.query("DELETE FROM event WHERE id = $1 RETURNING *", [id]);
-    
-            if (result.rows.length === 0) {
-                return res.status(404).json({ message: "Событие не найдено" });
-            }
-    
-            const imageFilename = result.rows[0].image;
-    
+            const { id } = req.params;
+            await db.query(`DELETE FROM event_artist WHERE id_event=$1`, [id]);
+            await db.query(`DELETE FROM event_tag WHERE id_event=$1`, [id]);
+            await db.query(`DELETE FROM event_organizer WHERE id_event=$1`, [id]);
+
+            const { rows } = await db.query(`DELETE FROM event WHERE id=$1 RETURNING *`, [id]);
+            if (!rows.length) return res.status(404).json({ message: "Событие не найдено" });
+
+            const imageFilename = rows[0].image;
             if (imageFilename) {
                 const imagePath = path.join(__dirname, '..', 'static', imageFilename);
-                try {
-                    await fs.unlink(imagePath);
-                    console.log(`Изображение ${imageFilename} удалено`);
-                } catch (err) {
-                    console.warn(`Не удалось удалить изображение: ${err.message}`);
-                }
+                try { await fs.unlink(imagePath); } catch {}
             }
-    
             res.json({ message: "Событие удалено" });
-    
         } catch (error) {
             console.error("Ошибка при удалении события:", error);
             res.status(500).json({ message: "Ошибка сервера" });
