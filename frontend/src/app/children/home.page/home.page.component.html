@@ -25,6 +25,7 @@
             [date]="event.dateStart"
             [price]="event.price"
             [tags]="event.tags"
+            routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
         />
     </div>
     <app-tui-secondary-button

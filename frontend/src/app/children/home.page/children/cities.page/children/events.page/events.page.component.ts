@@ -9,6 +9,7 @@ import { ICity } from '../../../../interfaces/city.interface';
 import { Observable } from 'rxjs';
 import { IEvent } from '../../../../interfaces/event.interface';
 import { ActivatedRoute } from '@angular/router';
+import { TuiEventCardComponent } from '../../../../components/tui-components/tui-event-card/tui-event-card.component';
 
 
 @Component({
@@ -19,6 +20,7 @@ import { ActivatedRoute } from '@angular/router';
         CityDeclensionPipe,
         TuiOutlineButtonComponent,
         TuiFilterComponent,
+        TuiEventCardComponent,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',
