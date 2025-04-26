@@ -2,17 +2,17 @@ import db from '../db.js';
 
 class CityController {
     async createCity(req, res) {
-        const { name, region, shortname } = req.body;
-        const backgroundimg = req.file?.filename;
+        const { name, regionName, shortName } = req.body;
+        const backgroundUrl = req.file?.filename;
 
-        if (!name || !region || !shortname || !backgroundimg) {
-            return res.status(400).json({ error: 'Поля "name", "region", "shortname" и изображение обязательны' });
+        if (!name || !regionName || !shortName || !backgroundUrl) {
+            return res.status(400).json({ error: 'Поля "name", "regionName", "shortName" и изображение обязательны' });
         }
 
         try {
             const newCity = await db.query(
-                'INSERT INTO city (name, region, shortname, backgroundimg) VALUES ($1, $2, $3, $4) RETURNING *',
-                [name, region, shortname, backgroundimg]
+                'INSERT INTO city (name, "regionName", "shortName", "backgroundUrl") VALUES ($1, $2, $3, $4) RETURNING *',
+                [name, regionName, shortName, backgroundUrl]
             );
             res.status(201).json(newCity.rows[0]);
         } catch (err) {
@@ -40,7 +40,7 @@ class CityController {
             const host = req.protocol + '://' + req.get('host');
             const enrichedCity = {
                 ...city.rows[0],
-                backgroundimg: `${host}/static/${city.rows[0].backgroundimg}`
+                backgroundUrl: `${host}/static/${city.rows[0].backgroundUrl}`
             };
 
             res.json(enrichedCity);
@@ -54,12 +54,12 @@ class CityController {
         try {
             const result = await db.query(`
                 SELECT
-                    LEFT(c.region, 1) AS letter,
-                    c.region AS region_name,
+                    LEFT(c."regionName", 1) AS letter,
+                    c."regionName" AS region_name,
                     c.id AS city_id,
                     c.name AS city_name,
-                    c.shortname,
-                    c.backgroundimg
+                    c."shortName",
+                    c."backgroundUrl"
                 FROM city c
                 ORDER BY letter, region_name, city_name;
             `);
@@ -85,7 +85,7 @@ class CityController {
                     id: row.city_id,
                     name: row.city_name,
                     shortname: row.shortname,
-                    backgroundimg: `${host}/static/${row.backgroundimg}`
+                    backgroundUrl: `${host}/static/${row.backgroundUrl}`
                 });
             });
 
@@ -94,7 +94,6 @@ class CityController {
             res.status(500).json({ error: err.message });
         }
     }
-
     async getTopCities(req, res) {
         try {
             // Массив городов, которые нужно вернуть
@@ -113,21 +112,30 @@ class CityController {
             if (result.rows.length === 0) {
                 return res.status(404).json({ message: 'Города не найдены' });
             }
+            
+            const host = req.protocol + '://' + req.get('host');
+            
+            // Добавляем хост к изображениям
+            const citiesWithHost = result.rows.map(city => ({
+                ...city,
+                backgroundUrl: `${host}/static/${city.backgroundUrl}`
+            }));
     
             // Отправляем результат
-            res.json(result.rows);
+            res.json(citiesWithHost);
         } catch (error) {
             console.error("Ошибка при получении городов:", error);
             res.status(500).json({ error: error.message });
         }
     }
 
+
     async updateCity(req, res) {
         const { id } = req.params;
-        const { name, region, shortname } = req.body;
+        const { name, regionName, shortName } = req.body;
 
         // Получаем файл изображения (если он есть)
-        const backgroundimg = req.file ? req.file.filename : null;  // Сохраняем только имя файла, без пути
+        const backgroundUrl = req.file ? req.file.filename : null;  // Сохраняем только имя файла, без пути
 
         if (!id) {
             return res.status(400).json({ error: 'Параметр "id" обязателен' });
@@ -138,11 +146,11 @@ class CityController {
                 `UPDATE city 
                      SET 
                          name = COALESCE($1, name),
-                         region = COALESCE($2, region),
-                         shortname = COALESCE($3, shortname),
-                         backgroundimg = COALESCE($4, backgroundimg)  -- Если backgroundimg null, оставим старое значение
+                         "regionName" = COALESCE($2, "regionName"),
+                         "shortName" = COALESCE($3, "shortName"),
+                         "backgroundUrl" = COALESCE($4, "backgroundUrl")
                      WHERE id = $5 RETURNING *`,
-                [name, region, shortname, backgroundimg, id]
+                [name, regionName, shortName, backgroundUrl, id]
             );
 
             if (result.rows.length === 0) {
