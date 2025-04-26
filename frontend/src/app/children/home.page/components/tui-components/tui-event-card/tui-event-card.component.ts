@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { TuiAppearance } from '@taiga-ui/core';
 import { TuiCardLarge } from '@taiga-ui/layout';
 import { TuiChipComponent } from '../tui-chip/tui-chip.component';
-import { IEvent } from '../../../interfaces/event.interface';
 
 
 @Component({
@@ -21,7 +20,7 @@ import { IEvent } from '../../../interfaces/event.interface';
     styleUrl: './tui-event-card.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TuiEventCardComponent implements IEvent {
+export class TuiEventCardComponent {
     @Input()
     public image: string = '';
     @Input()
@@ -31,9 +30,7 @@ export class TuiEventCardComponent implements IEvent {
     @Input()
     public date: Date = new Date ();
     @Input()
-    public price: string = '';
+    public price: number = 0;
     @Input()
-    public tags: string[] = [];
-    @Input()
-    public routerLink: string = '';
+    public tags: Array<{id: number, name: string}> = [];
 }

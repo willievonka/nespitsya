@@ -10,6 +10,7 @@
             {{ city.name | cityDeclension }}
         </span>
     </h1>
+    <!-- [ ] TODO: превратить список ивентов в карусель -->
     <div 
         class="home-page__events-list"
         *ngIf="events$ | async as events"
@@ -20,10 +21,9 @@
             [image]="event.image"
             [title]="event.title"
             [place]="event.place"
-            [date]="event.date"
+            [date]="event.dateStart"
             [price]="event.price"
             [tags]="event.tags"
-            [routerLink]="event.routerLink"
         />
     </div>
     <app-tui-secondary-button

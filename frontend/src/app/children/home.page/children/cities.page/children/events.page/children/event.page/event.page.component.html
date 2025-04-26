@@ -1,0 +1,54 @@
+<div class="event-page">
+    <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    <app-event-card
+        class="event-page__card"
+        [backgroundUrl]="event.image"
+        [title]="event.title"
+        [place]="event.place"
+        [dateStart]="event.dateStart"
+        [dateEnd]="event.dateEnd"
+        [price]="event.price"
+        [tags]="event.tags"
+    />
+    <div class="event-page__content">
+        <div class="event-page__description">
+            <h2>Описание</h2>
+            <p class="event-page__description-text">{{ event.description }}</p>
+        </div>
+        <div class="event-page__details">
+            <div class="event-page__organizer">
+                <h2>Организатор</h2>
+                <div class="event-page__organizer-info">
+                    <app-organizer-card
+                        class="event-page__organizer-card"
+                        [image]="organizer.image"
+                        [name]="organizer.name"
+                        [subsCount]="organizer.subsCount"
+                        [eventsCount]="organizer.eventsCount"
+                    />
+                    <app-tui-secondary-button
+                        class="event-page__organizer-button"
+                        buttonText="Подписаться"
+                        size="xs"
+                    />               
+                </div>
+            </div>
+            <div class="event-page__location">
+                <h2>Место</h2>
+                <div class="event-page__location-wrapper">
+                    <tui-icon icon="map-pin"/>
+                    <!-- [ ] TODO: сделать адрес копируемым в буфер обмена/ссылку на яндекс карты прикрутить -->
+                    <span tuiAppearance="link" class="event-page__location-name">{{ regionCityLocation }}</span>
+                </div>
+                <!-- [ ] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
+                <div class="event-page__location-map">
+                    <app-map
+                        [coordinates]="[60.600834, 56.829429]"
+                        [title]="event.title"
+                        [place]="event.place"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,7 +33,8 @@ export class HomePageComponent {
         this.city$ = this._homePageService.getCity();
         this.events$ = this.city$.pipe(
             map(city => city.id),
-            switchMap(cityId => this._homePageService.getEvents(cityId))
+            switchMap(cityId => this._homePageService.getEvents(cityId)),
+            map(events => events.slice(-4)),
         );
     }
 }

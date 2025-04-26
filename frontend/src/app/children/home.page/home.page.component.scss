@@ -5,8 +5,8 @@
     box-sizing: border-box;
 
     &__title {
-        margin: 13px 0;
-        margin-bottom: 26px;
+        margin: 12px 0;
+        margin-bottom: 24px;
         font-size: 52px;
         line-height: 44px;
         text-transform: uppercase;
@@ -30,7 +30,7 @@
 
     &__events-list {
         display: flex;
-        gap: 10px;
+        gap: 12px;
     }
 
     &__event-card {
