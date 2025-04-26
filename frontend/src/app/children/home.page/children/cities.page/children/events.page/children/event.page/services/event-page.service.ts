@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../../../../../../../environment';
 import { IEvent } from '../../../../../../../interfaces/event.interface';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { ICity } from '../../../../../../../interfaces/city.interface';
 import { IOrganizer } from '../../../../../../../interfaces/organizer.interface';
 import { IPlace } from '../../../../../../../interfaces/place.interface';
@@ -74,28 +74,22 @@ export class EventPageService {
     }
 
     
+    
     /**
-     * Fetches the address of a place based on its latitude and longitude.
-     * @param place - Observable emitting the place details.
+     * Fetches the address based on longitude and latitude using Yandex Maps API.
+     * @param lon - The longitude of the location.
+     * @param lat - The latitude of the location.
      * @returns Observable emitting the address as a string.
      */
-    public getAddress(place: Observable<IPlace>): Observable<string> {
-        return place.pipe(
-            map(p => ({
-                lon: p.lon,
-                lat: p.lat,
-            })),
-            switchMap(({ lon, lat  }: { lon: number; lat: number }) => {
-                const apiUrl: string = `https://geocode-maps.yandex.ru/v1/?apikey=${environment.yaMapsApiKey}&geocode=${lon},${lat}&format=json`;
+    public getAddress(lon: number, lat: number): Observable<string> {
+        const apiUrl: string = `https://geocode-maps.yandex.ru/v1/?apikey=${environment.yaMapsApiKey}&geocode=${lon},${lat}&format=json`;
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return this._http.get<any>(apiUrl).pipe(
-                    map((response) => {
-                        const address: string = response?.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text;
-                        
-                        return address || 'Адрес не найден';
-                    })
-                );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return this._http.get<any>(apiUrl).pipe(
+            map((response) => {
+                const address: string = response?.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text;
+                
+                return address || 'Адрес не найден';
             })
         );
     }

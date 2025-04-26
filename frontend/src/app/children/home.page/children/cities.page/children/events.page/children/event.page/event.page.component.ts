@@ -5,7 +5,7 @@ import { OrganizerCardComponent } from './components/organizer-card/organizer-ca
 import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
-import { TuiAppearance, TuiIcon } from '@taiga-ui/core';
+import { TuiIcon, TuiLink } from '@taiga-ui/core';
 import { MapComponent } from './components/map/map.component';
 import { EventPageService } from './services/event-page.service';
 import { ActivatedRoute } from '@angular/router';
@@ -24,7 +24,7 @@ import { IPlace } from '../../../../../../interfaces/place.interface';
         OrganizerCardComponent,
         TuiSecondaryButtonComponent,
         TuiIcon,
-        TuiAppearance,
+        TuiLink,
         MapComponent,
     ],
     templateUrl: './event.page.component.html',
@@ -57,6 +57,14 @@ export class EventPageComponent {
             map(event => event.placeId),
             switchMap(placeId => this._eventPageService.getPlace(placeId))
         );
-        this.address$ = this._eventPageService.getAddress(this.place$);
+        this.address$ = this.place$.pipe(
+            map(p => ({
+                lon: p.lon,
+                lat: p.lat,
+            })),
+            switchMap(({ lon, lat }: { lon: number; lat: number }) => 
+                this._eventPageService.getAddress(lon, lat)
+            )
+        );
     }
 }

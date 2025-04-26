@@ -45,7 +45,7 @@
                         class="event-page__location-name"
                         href="https://yandex.ru/maps/?text={{ (address$ | async) + ' ' + event.place }}&z=16"
                         target="_blank"
-                        tuiAppearance="link"
+                        tuiLink
                     >
                         {{ address$ | async }}
                     </a>
