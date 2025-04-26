@@ -37,8 +37,7 @@ export class EventPageComponent {
     public breadcrumbsItems$: Observable<Array<{ caption: string, routerLink: string }>>;
     public organizer$: Observable<IOrganizer>;
     public place$: Observable<IPlace>;
-
-    public regionCityLocation: string = 'Свердловская область, Екатеринбург, улица 8 Марта, 36';
+    public address$: Observable<string>;
 
     constructor(
         private _eventPageService: EventPageService,
@@ -58,5 +57,6 @@ export class EventPageComponent {
             map(event => event.placeId),
             switchMap(placeId => this._eventPageService.getPlace(placeId))
         );
+        this.address$ = this._eventPageService.getAddress(this.place$);
     }
 }

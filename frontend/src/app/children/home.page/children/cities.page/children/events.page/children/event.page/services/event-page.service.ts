@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../../../../../../../environment';
 import { IEvent } from '../../../../../../../interfaces/event.interface';
-import { combineLatest, map, Observable } from 'rxjs';
+import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { ICity } from '../../../../../../../interfaces/city.interface';
 import { IOrganizer } from '../../../../../../../interfaces/organizer.interface';
 import { IPlace } from '../../../../../../../interfaces/place.interface';
@@ -68,5 +68,32 @@ export class EventPageService {
      */
     public getPlace(placeId: number): Observable<IPlace> {
         return this._http.get<IPlace>(`${this._apiUrl}/place/${placeId}`);
+    }
+
+    
+    /**
+     * Fetches the address of a place based on its latitude and longitude.
+     * @param place - Observable emitting the place details.
+     * @returns Observable emitting the address as a string.
+     */
+    public getAddress(place: Observable<IPlace>): Observable<string> {
+        return place.pipe(
+            map(p => ({
+                lat: p.lat,
+                lon: p.lon,
+            })),
+            switchMap(({ lat, lon }: { lat: number; lon: number }) => {
+                const apiUrl: string = `https://geocode-maps.yandex.ru/v1/?apikey=${environment.yaMapsApiKey}&geocode=${lon},${lat}&format=json`;
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return this._http.get<any>(apiUrl).pipe(
+                    map((response) => {
+                        const address: string = response?.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.metaDataProperty?.GeocoderMetaData?.text;
+                        
+                        return address || 'Адрес не найден';
+                    })
+                );
+            })
+        );
     }
 }

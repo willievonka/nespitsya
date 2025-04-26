@@ -7,7 +7,7 @@
         [backgroundUrl]="event.image"
         [title]="event.title"
         [place]="event.place"
-        [location]="regionCityLocation"
+        [location]="(address$ | async) ?? 'Адрес не найден'"
         [dateStart]="event.dateStart"
         [dateEnd]="event.dateEnd"
         [price]="event.price"
@@ -43,17 +43,17 @@
                     <!-- [x] TODO: сделать адрес копируемым в буфер обмена/ссылку на яндекс карты прикрутить -->
                     <a 
                         class="event-page__location-name"
-                        href="https://yandex.ru/maps/?text={{ regionCityLocation + ' ' + event.place }}&z=16"
+                        href="https://yandex.ru/maps/?text={{ (address$ | async) + ' ' + event.place }}&z=16"
                         target="_blank"
                         tuiAppearance="link"
                     >
-                        {{ regionCityLocation }}
+                        {{ address$ | async }}
                     </a>
                 </div>
-                <!-- [ ] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
-                <div class="event-page__location-map">
+                <!-- [x] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
+                <div class="event-page__location-map" *ngIf="place$ | async as place">
                     <app-map
-                        [coordinates]="[60.600834, 56.829429]"
+                        [coordinates]="[place.lon, place.lat]"
                         [title]="event.title"
                         [place]="event.place"
                     />
