@@ -7,6 +7,7 @@ import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
 import { TuiIcon } from '@taiga-ui/core';
 import { MapComponent } from './components/map/map.component';
+import { EventPageService } from './services/event-page.service';
 
 
 @Component({
@@ -56,11 +57,12 @@ export class EventPageComponent {
 
     public regionCityLocation: string = 'Свердловская область, Екатеринбург, улица 8 Марта, 36';
 
-
     public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [
         { caption: 'Главная', routerLink: '/home' }, 
         { caption: 'Города', routerLink: '/home/cities' }, 
         { caption: 'Город', routerLink: `/home/cities/${this.event.cityId}` }, 
         { caption: this.event.title, routerLink: `/home/cities/${this.event.cityId}/${this.event.id}` }
     ];
+
+    constructor(private _eventPageService: EventPageService) {}
 }

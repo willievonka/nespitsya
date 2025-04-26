@@ -7,7 +7,7 @@
             <!-- [ ] TODO: доделать ссылку, чтобы корректно открывала мероприятие -->
             <a 
                 class="main__date-link" 
-                [href]="`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${(dateStart| date:'yyyyMMddTHHmmss')}/${(dateEnd| date:'yyyyMMddTHHmmss')}&text=${title}`"
+                [href]="`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${(dateStart| date:'yyyyMMddTHHmmss')}/${(dateEnd| date:'yyyyMMddTHHmmss')}&text=${title}&location=${location}`"
                 target="_blank"
                 tuiLink
             >

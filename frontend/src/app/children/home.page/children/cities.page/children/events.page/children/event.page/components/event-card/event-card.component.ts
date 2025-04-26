@@ -29,6 +29,8 @@ export class EventCardComponent {
     @Input()
     public place: string = '';
     @Input()
+    public location: string = '';
+    @Input()
     public dateStart: Date = new Date();
     @Input()
     public dateEnd: Date = new Date();
