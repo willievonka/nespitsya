@@ -5,18 +5,26 @@ import { OrganizerCardComponent } from './components/organizer-card/organizer-ca
 import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
-import { TuiIcon } from '@taiga-ui/core';
+import { TuiIcon, TuiLink } from '@taiga-ui/core';
 import { MapComponent } from './components/map/map.component';
+import { EventPageService } from './services/event-page.service';
+import { ActivatedRoute } from '@angular/router';
+import { map, Observable, switchMap } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { ICity } from '../../../../../../interfaces/city.interface';
+import { IPlace } from '../../../../../../interfaces/place.interface';
 
 
 @Component({
     selector: 'app-event-page',
     imports: [
+        CommonModule,
         TuiBreadcrumbsComponent,
         EventCardComponent,
         OrganizerCardComponent,
         TuiSecondaryButtonComponent,
         TuiIcon,
+        TuiLink,
         MapComponent,
     ],
     templateUrl: './event.page.component.html',
@@ -24,43 +32,39 @@ import { MapComponent } from './components/map/map.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventPageComponent {
-    public event: IEvent = {
-        id: 1,
-        cityId: 14,
-        placeId: 1,
-        organizerId: 7,
-        image: 'https://i.imgur.com/5qSSGHi.jpeg',
-        title: 'Оркестр CAGMO | Концерт при свечах',
-        description: '«Вальс-Бостон» — музыкальная сага длиною в жизнь.\n\nИстория о роковой случайности, изменившей жизнь, о любви, пронесенной через годы испытаний, и о прошлом, которое нельзя стереть, но можно переосмыслить.\n\nДобро пожаловать в Ростов-на-Дону 20-х годов прошлого века.\nМесто, где культурная жизнь городских интеллигентов переплетается с манящим угаром криминального мира. Здесь легко потерять голову, но ещё легче потерять себя. Это не просто мюзикл, а криминальная драма и головокружительный роман.\n\nО чём история?\n\nКонстантин (Ромаш), талантливый студент-медик, однажды случайно спасает жизнь вору и открывает для себя криминальный мир Ростова-на-Дону. Благодаря своим новым знакомым он встречает любовь всей своей жизни. Что несет эта случайная встреча: погибель или спасение? Может ли быть счастлив тот, кто пошел на сделку с совестью?\n\nГероям предстоит узнать, как уживаются полное беззаконие и настоящая мужская дружба, любовь к девушке, которой нет места в этом опасном мире, с долгом перед теми, кто помог тебе обрести свое счастье, какова цена ошибки и можно ли ее искупить? Жизнь — это череда нелепых случайностей или действительно судьба предопределена?\n\nИменно об этом песни Александра Розенбаума, которые легли в основу нашей истории. «Вальс-Бостон» — размышление о человеческих судьбах, о людях, их чувствах, потерях и мечтах. Песни Александра Розенбаума — не просто саундрек к истории героев, это — диалог со зрителем, приглашение к размышлению о дружбе и любви, верности и предательстве, молодости и взрослении. Попытка ответить на вопрос «кто мы с тобою здесь на самом деле»?',
-        place: 'Детская филармония',
-        dateStart: new Date('2025-05-14T19:00:00'),
-        dateEnd: new Date('2025-05-15T22:00:00'),
-        price: 1500,
-        tags:  [
-            { id: 1, name: 'Классическая музыка' }, 
-            { id: 2, name: 'Саундтрек' }, 
-            { id: 3, name: 'Неоклассика' }, 
-            { id: 4, name: 'Шоу' }, 
-            { id: 5, name: 'Концерт' }
-        ],
-    };
+    public event$: Observable<IEvent>;
+    public city$: Observable<ICity>;
+    public breadcrumbsItems$: Observable<Array<{ caption: string, routerLink: string }>>;
+    public organizer$: Observable<IOrganizer>;
+    public place$: Observable<IPlace>;
+    public address$: Observable<string>;
 
-    public organizer: IOrganizer = {
-        id: 1,
-        name: 'Oleg Tinkoff',
-        image: 'https://i.imgur.com/5qSSGHi.jpeg',
-        role: 'organizer',
-        subsCount: 9,
-        eventsCount: 7
-    };
+    constructor(
+        private _eventPageService: EventPageService,
+        private _route: ActivatedRoute,
+    ) {
+        const eventId: string = this._route.snapshot.paramMap.get('event-id') || '';
+        const cityId: string = this._route.snapshot.paramMap.get('city-id') || '';
 
-    public regionCityLocation: string = 'Свердловская область, Екатеринбург, улица 8 Марта, 36';
-
-
-    public breadcrumbsItems: Array<{ caption: string, routerLink: string }> = [
-        { caption: 'Главная', routerLink: '/home' }, 
-        { caption: 'Города', routerLink: '/home/cities' }, 
-        { caption: 'Город', routerLink: `/home/cities/${this.event.cityId}` }, 
-        { caption: this.event.title, routerLink: `/home/cities/${this.event.cityId}/${this.event.id}` }
-    ];
+        this.event$ = this._eventPageService.getEvent(eventId);
+        this.city$ = this._eventPageService.getCity(cityId);
+        this.breadcrumbsItems$ = this._eventPageService.getBreadcrumbs(this.city$, this.event$);
+        this.organizer$ = this.event$.pipe(
+            map(event => event.organizerId),
+            switchMap(organizerId => this._eventPageService.getOrganizer(organizerId))
+        );
+        this.place$ = this.event$.pipe(
+            map(event => event.placeId),
+            switchMap(placeId => this._eventPageService.getPlace(placeId))
+        );
+        this.address$ = this.place$.pipe(
+            map(p => ({
+                lon: p.lon,
+                lat: p.lat,
+            })),
+            switchMap(({ lon, lat }: { lon: number; lat: number }) => 
+                this._eventPageService.getAddress(lon, lat)
+            )
+        );
+    }
 }

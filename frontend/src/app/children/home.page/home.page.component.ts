@@ -9,12 +9,14 @@ import { ICity } from './interfaces/city.interface';
 import { IEvent } from './interfaces/event.interface';
 import { HomePageService } from './services/home-page.service';
 import { map, Observable, switchMap } from 'rxjs';
+import { TuiLink } from '@taiga-ui/core';
 
 
 @Component({
     selector: 'app-home-page',
     imports: [
         CommonModule,
+        TuiLink,
         TuiBreadcrumbsComponent,
         TuiEventCardComponent,
         TuiSecondaryButtonComponent,

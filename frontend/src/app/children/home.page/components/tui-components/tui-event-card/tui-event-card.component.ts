@@ -33,4 +33,6 @@ export class TuiEventCardComponent {
     public price: number = 0;
     @Input()
     public tags: Array<{id: number, name: string}> = [];
+    @Input()
+    public routerLink: string = '';
 }

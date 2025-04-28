@@ -1,15 +1,19 @@
 <div class="events-page">
-    <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    <div *ngIf="breadcrumbsItems$ | async as breadcrumbsItems">
+        <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    </div>
     <h1 class="events-page__title">
         События в<br>
-        <span class="events-page__city-location">{{ cityName | cityDeclension }}</span>
+        <span class="events-page__city-location" *ngIf="city$ | async as city">
+            {{ city.name | cityDeclension }}
+        </span>
     </h1>
-    <div class="events-page__results-container">
-        <div class="events-page__search-results" [ngPlural]="searchResultsCount">
+    <div class="events-page__search-results-container" *ngIf="events$ | async as events">
+        <div class="events-page__search-results" [ngPlural]="events.length">
             <ng-template ngPluralCase="=0">Нет результатов</ng-template>
-            <ng-template ngPluralCase="one">{{ searchResultsCount }} результат</ng-template>
-            <ng-template ngPluralCase="few">{{ searchResultsCount }} результата</ng-template>
-            <ng-template ngPluralCase="many">{{ searchResultsCount }} результатов</ng-template>
+            <ng-template ngPluralCase="one">{{ events.length }} результат</ng-template>
+            <ng-template ngPluralCase="few">{{ events.length }} результата</ng-template>
+            <ng-template ngPluralCase="many">{{ events.length }} результатов</ng-template>
         </div>
         <app-tui-outline-button
             buttonText="ДОБАВИТЬ"
@@ -20,18 +24,18 @@
     <div class="events-page__filter-wrapper">
         <app-tui-filter/>
     </div>
-    <!-- <div class="events-page__events-list">
+    <div class="events-page__events-list" *ngIf="events$ | async as events">
         <app-tui-event-card
-            class="events-page__event-card"
+            class="events-page__event-list-card"
             *ngFor="let event of events"
             [image]="event.image"
             [title]="event.title"
             [place]="event.place"
-            [date]="event.date"
+            [date]="event.dateStart"
             [price]="event.price"
             [tags]="event.tags"
-            [routerLink]="event.routerLink"
+            routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
         >
         </app-tui-event-card>
-    </div> -->
+    </div>
 </div>

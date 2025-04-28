@@ -20,7 +20,7 @@ export const routes: Routes = [
         loadComponent: () => import('./children/home.page/children/cities.page/children/events.page/events.page.component').then(m => m.EventsPageComponent)
     },
     {
-        path: 'home/cities/:id/:event-id',
+        path: 'home/cities/:city-id/:event-id',
         loadComponent: () => import ('./children/home.page/children/cities.page/children/events.page/children/event.page/event.page.component').then(m => m.EventPageComponent)
     },
     { 

@@ -8,16 +8,8 @@
       margin: 12px 0;
       margin-bottom: 12px;
       font-size: 52px;
-      line-height: 44px;
+      line-height: 52px;
       text-transform: uppercase;
-  }
-
-  &__results-container {
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-    max-width: 452px;
-    gap: 12px;
   }
 
   &__city-location {
@@ -34,5 +26,13 @@
       font-size: 20px;
       text-transform: uppercase;
       font-weight: 300;
+
+      &-container {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        max-width: 452px;
+        gap: 12px;
+      }
   }
 }

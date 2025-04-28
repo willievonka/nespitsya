@@ -2,13 +2,14 @@
     <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"/>
     <h1 class="home-page__title">
         Популярные<br>события в<br>
-        <span 
+        <a 
             class="home-page__city-location" 
             routerLink="/home/cities"
+            tuiLink
             *ngIf="city$ | async as city"
         >
             {{ city.name | cityDeclension }}
-        </span>
+        </a>
     </h1>
     <!-- [ ] TODO: превратить список ивентов в карусель -->
     <div 
@@ -24,6 +25,7 @@
             [date]="event.dateStart"
             [price]="event.price"
             [tags]="event.tags"
+            routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
         />
     </div>
     <app-tui-secondary-button
@@ -33,6 +35,5 @@
         [buttonText]="`Больше событий в ${city.name | cityDeclension}`"
         [buttonIconRight]="'@tui.corner-down-right'"
         [routerLink]="['/home/cities', city.id]"
-        [queryParams]="{ name: city.name }"
     />
 </div>
