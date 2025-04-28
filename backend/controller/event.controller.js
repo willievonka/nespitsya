@@ -19,6 +19,14 @@ class EventController {
                 return res.status(400).json({ message: "Все поля, кроме артистов и тэгов обязательны!" });
             }
 
+            const parsedDateStart = new Date(dateStart).toISOString();  
+            const parsedDateEnd = new Date(dateEnd).toISOString();  
+
+            if (isNaN(parsedDateStart) || isNaN(parsedDateEnd)) {
+                return res.status(400).json({ message: "Некорректный формат даты!" });
+            }
+
+
             // Проверка существования города
             const cityCheck = await db.query('SELECT 1 FROM city WHERE id = $1', [cityId]);
             if (cityCheck.rowCount === 0) {
@@ -55,7 +63,7 @@ class EventController {
             const eventResult = await db.query(
                 `INSERT INTO event (description, title, "placeId", "cityId", "dateStart", "dateEnd", price, image)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-                [description, title, placeId, cityId, dateStart, dateEnd, price, image]
+                [description, title, placeId, cityId, parsedDateStart, parsedDateEnd, price, image]
             );
             const id_event = eventResult.rows[0].id;
 
@@ -352,23 +360,165 @@ class EventController {
         }
     }
 
+    async getEventsByDateAsc(req, res) {
+        try {
+            const { cityId } = req.query;
+            const params = [];
+            let whereClause = '';
+    
+            if (cityId) {
+                params.push(cityId);
+                whereClause = 'WHERE "cityId" = $1';
+            }
+    
+            const { rows } = await db.query(`
+                SELECT * FROM event
+                ${whereClause}
+                ORDER BY 
+                    CASE WHEN "dateStart" IS NULL THEN 1 ELSE 0 END,
+                    "dateStart" ASC,
+                    "cityId" ASC
+            `, params);
+    
+            const grouped = {};
+    
+            for (const event of rows) {
+                let dateOnly = null;
+                if (event.dateStart) {
+                    dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
+                }
+    
+                if (!grouped[dateOnly]) {
+                    grouped[dateOnly] = [];
+                }
+    
+                grouped[dateOnly].push(event);
+            }
+    
+            const result = Object.keys(grouped)
+                .sort((a, b) => {
+                    if (a === 'null') return 1;
+                    if (b === 'null') return -1;
+                    return new Date(a) - new Date(b);
+                })
+                .map(date => ({
+                    date: date === 'null' ? null : date,
+                    events: grouped[date].sort((a, b) => {
+                        if (!a.dateStart) return 1;
+                        if (!b.dateStart) return -1;
+                        return new Date(a.dateStart) - new Date(b.dateStart);
+                    })
+                }));
+    
+            res.json(result);
+        } catch (error) {
+            console.error("Ошибка при получении событий по дате:", error);
+            res.status(500).json({ message: "Ошибка сервера" });
+        }
+    }
+    
+    
+
+    async getEventsByDateRange(req, res) {
+        try {
+            const { from, to, cityId } = req.query;
+    
+            if (!from || !to) {
+                return res.status(400).json({ message: "Необходимо указать параметры from и to" });
+            }
+    
+            const params = [from, to];
+            let whereClause = '"dateStart" BETWEEN $1 AND $2';
+    
+            if (cityId) {
+                params.push(cityId);
+                whereClause += ` AND "cityId" = $3`;
+            }
+    
+            const { rows } = await db.query(`
+                SELECT * FROM event
+                WHERE ${whereClause}
+                ORDER BY 
+                    CASE WHEN "dateStart" IS NULL THEN 1 ELSE 0 END,
+                    "dateStart" ASC,
+                    "cityId" ASC
+            `, params);
+    
+            const grouped = {};
+    
+            for (const event of rows) {
+                let dateOnly = null;
+                if (event.dateStart) {
+                    dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
+                }
+    
+                if (!grouped[dateOnly]) {
+                    grouped[dateOnly] = [];
+                }
+    
+                grouped[dateOnly].push(event);
+            }
+    
+            const result = Object.keys(grouped)
+                .sort((a, b) => {
+                    if (a === 'null') return 1;
+                    if (b === 'null') return -1;
+                    return new Date(a) - new Date(b);
+                })
+                .map(date => ({
+                    date: date === 'null' ? null : date,
+                    events: grouped[date].sort((a, b) => {
+                        if (!a.dateStart) return 1;
+                        if (!b.dateStart) return -1;
+                        return new Date(a.dateStart) - new Date(b.dateStart);
+                    })
+                }));
+    
+            res.json(result);
+        } catch (error) {
+            console.error("Ошибка при получении событий по диапазону дат:", error);
+            res.status(500).json({ message: "Ошибка сервера" });
+        }
+    }
+    
+
     async updateEvent(req, res) {
         try {
             const { id, description, title, placeId, cityId, dateStart, dateEnd, price } = req.body;
+
             if (!id || !description || !title || !placeId || !cityId || !dateStart || !dateEnd || !price) {
                 return res.status(400).json({ message: "Все поля обязательны для обновления" });
             }
+
+            // Приведение типов к целому числу (если нужно)
+            const parsedPlaceId = parseInt(placeId);
+            const parsedCityId = parseInt(cityId);
+            const parsedPrice = parseInt(price);
+            const parsedId = parseInt(id);
+
+            if (isNaN(parsedPlaceId) || isNaN(parsedCityId) || isNaN(parsedPrice) || isNaN(parsedId)) {
+                return res.status(400).json({ message: "Некорректные числовые значения" });
+            }
+
             const { rows } = await db.query(
-                `UPDATE event SET description=$1, title=$2, placeId=$3, cityId=$4, dateStart=$5, dateEnd=$6, price=$7 WHERE id=$8 RETURNING *`,
-                [description, title, placeId, cityId, dateStart, dateEnd, price, id]
+                `UPDATE event 
+                 SET description = $1, title = $2, "placeId" = $3, "cityId" = $4, "dateStart" = $5, "dateEnd" = $6, price = $7 
+                 WHERE id = $8 
+                 RETURNING *`,
+                [description, title, parsedPlaceId, parsedCityId, dateStart, dateEnd, parsedPrice, parsedId]
             );
-            if (!rows.length) return res.status(404).json({ message: "Событие не найдено" });
+
+            if (!rows.length) {
+                return res.status(404).json({ message: "Событие не найдено" });
+            }
+
             res.json(rows[0]);
         } catch (error) {
             console.error("Ошибка при обновлении события:", error);
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
+
 
     async deleteEvent(req, res) {
         try {
@@ -383,7 +533,7 @@ class EventController {
             const imageFilename = rows[0].image;
             if (imageFilename) {
                 const imagePath = path.join(__dirname, '..', 'static', imageFilename);
-                try { await fs.unlink(imagePath); } catch {}
+                try { await fs.unlink(imagePath); } catch { }
             }
             res.json({ message: "Событие удалено" });
         } catch (error) {
