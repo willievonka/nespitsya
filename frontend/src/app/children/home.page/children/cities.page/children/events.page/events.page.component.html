@@ -8,12 +8,13 @@
             {{ city.name | cityDeclension }}
         </span>
     </h1>
-    <div class="events-page__search-results-container" *ngIf="events$ | async as events">
-        <div class="events-page__search-results" [ngPlural]="events.length">
+    <div class="events-page__search-results-container" *ngIf="eventsNumber$ | async as eventsNumber">
+        <!-- [x] TODO: переделать отображение количества ивентов -->
+        <div class="events-page__search-results" [ngPlural]="eventsNumber">
             <ng-template ngPluralCase="=0">Нет результатов</ng-template>
-            <ng-template ngPluralCase="one">{{ events.length }} результат</ng-template>
-            <ng-template ngPluralCase="few">{{ events.length }} результата</ng-template>
-            <ng-template ngPluralCase="many">{{ events.length }} результатов</ng-template>
+            <ng-template ngPluralCase="one">{{ eventsNumber }} результат</ng-template>
+            <ng-template ngPluralCase="few">{{ eventsNumber }} результата</ng-template>
+            <ng-template ngPluralCase="many">{{ eventsNumber }} результатов</ng-template>
         </div>
         <app-tui-outline-button
             buttonText="ДОБАВИТЬ"
@@ -22,20 +23,12 @@
         />
     </div>
     <div class="events-page__filter-wrapper">
+        <!-- [ ] TODO: реализовать фильтры -->
         <app-tui-filter/>
     </div>
-    <div class="events-page__events-list" *ngIf="events$ | async as events">
-        <app-tui-event-card
-            class="events-page__event-list-card"
-            *ngFor="let event of events"
-            [image]="event.image"
-            [title]="event.title"
-            [place]="event.place"
-            [date]="event.dateStart"
-            [price]="event.price"
-            [tags]="event.tags"
-            routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
-        >
-        </app-tui-event-card>
-    </div>
+    <app-events-list 
+        class="events-page__events-list" 
+        *ngIf="events$ | async as events" 
+        [eventsList]="events"
+    />
 </div>

@@ -16,14 +16,14 @@ button {
     color: white;
     border: none;
     cursor: pointer;
-    backdrop-filter: blur(0.7px);
+    backdrop-filter: blur(0.5px);
     transition: 0.4s ease-in-out;
 }
 
 button:hover {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 button:active {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.5);
 }    

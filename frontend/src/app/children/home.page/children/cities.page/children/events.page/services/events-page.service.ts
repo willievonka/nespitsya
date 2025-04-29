@@ -3,7 +3,7 @@ import { environment } from '../../../../../../../../environment';
 import { ICity } from '../../../../../interfaces/city.interface';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
-import { IEvent } from '../../../../../interfaces/event.interface';
+import { TEventsList } from '../types/events-list.type';
 
 
 @Injectable({
@@ -23,14 +23,13 @@ export class EventsPageService {
         return this._http.get<ICity>(`${this._apiUrl}/cities/${cityId}`);
     }
 
-    //[ ] TODO: реализовать фильтры
     /**
      * Fetches events for a specific city by its ID.
      * @param cityId - The ID of the city to fetch events for.
      * @returns An observable containing an array of events.
      */
-    public getEvents(cityId: string): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`).pipe(
+    public getEvents(cityId: string): Observable<TEventsList> {
+        return this._http.get<TEventsList>(`${this._apiUrl}/event/date?cityId=${cityId}`).pipe(
             catchError(e => {
                 if (e.status === 404) {
                     return of([]);
