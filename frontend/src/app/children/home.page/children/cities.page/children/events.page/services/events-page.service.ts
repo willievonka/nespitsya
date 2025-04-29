@@ -23,7 +23,6 @@ export class EventsPageService {
         return this._http.get<ICity>(`${this._apiUrl}/cities/${cityId}`);
     }
 
-    //[ ] TODO: реализовать фильтры
     /**
      * Fetches events for a specific city by its ID.
      * @param cityId - The ID of the city to fetch events for.
