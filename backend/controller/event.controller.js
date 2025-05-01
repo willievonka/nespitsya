@@ -144,16 +144,22 @@ class EventController {
     async getEventsFromCity(req, res) {
         try {
             const { id } = req.params;
+            const countEvents = parseInt(req.query.countEvents) || 10; // по умолчанию 10
+    
             const { rows } = await db.query(`
                 SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
                        e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
                 FROM event e
                 JOIN place p ON e."placeId" = p.id
                 LEFT JOIN event_organizer eo ON e.id = eo.id_event
-                WHERE e."cityId" = $1
-            `, [id]);
-            if (!rows.length) return res.status(404).json({ message: "В этом городе нет событий" });
-
+                WHERE e."cityId" = $1 AND e."dateStart" > NOW()
+                ORDER BY e."dateStart" ASC
+                LIMIT $2
+            `, [id, countEvents]);
+    
+            if (!rows.length)
+                return res.status(404).json({ message: "В этом городе нет будущих событий" });
+    
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
@@ -165,7 +171,7 @@ class EventController {
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
-
+    
             const enriched = rows.map(e => {
                 const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
@@ -178,13 +184,14 @@ class EventController {
                     tags: tagsMap[e.id] || []
                 };
             });
-
+    
             res.json(enriched);
         } catch (error) {
             console.error("Ошибка при получении событий:", error);
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
+    
 
     async getEventsByArtist(req, res) {
         try {
@@ -379,10 +386,30 @@ class EventController {
                     "dateStart" ASC,
                     "cityId" ASC
             `, params);
+
+            
     
             const grouped = {};
+            const host = req.protocol + '://' + req.get('host');
     
             for (const event of rows) {
+
+                const { rows: tagsRes } = await db.query(
+                    `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
+                    [event.id]
+                );
+                event.tags = tagsRes;
+
+                const { rows: placeRows } = await db.query(
+                    `SELECT name FROM place WHERE id = $1`,
+                    [event.placeId]
+                );
+                event.place = placeRows[0]?.name || null;
+
+                if (event.image) {
+                    event.image = `${host}/static/${event.image}`;
+                }
+
                 let dateOnly = null;
                 if (event.dateStart) {
                     dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
@@ -445,8 +472,27 @@ class EventController {
             `, params);
     
             const grouped = {};
+            const host = req.protocol + '://' + req.get('host');
+
     
             for (const event of rows) {
+
+                const { rows: tagsRes } = await db.query(
+                    `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
+                    [event.id]
+                );
+                event.tags = tagsRes;
+
+                const { rows: placeRows } = await db.query(
+                    `SELECT name FROM place WHERE id = $1`,
+                    [event.placeId]
+                );
+                event.place = placeRows[0]?.name || null;
+
+                if (event.image) {
+                    event.image = `${host}/static/${event.image}`;
+                }
+
                 let dateOnly = null;
                 if (event.dateStart) {
                     dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
