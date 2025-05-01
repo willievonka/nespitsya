@@ -10,7 +10,6 @@ import { ActivatedRoute } from '@angular/router';
 import { EventsListComponent } from './components/events-list/events-list.component';
 import { TEventsList } from './types/events-list.type';
 import { IEvent } from '../../../../interfaces/event.interface';
-import { FiltersComponent } from './components/filters/filters.component';
 
 
 @Component({
@@ -21,7 +20,6 @@ import { FiltersComponent } from './components/filters/filters.component';
         TuiBreadcrumbsComponent,
         CityDeclensionPipe,
         TuiOutlineButtonComponent,
-        FiltersComponent,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',

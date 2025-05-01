@@ -26,7 +26,8 @@ export class HomePageService {
      * @returns {Observable<ICity>} An observable of the nearest city data.
      */
     public getCity(): Observable<ICity> {
-        return this._http.get<ICity>(`${this._apiUrl}/nearest-city?lon=${this._cityCoordinates$.lon}&lat=${this._cityCoordinates$.lat}`);
+        // return this._http.get<ICity>(`${this._apiUrl}/nearest-city?lon=${this._cityCoordinates$.lon}&lat=${this._cityCoordinates$.lat}`);
+        return this._http.get<ICity>(`${this._apiUrl}/cities/14`);
     }
 
     /**
