@@ -1,9 +1,52 @@
 import db from '../db.js';
+import axios from 'axios';
+
+async function getCoordinates(cityName) {
+    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        params: {
+            q: cityName,
+            format: 'json',
+            limit: 1
+        },
+        headers: { 'User-Agent': 'YourAppNameHere' }
+    });
+
+    if (!response.data.length) {
+        throw new Error('Город не найден');
+    }
+
+    const { lat, lon } = response.data[0];
+    return { lat: parseFloat(lat), lon: parseFloat(lon) };
+}
+
+async function updateAllCitiesCoordinates() {
+    const result = await db.query('SELECT id, name FROM city WHERE latitude IS NULL OR longitude IS NULL');
+
+    for (const city of result.rows) {
+        const coords = await getCoordinates(city.name);
+        if (!coords) {
+            console.warn(`Не удалось найти координаты для города "${city.name}"`);
+            continue;
+        }
+
+        await db.query(
+            'UPDATE city SET latitude = $1, longitude = $2 WHERE id = $3',
+            [coords.lat, coords.lon, city.id]
+        );
+
+        console.log(`Обновлено: ${city.name} → ${coords.lat}, ${coords.lon}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    console.log('Готово!');
+}
+
 
 class CityController {
     async createCity(req, res) {
         const { name, regionName, shortName } = req.body;
         const backgroundUrl = req.file?.filename;
+        const { lat, lon } = await getCoordinates(name);
 
         if (!name || !regionName || !shortName || !backgroundUrl) {
             return res.status(400).json({ error: 'Поля "name", "regionName", "shortName" и изображение обязательны' });
@@ -11,8 +54,8 @@ class CityController {
 
         try {
             const newCity = await db.query(
-                'INSERT INTO city (name, "regionName", "shortName", "backgroundUrl") VALUES ($1, $2, $3, $4) RETURNING *',
-                [name, regionName, shortName, backgroundUrl]
+                'INSERT INTO city (name, "regionName", "shortName", "backgroundUrl", latitude, longitude) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                [name, regionName, shortName, backgroundUrl, lat, lon]
             );
             res.status(201).json(newCity.rows[0]);
         } catch (err) {
@@ -98,29 +141,29 @@ class CityController {
         try {
             // Массив городов, которые нужно вернуть
             const cities = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Казань', 'Нижний Новгород'];
-    
+
             // Формируем строку запроса с параметрами
             const query = `
                 SELECT * FROM city
                 WHERE name IN ($1, $2, $3, $4, $5)
             `;
-    
+
             // Выполняем запрос
             const result = await db.query(query, cities);
-    
+
             // Если города не найдены
             if (result.rows.length === 0) {
                 return res.status(404).json({ message: 'Города не найдены' });
             }
-            
+
             const host = req.protocol + '://' + req.get('host');
-            
+
             // Добавляем хост к изображениям
             const citiesWithHost = result.rows.map(city => ({
                 ...city,
                 backgroundUrl: `${host}/static/${city.backgroundUrl}`
             }));
-    
+
             // Отправляем результат
             res.json(citiesWithHost);
         } catch (error) {
@@ -128,6 +171,49 @@ class CityController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    async getNearestCity(req, res) {
+        const { lat, lon } = req.query;
+
+        // Проверка наличия параметров
+        if (!lat || !lon) {
+            return res.status(400).json({ error: 'Параметры "lat" и "lon" обязательны' });
+        }
+
+        // Проверка, что это числа
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lon);
+        if (isNaN(latitude) || isNaN(longitude)) {
+            return res.status(400).json({ error: 'Параметры "lat" и "lon" должны быть числами' });
+        }
+
+        try {
+            const nearestCityQuery = `
+            SELECT id, name, latitude, longitude,
+                    (
+                        6371 * acos(
+                            cos(radians($1)) * cos(radians("latitude")) *
+                            cos(radians("longitude") - radians($2)) +
+                            sin(radians($1)) * sin(radians("latitude"))
+                        )
+                    ) AS distance
+                FROM city
+                ORDER BY distance
+                LIMIT 1;
+            `;
+
+            const result = await db.query(nearestCityQuery, [latitude, longitude]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: 'Ближайший город не найден' });
+            }
+
+            res.json(result.rows[0]);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
 
 
     async updateCity(req, res) {
