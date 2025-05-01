@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ICity } from '../interfaces/city.interface';
 import { IEvent } from '../interfaces/event.interface';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { environment } from '../../../../environment';
 import { GeolocationService } from '@ng-web-apis/geolocation';
 
@@ -11,20 +11,22 @@ import { GeolocationService } from '@ng-web-apis/geolocation';
     providedIn: 'root',
 })
 export class HomePageService {
-    // [ ] TODO: сделать получение города по координатам из апи геолокации
-    private _cityId: number = 14; // - заглушка, пока не сделаем получение города по координатам из апи геолокации
-
-    private readonly _apiUrl: string = environment.apiUrl; // - тру апи
-    //private readonly _apiUrl: string = 'mock-data'; // - фейк апи
-
-    constructor(private _http: HttpClient, private readonly _geolocation$: GeolocationService) {}
+    private readonly _apiUrl: string = environment.apiUrl;
+    private _cityCoordinates$: { lon: number; lat: number } = { lon: 37.6156, lat: 55.7522 }; // Default coordinates for Moscow
+    
+    constructor(private _http: HttpClient, private readonly _geolocation$: GeolocationService) {
+        this._geolocation$.pipe(take(1)).subscribe((position: GeolocationPosition) => {
+            this._cityCoordinates$.lon = position.coords.longitude;
+            this._cityCoordinates$.lat = position.coords.latitude;
+        });
+    }
 
     /**
-     * Gets the city data from the API.
-     * @returns {Observable<ICity>} An observable of the city data.
+     * Gets the nearest city based on the current coordinates.
+     * @returns {Observable<ICity>} An observable of the nearest city data.
      */
     public getCity(): Observable<ICity> {
-        return this._http.get<ICity>(`${this._apiUrl}/cities/${this._cityId}`);
+        return this._http.get<ICity>(`${this._apiUrl}/nearest-city?lon=${this._cityCoordinates$.lon}&lat=${this._cityCoordinates$.lat}`);
     }
 
     /**
