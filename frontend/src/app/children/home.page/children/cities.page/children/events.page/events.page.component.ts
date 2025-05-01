@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { TuiBreadcrumbsComponent } from '../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
 import { TuiOutlineButtonComponent } from './components/tui-components/tui-outline-button/tui-outline-button.component';
 import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-declension.pipe';
-import { TuiFilterComponent } from './components/tui-components/tui-filter/tui-filter.component';
 import { EventsPageService } from './services/events-page.service';
 import { ICity } from '../../../../interfaces/city.interface';
 import { map, Observable } from 'rxjs';
@@ -21,7 +20,6 @@ import { IEvent } from '../../../../interfaces/event.interface';
         TuiBreadcrumbsComponent,
         CityDeclensionPipe,
         TuiOutlineButtonComponent,
-        TuiFilterComponent,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',
