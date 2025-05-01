@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TuiCalendarComponent } from './tui-calendar.component';
+import { FiltersComponent } from './filters.component';
 
 
-describe('TuiCalendarComponent', () => {
-    let component: TuiCalendarComponent;
-    let fixture: ComponentFixture<TuiCalendarComponent>;
+describe('FiltersComponent', () => {
+    let component: FiltersComponent;
+    let fixture: ComponentFixture<FiltersComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [TuiCalendarComponent]
+            imports: [FiltersComponent]
         })
             .compileComponents();
 
-        fixture = TestBed.createComponent(TuiCalendarComponent);
+        fixture = TestBed.createComponent(FiltersComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
