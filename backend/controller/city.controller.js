@@ -1,5 +1,12 @@
 import db from '../db.js';
 import axios from 'axios';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fs from 'fs';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function getCoordinates(cityName) {
     const response = await axios.get('https://nominatim.openstreetmap.org/search', {
@@ -106,24 +113,35 @@ class CityController {
                 FROM city c
                 ORDER BY letter, region_name, city_name;
             `);
-
+    
             const regionsList = [];
+    
             result.rows.forEach(row => {
-
-                let regionGroup = regionsList.find(group => group.name === row.letter);
+                const isFederalCity = row.region_name === row.city_name;
+    
+                // Буква, по которой группируются регионы
+                const groupLetter = row.letter;
+    
+                // Имя региона: если федеральный город — используем имя города
+                const regionName = isFederalCity ? `${row.city_name} (г. фед. знач.)` : row.region_name;
+    
+                // Находим или создаём группу по первой букве
+                let regionGroup = regionsList.find(group => group.name === groupLetter);
                 if (!regionGroup) {
-                    regionGroup = { name: row.letter, regions: [] };
+                    regionGroup = { name: groupLetter, regions: [] };
                     regionsList.push(regionGroup);
                 }
-
-                let region = regionGroup.regions.find(r => r.name === row.region_name);
+    
+                // Находим или создаём регион внутри группы
+                let region = regionGroup.regions.find(r => r.name === regionName);
                 if (!region) {
-                    region = { name: row.region_name, cities: [] };
+                    region = { name: regionName, cities: [] };
                     regionGroup.regions.push(region);
                 }
-
+    
                 const host = req.protocol + '://' + req.get('host');
-
+    
+                // Добавляем город в список региона
                 region.cities.push({
                     id: row.city_id,
                     name: row.city_name,
@@ -131,40 +149,36 @@ class CityController {
                     backgroundUrl: `${host}/static/${row.backgroundUrl}`
                 });
             });
-
+    
             res.json(regionsList);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
+    
+
     async getTopCities(req, res) {
         try {
             // Массив городов, которые нужно вернуть
             const cities = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Казань', 'Нижний Новгород'];
 
-            // Формируем строку запроса с параметрами
             const query = `
                 SELECT * FROM city
                 WHERE name IN ($1, $2, $3, $4, $5)
             `;
-
-            // Выполняем запрос
             const result = await db.query(query, cities);
 
-            // Если города не найдены
             if (result.rows.length === 0) {
                 return res.status(404).json({ message: 'Города не найдены' });
             }
 
             const host = req.protocol + '://' + req.get('host');
 
-            // Добавляем хост к изображениям
             const citiesWithHost = result.rows.map(city => ({
                 ...city,
                 backgroundUrl: `${host}/static/${city.backgroundUrl}`
             }));
 
-            // Отправляем результат
             res.json(citiesWithHost);
         } catch (error) {
             console.error("Ошибка при получении городов:", error);
@@ -175,12 +189,10 @@ class CityController {
     async getNearestCity(req, res) {
         const { lat, lon } = req.query;
 
-        // Проверка наличия параметров
         if (!lat || !lon) {
             return res.status(400).json({ error: 'Параметры "lat" и "lon" обязательны' });
         }
 
-        // Проверка, что это числа
         const latitude = parseFloat(lat);
         const longitude = parseFloat(lon);
         if (isNaN(latitude) || isNaN(longitude)) {
@@ -220,8 +232,7 @@ class CityController {
         const { id } = req.params;
         const { name, regionName, shortName } = req.body;
 
-        // Получаем файл изображения (если он есть)
-        const backgroundUrl = req.file ? req.file.filename : null;  // Сохраняем только имя файла, без пути
+        const backgroundUrl = req.file ? req.file.filename : null;
 
         if (!id) {
             return res.status(400).json({ error: 'Параметр "id" обязателен' });
@@ -254,20 +265,30 @@ class CityController {
 
     async deleteCity(req, res) {
         const { id } = req.params;
-
+    
         if (!id) {
             return res.status(400).json({ error: 'Параметр "id" обязателен' });
         }
-
+    
         try {
-            const deleted = await db.query(
-                "DELETE FROM city WHERE id = $1 RETURNING *",
-                [id]
-            );
-            if (deleted.rows.length === 0) {
+
+            const cityResult = await db.query("SELECT * FROM city WHERE id = $1", [id]);
+            if (cityResult.rows.length === 0) {
                 return res.status(404).json({ message: 'Город не найден' });
             }
-            res.json({ message: 'Город удалён', city: deleted.rows[0] });
+            const city = cityResult.rows[0];
+            const imagePath = path.join(__dirname, '..', 'static', city.backgroundUrl); 
+    
+            await db.query("DELETE FROM city WHERE id = $1", [id]);
+    
+            // Удаляем изображение
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                    console.error('Ошибка при удалении изображения:', err);
+                }
+            });
+    
+            res.json({ message: 'Город и его изображение удалены', city });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
