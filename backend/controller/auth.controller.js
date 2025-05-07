@@ -89,7 +89,6 @@ class authController {
             res.status(500).json({ message: 'Ошибка регистрации организатора' });
         }
     }
-    
 
     async login(req, res) {
         try {
@@ -131,8 +130,6 @@ class authController {
         }
     }
 
-
-
     async getUsers(req, res) {
         try {
             const users = await db.query('SELECT id, username, email, role FROM users');
@@ -144,4 +141,4 @@ class authController {
     }
 }
 
-export default new authController()
+export default new authController();

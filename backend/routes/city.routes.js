@@ -3,7 +3,7 @@ import cityController from '../controller/city.controller.js'
 import { roleMiddleware } from '../middleware/roleMiddleware.js'
 import upload from '../middleware/upload.js'
 
-const router = new Router()
+const router = new Router();
 
 // router.post('/cities', roleMiddleware('admin'), cityController.createCity);
 router.post('/cities', upload.single('backgroundUrl'), cityController.createCity);
@@ -16,4 +16,4 @@ router.put('/cities/:id', upload.single('backgroundUrl'), cityController.updateC
 router.delete('/cities/:id', cityController.deleteCity);
 
 
-export default router
+export default router;

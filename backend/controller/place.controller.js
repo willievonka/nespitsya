@@ -60,7 +60,6 @@ class PlaceController {
         }
     }
     
-    
     async getOnePlace(req, res) {
         try {
             const { id } = req.params;
@@ -95,7 +94,6 @@ class PlaceController {
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-    
 
     async updatePlace(req, res) {
         try {
@@ -133,7 +131,6 @@ class PlaceController {
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-    
 
     async deletePlace(req, res) {
         try {

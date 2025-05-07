@@ -48,7 +48,6 @@ async function updateAllCitiesCoordinates() {
     console.log('Готово!');
 }
 
-
 class CityController {
     async createCity(req, res) {
         const { name, regionName, shortName } = req.body;
@@ -69,7 +68,6 @@ class CityController {
             res.status(500).json({ error: err.message });
         }
     }
-
 
     async getCityById(req, res) {
         const { id } = req.params;
@@ -99,7 +97,6 @@ class CityController {
         }
     }
 
-
     async getRegionsList(req, res) {
         try {
             const result = await db.query(`
@@ -119,10 +116,9 @@ class CityController {
             result.rows.forEach(row => {
                 const isFederalCity = row.region_name === row.city_name;
     
-                // Буква, по которой группируются регионы
+                // Первая буква
                 const groupLetter = row.letter;
     
-                // Имя региона: если федеральный город — используем имя города
                 const regionName = isFederalCity ? `${row.city_name} (г. фед. знач.)` : row.region_name;
     
                 // Находим или создаём группу по первой букве
@@ -141,7 +137,6 @@ class CityController {
     
                 const host = req.protocol + '://' + req.get('host');
     
-                // Добавляем город в список региона
                 region.cities.push({
                     id: row.city_id,
                     name: row.city_name,
@@ -155,11 +150,10 @@ class CityController {
             res.status(500).json({ error: err.message });
         }
     }
-    
 
     async getTopCities(req, res) {
         try {
-            // Массив городов, которые нужно вернуть
+            // Топ городов
             const cities = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Казань', 'Нижний Новгород'];
 
             const query = `
@@ -226,8 +220,6 @@ class CityController {
         }
     }
 
-
-
     async updateCity(req, res) {
         const { id } = req.params;
         const { name, regionName, shortName } = req.body;
@@ -261,8 +253,6 @@ class CityController {
         }
     }
 
-
-
     async deleteCity(req, res) {
         const { id } = req.params;
     
@@ -271,7 +261,6 @@ class CityController {
         }
     
         try {
-
             const cityResult = await db.query("SELECT * FROM city WHERE id = $1", [id]);
             if (cityResult.rows.length === 0) {
                 return res.status(404).json({ message: 'Город не найден' });

@@ -26,7 +26,6 @@ class EventController {
                 return res.status(400).json({ message: "Некорректный формат даты!" });
             }
 
-
             // Проверка существования города
             const cityCheck = await db.query('SELECT 1 FROM city WHERE id = $1', [cityId]);
             if (cityCheck.rowCount === 0) {
@@ -191,7 +190,6 @@ class EventController {
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-    
 
     async getEventsByArtist(req, res) {
         try {
@@ -387,8 +385,6 @@ class EventController {
                     "cityId" ASC
             `, params);
 
-            
-    
             const grouped = {};
             const host = req.protocol + '://' + req.get('host');
     
@@ -444,8 +440,6 @@ class EventController {
         }
     }
     
-    
-
     async getEventsByDateRange(req, res) {
         try {
             const { from, to, cityId } = req.query;
@@ -473,7 +467,6 @@ class EventController {
     
             const grouped = {};
             const host = req.protocol + '://' + req.get('host');
-
     
             for (const event of rows) {
 
@@ -526,7 +519,6 @@ class EventController {
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-    
 
     async updateEvent(req, res) {
         try {
@@ -536,7 +528,6 @@ class EventController {
                 return res.status(400).json({ message: "Все поля обязательны для обновления" });
             }
 
-            // Приведение типов к целому числу (если нужно)
             const parsedPlaceId = parseInt(placeId);
             const parsedCityId = parseInt(cityId);
             const parsedPrice = parseInt(price);
@@ -564,7 +555,6 @@ class EventController {
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-
 
     async deleteEvent(req, res) {
         try {
