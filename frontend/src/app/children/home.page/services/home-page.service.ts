@@ -36,6 +36,6 @@ export class HomePageService {
      * @returns {Observable<IEvent[]>} An observable of the events data.
      */
     public getEvents(cityId: number): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}`);
+        return this._http.get<IEvent[]>(`${this._apiUrl}/event/city/${cityId}?countEvents=9`);
     }
 }
