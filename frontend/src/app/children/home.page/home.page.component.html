@@ -12,21 +12,8 @@
         </a>
     </h1>
     <!-- [ ] TODO: превратить список ивентов в карусель -->
-    <div 
-        class="home-page__events-list"
-        *ngIf="events$ | async as events"
-    >
-        <app-tui-event-card
-            class="home-page__event-card"
-            *ngFor="let event of events"
-            [image]="event.image"
-            [title]="event.title"
-            [place]="event.place"
-            [date]="event.dateStart"
-            [price]="event.price"
-            [tags]="event.tags"
-            routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
-        />
+    <div *ngIf="events$ | async as events">
+        <app-tui-carousel [items]="events"/>
     </div>
     <app-tui-secondary-button
         class="home-page__more-events-button"
