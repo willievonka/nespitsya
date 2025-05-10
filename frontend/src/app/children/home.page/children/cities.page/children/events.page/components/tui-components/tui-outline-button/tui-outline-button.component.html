@@ -1,0 +1,21 @@
+<button
+    class="outline-button"
+    tuiButton
+    type="button"
+    appearance="outline"
+    [size]="buttonSize"
+>
+    <tui-icon
+        *ngIf="buttonIconLeft"
+        [icon]="buttonIconLeft"
+        [style.height.rem]="2"
+    >
+    </tui-icon>
+    <span *ngIf="buttonText">{{ buttonText }}</span>
+    <tui-icon
+        *ngIf="buttonIconRight"
+        [icon]="buttonIconRight"
+        [style.height.rem]="2"
+        >
+    </tui-icon>
+</button>

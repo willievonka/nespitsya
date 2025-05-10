@@ -1,0 +1,23 @@
+.main {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: bold;
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    &__subs-count {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}

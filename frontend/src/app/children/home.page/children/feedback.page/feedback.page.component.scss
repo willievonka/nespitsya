@@ -1,0 +1,29 @@
+.page-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 50px;
+  box-sizing: border-box;
+}
+
+.feedback-form {
+  max-width: 697px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+  gap: 12px;
+
+  &__email-input {
+    max-width: 320px;
+  }
+
+  &__text-input {
+    height: 323px; 
+  }
+}
+
+h1 {
+  font-size: 52px;
+  line-height: 52px;
+  text-transform: uppercase;
+  margin: 12px 0;
+}

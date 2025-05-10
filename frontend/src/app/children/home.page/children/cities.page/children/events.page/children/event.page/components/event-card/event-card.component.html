@@ -1,0 +1,38 @@
+<div class="background" style.backgroundImage="url({{ backgroundUrl }})">
+    <div class="main">
+        <h1 class="main__title">{{ title }}</h1>
+        <h2 class="main__place">{{ place }}</h2>
+        <div class="main__date">
+            <tui-icon icon="calendar"/>
+            <!-- [x] TODO: доделать ссылку, чтобы корректно открывала мероприятие -->
+            <a 
+                class="main__date-link" 
+                [href]="`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${(dateStart| date:'yyyyMMddTHHmmss')}/${(dateEnd| date:'yyyyMMddTHHmmss')}&text=${title}&location=${location}`"
+                target="_blank"
+                tuiLink
+            >
+                <div *ngIf="(dateStart | date:'yyyyMMdd') === (dateEnd | date:'yyyyMMdd'); then dateOneDay else dateMultiDay"></div>
+                <ng-template #dateOneDay>
+                    {{ dateStart | date:'EE, d MMMM' | titlecase }} | {{ dateStart | date:'HH:mm' }} - {{ dateEnd | date:'HH:mm' }}
+                </ng-template>
+                <ng-template #dateMultiDay>
+                    {{ dateStart | date:'EE, d MMMM | HH:mm' | titlecase }} - {{ dateEnd | date:'EE, d MMMM | HH:mm' | titlecase }}
+                </ng-template>
+            </a>
+        </div>
+        <div class="main__tags">
+            <app-tui-chip
+                class="main__tag"
+                size="xs"
+                *ngFor="let tag of tags" 
+                [value]="tag.name"
+            />
+        </div>
+        <div class="main__buttons">
+            <!-- [ ] TODO: повесить на кнопку api поиска билетов -->
+            <app-tui-accent-button buttonText="Найти билеты от {{ price }}₽"/>
+            <app-tui-secondary-button buttonIconLeft="heart" size="m"/>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,48 @@
+.header {
+  background-color: rgb(12, 12, 12);
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  margin-bottom: 50px;
+  padding: 18px 50px;
+  box-sizing: border-box;
+  border-radius: 0 0 16px 16px;
+  align-items: center;
+  justify-content: space-between;
+  -webkit-box-shadow: 0px 4px 58.4px 0px rgba(255, 106, 0, 1);
+  -moz-box-shadow: 0px 4px 58.4px 0px rgba(255, 106, 0, 1);
+  box-shadow: 0px 4px 58.4px 0px rgba(255, 106, 0, 1);
+
+  &_auth-page {
+    height: 80px;
+    justify-content: center;
+  }
+
+  a {
+    display: flex;
+    cursor: pointer;
+  }
+
+  &__left-part {
+    display: flex;
+    align-items: center;
+    gap: 70px;
+  }
+
+  &__logo {
+    width: 160px;
+    height: 40px;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
+
+  &__input-search {
+    width: 320px;
+    margin-right: 5px;
+  }
+}

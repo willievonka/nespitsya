@@ -1,0 +1,14 @@
+<div class="page-content">
+    <app-tui-breadcrumbs [items]="breadcrumbsItems"></app-tui-breadcrumbs>
+    <h1>Форма обратной связи</h1>
+    <div class="feedback-form">
+        <app-tui-input-email class="feedback-form__email-input"></app-tui-input-email>
+        <app-tui-input-text class="feedback-form__text-input"></app-tui-input-text>
+        <app-tui-accent-button
+            class="header__accent-button"
+            [buttonText]="sendButtonText"
+            [buttonIcon]="sendButtonIcon">
+        </app-tui-accent-button>
+    </div>
+</div>
+

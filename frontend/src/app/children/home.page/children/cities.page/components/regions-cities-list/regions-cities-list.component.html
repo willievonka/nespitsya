@@ -1,0 +1,21 @@
+<div class="region-list">
+    <div class="region-list__group" *ngFor="let group of groups">
+        <h2 class="group__title" #name>{{ group.name }}</h2>
+        <div class="region" *ngFor="let region of group.regions">
+            <h3 class="region__title">
+                {{ region.name }}
+            </h3>
+            <div class="region__cities-list">
+                <app-tui-secondary-button
+                    class="cities-list__city"
+                    *ngFor="let city of region.cities"
+                    buttonIconLeft="@tui.building-2"
+                    [buttonText]="city.name"
+                    size="l"
+                    [routerLink]="['/home/cities', city.id]"
+                >
+                </app-tui-secondary-button>
+            </div>
+        </div>
+    </div>
+</div>

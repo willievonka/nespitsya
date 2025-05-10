@@ -1,0 +1,27 @@
+<div class="main">
+    <div class="main__events-group" *ngFor="let eventsListItem of eventsList">
+        <ng-container *ngIf="eventsListItem.date; else noDateTemplate">
+            <h2 class="main__events-date">
+                {{ eventsListItem.date | date: 'EEEE, d MMMM YYYY' | uppercase }}
+            </h2>
+        </ng-container>
+        <ng-template #noDateTemplate>
+            <h2 class="main__events-date">
+                ДАТА НЕИЗВЕСТНА
+            </h2>
+        </ng-template>
+        <div class="main__events-container">
+            <app-tui-event-card
+                class="main__event"
+                *ngFor="let event of eventsListItem.events"
+                [image]="event.image"
+                [title]="event.title"
+                [place]="event.place"
+                [date]="event.dateStart"
+                [price]="event.price"
+                [tags]="event.tags"
+                routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
+            />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<div class="event-page" *ngIf="event$ | async as event">
+    <div *ngIf="breadcrumbsItems$ | async as breadcrumbsItems">
+        <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+    </div>
+    <app-event-card
+        class="event-page__card"
+        [backgroundUrl]="event.image"
+        [title]="event.title"
+        [place]="event.place"
+        [location]="(address$ | async) ?? 'Адрес не найден'"
+        [dateStart]="event.dateStart"
+        [dateEnd]="event.dateEnd"
+        [price]="event.price"
+        [tags]="event.tags"
+    />
+    <div class="event-page__content">
+        <div class="event-page__description">
+            <h2>Описание</h2>
+            <p class="event-page__description-text">{{ event.description }}</p>
+        </div>
+        <div class="event-page__details">
+            <div class="event-page__organizer">
+                <h2>Организатор</h2>
+                <div class="event-page__organizer-info" *ngIf="organizer$ | async as organizer">
+                    <app-organizer-card
+                        class="event-page__organizer-card"
+                        [image]="organizer.image"
+                        [name]="organizer.name"
+                        [subsCount]="organizer.subsCount"
+                        [eventsCount]="organizer.eventsCount"
+                    />
+                    <app-tui-secondary-button
+                        class="event-page__organizer-button"
+                        buttonText="Подписаться"
+                        size="xs"
+                    />               
+                </div>
+            </div>
+            <div class="event-page__location">
+                <h2>Место</h2>
+                <div class="event-page__location-wrapper">
+                    <tui-icon icon="map-pin"/>
+                    <!-- [x] TODO: сделать адрес копируемым в буфер обмена/ссылку на яндекс карты прикрутить -->
+                    <a 
+                        class="event-page__location-name"
+                        href="https://yandex.ru/maps/?text={{ (address$ | async) + ' ' + event.place }}&z=16"
+                        target="_blank"
+                        tuiLink
+                    >
+                        {{ address$ | async }}
+                    </a>
+                </div>
+                <!-- [x] TODO: подумать над добавлением геокодера, чтобы переводить координаты в адрес, или же подгружать с бэка -->
+                <div class="event-page__location-map" *ngIf="place$ | async as place">
+                    <app-map
+                        [coordinates]="[place.lon, place.lat]"
+                        [title]="event.title"
+                        [place]="event.place"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
