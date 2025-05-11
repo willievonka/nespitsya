@@ -17,13 +17,14 @@
             [itemsCount]="itemsPerPage"
             [(index)]="index"
         >
-            <ng-container *ngFor="let item of items">
+            <ng-container *ngFor="let item of items" class="main__carousel-page">
                 <div
                     *tuiItem
                     class="main__carousel-item"
                 >
+                    <!-- [x] TODO: сделать новый визуал карточкам -->
                     <app-tui-event-card
-                        class="main__carousel-item"
+                        class="main__carousel-card"
                         [image]="item.image"
                         [title]="item.title"
                         [place]="item.place"

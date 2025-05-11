@@ -1,11 +1,14 @@
 .main {
+    --tui-carousel-padding: 0 24px;
+
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
 
-
-    &__carousel-wrapper {
-        display: flex;
-        align-items: center;
+    &__carousel {
+        &-wrapper {
+            display: flex;
+            align-items: center;
+        }
     }
 }

@@ -9,7 +9,6 @@ import { IEvent } from './interfaces/event.interface';
 import { HomePageService } from './services/home-page.service';
 import { map, Observable, switchMap } from 'rxjs';
 import { TuiLink } from '@taiga-ui/core';
-import { TuiEventCardComponent } from '../../components/tui-components/tui-event-card/tui-event-card.component';
 import { TuiCarouselComponent } from './components/tui-components/tui-carousel/tui-carousel.component';
 
 
@@ -21,7 +20,6 @@ import { TuiCarouselComponent } from './components/tui-components/tui-carousel/t
         TuiBreadcrumbsComponent,
         TuiSecondaryButtonComponent,
         TuiCarouselComponent,
-        TuiEventCardComponent,
         CityDeclensionPipe,
         RouterLink,
     ],

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TuiAppearance } from '@taiga-ui/core';
-import { TuiCardLarge } from '@taiga-ui/layout';
 import { TuiChipComponent } from '../tui-chip/tui-chip.component';
 
 
@@ -12,7 +11,6 @@ import { TuiChipComponent } from '../tui-chip/tui-chip.component';
         CommonModule,
         DatePipe,
         RouterLink,
-        TuiCardLarge,
         TuiAppearance,
         TuiChipComponent,
     ],

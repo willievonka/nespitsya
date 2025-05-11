@@ -11,9 +11,9 @@
             {{ city.name | cityDeclension }}
         </a>
     </h1>
-    <!-- [ ] TODO: превратить список ивентов в карусель -->
+    <!-- [x] TODO: превратить список ивентов в карусель -->
     <div *ngIf="events$ | async as events">
-        <app-tui-carousel [items]="events"/>
+        <app-tui-carousel [items]="events" [itemsPerPage]="3"/>
     </div>
     <app-tui-secondary-button
         class="home-page__more-events-button"
