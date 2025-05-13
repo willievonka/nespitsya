@@ -1,8 +1,15 @@
 import { Routes } from '@angular/router';
+import { accountRoutes } from './children/account.page/account.page.routes';
 
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
+    // [ ] TODO: повесить гарды на страницы аккаунта и аутентификации
+    {
+        path: 'account',
+        loadComponent: () => import('./children/account.page/account.page.component').then(m => m.AccountPageComponent),
+        children: accountRoutes
+    },
     { 
         path: 'auth', 
         loadComponent: () => import('./children/auth.page/auth.page.component').then(m => m.AuthPageComponent)
