@@ -8,6 +8,9 @@ import { registerLocaleData } from '@angular/common';
 import { provideYConfig, YConfig } from 'angular-yandex-maps-v3';
 import localeRu from '@angular/common/locales/ru';
 import { environment } from '../environment';
+import { TUI_RUSSIAN_LANGUAGE, TUI_LANGUAGE } from '@taiga-ui/i18n';
+import { of } from 'rxjs';
+
 
 
 const yandexConfig: YConfig = {
@@ -24,6 +27,7 @@ export const appConfig: ApplicationConfig = {
         provideYConfig(yandexConfig), 
         NG_EVENT_PLUGINS,
         { provide: LOCALE_ID, useValue: 'ru-RU' },
+        { provide: TUI_LANGUAGE, useValue: of(TUI_RUSSIAN_LANGUAGE) },
     ]
 };
 
