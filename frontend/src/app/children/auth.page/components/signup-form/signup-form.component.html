@@ -1,6 +1,6 @@
 <div class="main">
     <h1 class="main__title">Создать аккаунт</h1>
-    <form class="form" [formGroup]="registerForm">
+    <form class="form" [formGroup]="signupForm">
         <tui-textfield class="form__input">
             <input
                 formControlName="email"
@@ -59,13 +59,11 @@
     </form>
     <div class="main__footer">
         Уже есть аккаунт? 
-        <a 
+        <button
             tuiLink 
-            tabindex="0" 
-            (click)="onSwitchToLogin()" 
-            (keydown.enter)="onSwitchToLogin()"
+            [routerLink]="['/auth/login']"
         >
             Войти
-        </a>
+    </button>
     </div>
 </div>

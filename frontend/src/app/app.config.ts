@@ -12,7 +12,6 @@ import { TUI_RUSSIAN_LANGUAGE, TUI_LANGUAGE } from '@taiga-ui/i18n';
 import { of } from 'rxjs';
 
 
-
 const yandexConfig: YConfig = {
     apikey: environment.yaMapsApiKey,
     lang: 'ru_RU'

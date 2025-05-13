@@ -4,11 +4,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
     selector: 'app-login-form',
     imports: [
+        RouterModule,
         TuiAccentButtonComponent,
         ReactiveFormsModule,
         TuiPassword,

@@ -4,12 +4,14 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiPassword, TuiFieldErrorPipe, tuiValidationErrorsProvider } from '@taiga-ui/kit';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
-    selector: 'app-register-form',
+    selector: 'app-signup-form',
     imports: [
         CommonModule,
+        RouterModule,
         TuiAccentButtonComponent,
         ReactiveFormsModule,
         TuiPassword,
@@ -20,8 +22,8 @@ import { TuiPassword, TuiFieldErrorPipe, tuiValidationErrorsProvider } from '@ta
         TuiFieldErrorPipe,
         AsyncPipe,
     ],
-    templateUrl: './register-form.component.html',
-    styleUrl: './register-form.component.scss',
+    templateUrl: './signup-form.component.html',
+    styleUrl: './signup-form.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiValidationErrorsProvider({
@@ -32,11 +34,11 @@ import { TuiPassword, TuiFieldErrorPipe, tuiValidationErrorsProvider } from '@ta
     ],
     
 })
-export class RegisterFormComponent {
+export class SignupFormComponent {
     @Output() 
     public switchToLogin: EventEmitter<void> = new EventEmitter<void>();
 
-    protected readonly registerForm: FormGroup = new FormGroup({
+    protected readonly signupForm: FormGroup = new FormGroup({
         email: new FormControl('', Validators.compose([Validators.required,  Validators.email])),
         username: new FormControl('', Validators.required),
         password: new FormControl('', Validators.required),
