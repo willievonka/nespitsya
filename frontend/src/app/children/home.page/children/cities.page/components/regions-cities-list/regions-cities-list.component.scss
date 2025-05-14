@@ -1,0 +1,33 @@
+.region-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.category__title {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.group__title {
+    margin-top: 12px;
+}
+
+.region {
+    &__title {
+        margin: 12px 0;
+        margin-bottom: 24px;
+        font-size: 52px;
+        line-height: 52px;
+        text-transform: uppercase;
+    }
+    
+    &__cities-list {
+        max-width: 1000px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+}
+

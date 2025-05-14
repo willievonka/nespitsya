@@ -1,0 +1,14 @@
+<tui-tabs 
+  [(activeItemIndex)]="activeItemIndex"
+  class="tabs"
+  size="m"
+  vertical="right"
+>
+  <button
+    class="tabs__tab" 
+    *ngFor="let tab of tabs"
+    tuiTab
+  >
+    {{ tab }}
+  </button>
+</tui-tabs>

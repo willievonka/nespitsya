@@ -1,0 +1,18 @@
+.list {
+    box-sizing: border-box;
+
+    &__title {
+        margin: 12px 0;
+        margin-bottom: 24px;
+        font-size: 52px;
+        line-height: 52px;
+        text-transform: uppercase;
+    }
+
+    &__cities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        max-width: 1000px;
+    }
+}

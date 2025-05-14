@@ -1,0 +1,73 @@
+h1, h2, h3 {
+    margin: 0;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 232px;
+    padding: 28px;
+    border-radius: 12px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    
+    &__background {
+        display: flex;
+        border-radius: 12px;
+        background-size: cover;
+    }
+
+    &__link {
+        display: flex;
+        min-width: 372px;
+        max-width: max-content;
+        border-radius: 12px;
+        text-decoration: none;
+    }
+
+    &__main-info {
+        height: 96px;
+    }
+
+    &__title {
+        text-transform: uppercase;
+        font-size: 24px;
+        line-height: 24px;
+    }
+
+    &__place {
+        color: rgba($color: #ffffff, $alpha: 0.6);
+    }
+
+    &__date-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__date {
+        color: rgba($color: #E38163, $alpha: 1);
+    }
+
+    &__tags {
+        display: flex;
+        margin-top: auto;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+.event-card:hover {
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
+.event-card:active {
+    background-color: rgba(0, 0, 0, 0.72);
+}

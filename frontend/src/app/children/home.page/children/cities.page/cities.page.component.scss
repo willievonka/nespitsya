@@ -1,0 +1,16 @@
+.cities-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 50px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  &__popular-cities-list {
+    margin-bottom: 30px;
+  }
+}

@@ -1,0 +1,33 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    padding: 0 50px;
+    box-sizing: border-box;
+
+    &__title {
+        margin: 12px 0;
+        margin-bottom: 24px;
+        font-size: 52px;
+        line-height: 52px;
+        text-transform: uppercase;
+    }
+
+    &__city-location {
+        display: flex;
+        width:fit-content;
+    }
+
+    &__events-list {
+        display: flex;
+        gap: 12px;
+    }
+
+    &__event-card {
+        width: 316px;
+    }
+
+    &__more-events-button {
+        margin: 0 auto;
+        margin-top: 50px;
+    }
+}

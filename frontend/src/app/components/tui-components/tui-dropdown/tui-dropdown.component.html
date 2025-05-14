@@ -1,0 +1,37 @@
+<button
+    class="dropdown-button"
+    tuiButton
+    tuiChevron
+    type="button"
+    appearance="flat"
+    [size]=size
+    [tuiDropdown]="dropdownContent"
+    [tuiDropdownManual]="open"
+    [tuiObscuredEnabled]="open"
+    (click)="onClick()"
+    (tuiActiveZoneChange)="onActiveZone($event)"
+    (tuiObscured)="onObscured($event)"
+>
+    <tui-icon *ngIf="dropdownIcon" [icon]="dropdownIcon" [style.height.rem]="2"></tui-icon>
+    <span *ngIf="dropdownText">{{ dropdownText }}</span>
+    <ng-template #dropdownContent>
+        <div class="dropdown">
+            <app-tui-flat-button
+                class="dropdown__cities-button dropdown__item"
+                buttonSize="m"
+                [buttonText]="citiesButtonText"
+                [buttonIconRight]="citiesButtonIcon"
+                routerLink="/home/cities"
+            >
+            </app-tui-flat-button>
+            <app-tui-flat-button
+                class="dropdown__artists-button dropdown__item"
+                buttonSize="m"
+                [buttonText]="artistsButtonText"
+                [buttonIconRight]="artistsButtonIcon"
+                routerLink="/home/artists"
+            >
+            </app-tui-flat-button>
+        </div>
+    </ng-template>
+</button>

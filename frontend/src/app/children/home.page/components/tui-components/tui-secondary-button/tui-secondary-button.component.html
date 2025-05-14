@@ -1,0 +1,10 @@
+<button
+    class="secondary-button"
+    tuiButton
+    appearance="secondary"
+    [size]=size
+>
+    <tui-icon *ngIf="buttonIconLeft" [icon]="buttonIconLeft" [style.height.rem]="2"></tui-icon>
+    <span *ngIf="buttonText">{{ buttonText }}</span>
+    <tui-icon *ngIf="buttonIconRight" [icon]="buttonIconRight" [style.height.rem]="2"></tui-icon>
+</button>

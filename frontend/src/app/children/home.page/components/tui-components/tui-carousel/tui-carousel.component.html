@@ -1,0 +1,59 @@
+<div 
+    class="main" 
+    tuiCarouselButtons
+>
+    <div class="main__carousel-wrapper">
+        <button
+            class="main__carousel-button"
+            tuiIconButton
+            tuiAppearance="flat"
+            type="button"
+            (click)="prev()"
+        >
+            <tui-icon icon="@tui.chevron-left"/>
+        </button>
+        <tui-carousel
+            class="main__carousel"
+            [itemsCount]="itemsPerPage"
+            [(index)]="index"
+        >
+            <ng-container *ngFor="let item of items" class="main__carousel-page">
+                <div
+                    *tuiItem
+                    class="main__carousel-item"
+                >
+                    <!-- [x] TODO: сделать новый визуал карточкам -->
+                    <app-tui-event-card
+                        class="main__carousel-card"
+                        [image]="item.image"
+                        [title]="item.title"
+                        [place]="item.place"
+                        [date]="item.dateStart"
+                        [price]="item.price"
+                        [tags]="item.tags"
+                        routerLink="/home/cities/{{ item.cityId }}/{{ item.id }}"
+                    />
+                </div>
+            </ng-container>
+        </tui-carousel>
+        <button
+            class="main__carousel-button"
+            tuiIconButton
+            tuiAppearance="flat"
+            type="button"
+            (click)="next()"
+        >
+            <tui-icon icon="@tui.chevron-right"/>
+        </button>
+    </div>
+    <tui-pagination
+        class="main__pagination"
+        size="s"
+        [index]="paginationIndex"
+        [length]="pageCount"
+        (indexChange)="onIndex($event)"
+    />
+</div>
+
+
+

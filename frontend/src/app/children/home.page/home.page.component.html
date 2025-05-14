@@ -1,0 +1,26 @@
+<div class="home-page">
+    <app-tui-breadcrumbs [items]="[{ caption: 'Главная', routerLink: '/home' }]"/>
+    <h1 class="home-page__title">
+        Популярные<br>события в<br>
+        <a 
+            class="home-page__city-location" 
+            routerLink="/home/cities"
+            tuiLink
+            *ngIf="city$ | async as city"
+        >
+            {{ city.name | cityDeclension }}
+        </a>
+    </h1>
+    <!-- [x] TODO: превратить список ивентов в карусель -->
+    <div *ngIf="events$ | async as events">
+        <app-tui-carousel [items]="events" [itemsPerPage]="3"/>
+    </div>
+    <app-tui-secondary-button
+        class="home-page__more-events-button"
+        size="l"
+        *ngIf="city$ | async as city"
+        [buttonText]="`Больше событий в ${city.name | cityDeclension}`"
+        [buttonIconRight]="'@tui.corner-down-right'"
+        [routerLink]="['/home/cities', city.id]"
+    />
+</div>
