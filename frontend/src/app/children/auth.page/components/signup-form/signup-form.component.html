@@ -55,12 +55,20 @@
             formControlName="passwordRepeat"
             [error]="[] | tuiFieldError | async"
         />
-        <app-tui-accent-button buttonText="Зарегистрироваться"/>
+        <app-tui-accent-button 
+            buttonText="Зарегистрироваться"
+            (click)="onSignup()"
+        />
+        <tui-error 
+            *ngIf="signupError"
+            style="margin-top: 16px;"
+            [error]="signupError"
+        />
     </form>
     <div class="main__footer">
         Уже есть аккаунт? 
         <button
-            tuiLink 
+            tuiLink
             [routerLink]="['/auth/login']"
         >
             Войти

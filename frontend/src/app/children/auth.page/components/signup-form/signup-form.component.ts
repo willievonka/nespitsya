@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
 import { TuiAccentButtonComponent } from '../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiPassword, TuiFieldErrorPipe, tuiValidationErrorsProvider } from '@taiga-ui/kit';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -35,8 +37,7 @@ import { RouterModule } from '@angular/router';
     
 })
 export class SignupFormComponent {
-    @Output() 
-    public switchToLogin: EventEmitter<void> = new EventEmitter<void>();
+    public signupError: string | null = null;
 
     protected readonly signupForm: FormGroup = new FormGroup({
         email: new FormControl('', Validators.compose([Validators.required,  Validators.email])),
@@ -45,11 +46,36 @@ export class SignupFormComponent {
         passwordRepeat: new FormControl('', Validators.compose([Validators.required, this.passwordsMatch()])),
     });
 
+    constructor(
+        private _authService: AuthService, 
+        private _router: Router, 
+        private _destroyRef: DestroyRef,
+        private _cdr: ChangeDetectorRef,
+    ) {}
+
     /**
-     * Emits an event to switch to the login form.
+     * Handles the signup form submission, performs validation and calls the AuthService to register the user.
      */
-    public onSwitchToLogin(): void {
-        this.switchToLogin.emit();
+    public onSignup(): void {
+        if (this.signupForm.invalid) {
+            this.signupForm.markAllAsTouched();
+
+            return;
+        }
+        this._authService.signup(this.signupForm)
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe({
+                next: (response) => {
+                    console.log('Signup successful:', response);
+                    this.signupForm.reset();
+                    this._router.navigate(['auth', 'login']);
+                },
+                error: (error) => {
+                    this.signupError = error?.error?.message || 'Неизвестная ошибка регистрации';
+                    console.error('Signup failed:', error);
+                    this._cdr.detectChanges();
+                },
+            });
     }
 
     /**

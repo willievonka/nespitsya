@@ -16,7 +16,7 @@ import { Router, RouterModule } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthPageComponent {
-    private _canGoBack: boolean = true;
+    private _canGoBack: boolean = false;
 
     constructor(private _location: Location, private _router: Router) {
         this._canGoBack = !!(this._router.getCurrentNavigation()?.previousNavigation);

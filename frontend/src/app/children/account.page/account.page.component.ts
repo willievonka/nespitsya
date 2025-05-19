@@ -26,7 +26,7 @@ export class AccountPageComponent {
     };
 
     constructor() {
-        this.role = 'user';
+        this.role = 'organizer';
 
         this.roleTabs = {
             user: [
