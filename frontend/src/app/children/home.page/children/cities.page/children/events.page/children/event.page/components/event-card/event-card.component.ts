@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiChipComponent } from '../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
+import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { TuiSecondaryButtonComponent } from '../../../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';

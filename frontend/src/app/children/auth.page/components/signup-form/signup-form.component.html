@@ -1,6 +1,6 @@
 <div class="main">
     <h1 class="main__title">Создать аккаунт</h1>
-    <form class="form" [formGroup]="registerForm">
+    <form class="form" [formGroup]="signupForm">
         <tui-textfield class="form__input">
             <input
                 formControlName="email"
@@ -55,17 +55,23 @@
             formControlName="passwordRepeat"
             [error]="[] | tuiFieldError | async"
         />
-        <app-tui-accent-button buttonText="Зарегистрироваться"/>
+        <app-tui-accent-button 
+            buttonText="Зарегистрироваться"
+            (click)="onSignup()"
+        />
+        <tui-error 
+            *ngIf="signupError"
+            style="margin-top: 16px;"
+            [error]="signupError"
+        />
     </form>
     <div class="main__footer">
         Уже есть аккаунт? 
-        <a 
-            tuiLink 
-            tabindex="0" 
-            (click)="onSwitchToLogin()" 
-            (keydown.enter)="onSwitchToLogin()"
+        <button
+            tuiLink
+            [routerLink]="['/auth/login']"
         >
             Войти
-        </a>
+    </button>
     </div>
 </div>

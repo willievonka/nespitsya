@@ -32,13 +32,11 @@
     </form>
     <div class="main__footer">
         Нет аккаунта? 
-        <a 
+        <button
             tuiLink 
-            tabindex="0" 
-            (click)="onSwitchToRegister()" 
-            (keydown.enter)="onSwitchToRegister()"
+            [routerLink]="['/auth/signup']"
         >
             Создать
-        </a>
+        </button>
     </div>
 </div>

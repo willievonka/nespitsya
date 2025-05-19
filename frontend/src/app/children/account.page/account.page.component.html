@@ -1,0 +1,30 @@
+<div class="main">
+    <div class="main__left">
+        <nav class="main__nav" tuiTabs vertical="right">
+            <button
+                *ngFor="let tab of roleTabs[role]"
+                class="main__nav-button"
+                tuiTab
+                type="button"
+                [iconStart]="tab.icon"
+                [routerLink]="tab.path"
+                routerLinkActive="active"
+            >
+                {{ tab.label }}
+            </button>
+        </nav>
+        <button
+            class="main__logout-button"
+            tuiButton
+            size="s"
+            appearance="flat"
+            type="button"
+            iconEnd="log-out"
+        >
+            Выйти из аккаунта
+        </button>
+    </div>
+    <div class="main__content">
+        <router-outlet/>
+    </div>
+</div>
