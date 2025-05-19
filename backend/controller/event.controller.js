@@ -11,20 +11,23 @@ class EventController {
     async createEvent(req, res) {
         try {
             const { description, title, placeId, cityId, dateStart, dateEnd, price, artists, tags } = req.body;
-            // const organizer = req.user.id
-            const organizer = 7 // ВРЕМЕННО!!!
+            const organizer = req.user.id
+            // const organizer = 7 // ВРЕМЕННО!!!
             const image = req.file?.filename;
 
             if (!description || !title || !placeId || !cityId || !dateStart || !dateEnd || !price || !image) {
                 return res.status(400).json({ message: "Все поля, кроме артистов и тэгов обязательны!" });
             }
 
-            const parsedDateStart = new Date(dateStart).toISOString();  
-            const parsedDateEnd = new Date(dateEnd).toISOString();  
+            const parsedDateStart = new Date(dateStart);
+            const parsedDateEnd = new Date(dateEnd);
 
-            if (isNaN(parsedDateStart) || isNaN(parsedDateEnd)) {
+            if (isNaN(parsedDateStart.getTime()) || isNaN(parsedDateEnd.getTime())) {
                 return res.status(400).json({ message: "Некорректный формат даты!" });
             }
+
+            const isoDateStart = parsedDateStart.toISOString();
+            const isoDateEnd = parsedDateEnd.toISOString();
 
             // Проверка существования города
             const cityCheck = await db.query('SELECT 1 FROM city WHERE id = $1', [cityId]);
@@ -62,7 +65,7 @@ class EventController {
             const eventResult = await db.query(
                 `INSERT INTO event (description, title, "placeId", "cityId", "dateStart", "dateEnd", price, image)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-                [description, title, placeId, cityId, parsedDateStart, parsedDateEnd, price, image]
+                [description, title, placeId, cityId, isoDateStart, isoDateEnd, price, image]
             );
             const id_event = eventResult.rows[0].id;
 
@@ -144,7 +147,7 @@ class EventController {
         try {
             const { id } = req.params;
             const countEvents = parseInt(req.query.countEvents) || 10; // по умолчанию 10
-    
+
             const { rows } = await db.query(`
                 SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
                        e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
@@ -155,10 +158,10 @@ class EventController {
                 ORDER BY e."dateStart" ASC
                 LIMIT $2
             `, [id, countEvents]);
-    
+
             if (!rows.length)
                 return res.status(404).json({ message: "В этом городе нет будущих событий" });
-    
+
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
@@ -170,7 +173,7 @@ class EventController {
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
-    
+
             const enriched = rows.map(e => {
                 const { organizerid, dateStart, dateEnd, ...rest } = e;
                 return {
@@ -183,7 +186,7 @@ class EventController {
                     tags: tagsMap[e.id] || []
                 };
             });
-    
+
             res.json(enriched);
         } catch (error) {
             console.error("Ошибка при получении событий:", error);
@@ -370,12 +373,12 @@ class EventController {
             const { cityId } = req.query;
             const params = [];
             let whereClause = '';
-    
+
             if (cityId) {
                 params.push(cityId);
                 whereClause = 'WHERE "cityId" = $1';
             }
-    
+
             const { rows } = await db.query(`
                 SELECT * FROM event
                 ${whereClause}
@@ -387,7 +390,7 @@ class EventController {
 
             const grouped = {};
             const host = req.protocol + '://' + req.get('host');
-    
+
             for (const event of rows) {
 
                 const { rows: tagsRes } = await db.query(
@@ -410,14 +413,14 @@ class EventController {
                 if (event.dateStart) {
                     dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
                 }
-    
+
                 if (!grouped[dateOnly]) {
                     grouped[dateOnly] = [];
                 }
-    
+
                 grouped[dateOnly].push(event);
             }
-    
+
             const result = Object.keys(grouped)
                 .sort((a, b) => {
                     if (a === 'null') return 1;
@@ -432,30 +435,30 @@ class EventController {
                         return new Date(a.dateStart) - new Date(b.dateStart);
                     })
                 }));
-    
+
             res.json(result);
         } catch (error) {
             console.error("Ошибка при получении событий по дате:", error);
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
-    
+
     async getEventsByDateRange(req, res) {
         try {
             const { from, to, cityId } = req.query;
-    
+
             if (!from || !to) {
                 return res.status(400).json({ message: "Необходимо указать параметры from и to" });
             }
-    
+
             const params = [from, to];
             let whereClause = '"dateStart" BETWEEN $1 AND $2';
-    
+
             if (cityId) {
                 params.push(cityId);
                 whereClause += ` AND "cityId" = $3`;
             }
-    
+
             const { rows } = await db.query(`
                 SELECT * FROM event
                 WHERE ${whereClause}
@@ -464,10 +467,10 @@ class EventController {
                     "dateStart" ASC,
                     "cityId" ASC
             `, params);
-    
+
             const grouped = {};
             const host = req.protocol + '://' + req.get('host');
-    
+
             for (const event of rows) {
 
                 const { rows: tagsRes } = await db.query(
@@ -490,14 +493,14 @@ class EventController {
                 if (event.dateStart) {
                     dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
                 }
-    
+
                 if (!grouped[dateOnly]) {
                     grouped[dateOnly] = [];
                 }
-    
+
                 grouped[dateOnly].push(event);
             }
-    
+
             const result = Object.keys(grouped)
                 .sort((a, b) => {
                     if (a === 'null') return 1;
@@ -512,7 +515,7 @@ class EventController {
                         return new Date(a.dateStart) - new Date(b.dateStart);
                     })
                 }));
-    
+
             res.json(result);
         } catch (error) {
             console.error("Ошибка при получении событий по диапазону дат:", error);
