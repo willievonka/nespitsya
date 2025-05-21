@@ -5,7 +5,7 @@ import { TuiDropdown } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { TuiFlatButtonComponent } from '../../../tui-components/tui-flat-button/tui-flat-button.component';
 import { Observable } from 'rxjs';
-import { IUser } from '../../../../intefaces/user.interface';
+import { IUser } from '../../../../interfaces/user.interface';
 import { AccountService } from '../../../../children/account.page/services/account.service';
 import { CommonModule } from '@angular/common';
 
