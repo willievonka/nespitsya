@@ -65,7 +65,7 @@ export class LoginFormComponent {
                 next: (response) => {
                     console.log('Login successful:', response);
                     this.loginForm.reset();
-                    this._router.navigate(['auth', 'login']);
+                    this._router.navigate(['home']);
                 },
                 error: (error) => {
                     this.loginError = error?.error?.message || 'Неизвестная ошибка входа';

@@ -5,6 +5,8 @@ import { TuiAccentButtonComponent } from '../tui-components/tui-accent-button/tu
 import { TuiDropdownComponent } from '../tui-components/tui-dropdown/tui-dropdown.component';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../children/auth.page/services/auth.service';
+import { AccountButtonComponent } from './components/account-button/account-button.component';
 
 
 @Component({
@@ -15,6 +17,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         TuiInputSearchComponent,
         TuiAccentButtonComponent,
         TuiDropdownComponent,
+        AccountButtonComponent,
     ],
     templateUrl: './header.component.html',
     styleUrl: './header.component.scss',
@@ -22,6 +25,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class HeaderComponent {
     public isAuthPage: boolean = false;
+    public isAuthenticated: boolean = inject(AuthService).isAuthenticated();
 
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);
     constructor(private _router: Router, private _cdr: ChangeDetectorRef) {

@@ -1,0 +1,32 @@
+<div *ngIf="user$ | async as user">
+    <tui-avatar
+        tuiButton
+        style="width: 48px; height: 48px;"
+        [tuiDropdown]="dropdownContent"
+        [tuiDropdownManual]="open"
+        [tuiObscuredEnabled]="open"
+        (click)="onClick()"
+        (tuiActiveZoneChange)="onActiveZone($event)"
+        (tuiObscured)="onObscured($event)"
+    >
+        <ng-template #dropdownContent>
+            <div class="dropdown">
+                <app-tui-flat-button
+                    class="dropdown__cities-button dropdown__item"
+                    buttonSize="m"
+                    [buttonText]="user.username"
+                    routerLink="/home/cities"
+                >
+                </app-tui-flat-button>
+                <app-tui-flat-button
+                    class="dropdown__artists-button dropdown__item"
+                    buttonSize="m"
+                    routerLink="/home/artists"
+                >
+                </app-tui-flat-button>
+            </div>
+        </ng-template>
+    </tui-avatar>
+</div>
+
+

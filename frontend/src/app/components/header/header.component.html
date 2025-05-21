@@ -18,12 +18,20 @@
         />
       </div>
     </div>
-    <app-tui-accent-button 
-      class="header__login-button" 
-      [buttonIcon]="'@tui.user'" 
-      [buttonText]="'ВОЙТИ'"
-      routerLink="/auth"
-    />
+    <div *ngIf="!isAuthenticated; then loginButton else accountButton"></div>
+    <ng-template #loginButton>
+      <app-tui-accent-button 
+        class="header__login-button" 
+        [buttonIcon]="'@tui.user'" 
+        [buttonText]="'ВОЙТИ'"
+        routerLink="/auth"
+      />
+    </ng-template>
+    <ng-template #accountButton>
+      <app-account-button
+        class="header__account-button"
+      />
+    </ng-template>
   </div>
 </ng-template>
 

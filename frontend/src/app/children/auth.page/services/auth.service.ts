@@ -30,11 +30,7 @@ export class AuthService {
      * @returns An Observable emitting a boolean indicating the success of the login.
      */
     public login(form: FormGroup): Observable<boolean> {
-        interface ILoginResponse {
-            token: string;
-        }
-
-        return this._http.post<ILoginResponse>(this._authUrl + '/login', form.value)
+        return this._http.post<{ token: string }>(this._authUrl + '/login', form.value)
             .pipe(
                 map(response => {
                     localStorage.setItem('JWT_Token', response.token);
