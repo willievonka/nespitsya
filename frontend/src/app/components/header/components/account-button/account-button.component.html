@@ -1,32 +1,46 @@
-<div *ngIf="user$ | async as user">
+<div 
+    class="main"
+    *ngIf="user$ | async as user"
+>
     <tui-avatar
-        tuiButton
-        style="width: 48px; height: 48px;"
+        class="main__avatar"
+        [src]="user.image ? user.image : '@tui.user'"
         [tuiDropdown]="dropdownContent"
         [tuiDropdownManual]="open"
         [tuiObscuredEnabled]="open"
         (click)="onClick()"
         (tuiActiveZoneChange)="onActiveZone($event)"
         (tuiObscured)="onObscured($event)"
+        *ngIf="tabs$ | async as tabs"
     >
         <ng-template #dropdownContent>
-            <div class="dropdown">
-                <app-tui-flat-button
-                    class="dropdown__cities-button dropdown__item"
-                    buttonSize="m"
-                    [buttonText]="user.username"
-                    routerLink="/home/cities"
+            <div class="main__dropdown">
+                <button
+                    *ngFor="let tab of tabs"
+                    class="main__dropdown-item"
+                    tuiButton
+                    type="button"
+                    appearance="flat"
+                    size="m"
+                    [iconEnd]="tab.icon"
+                    [textContent]="tab.name"
+                    [routerLink]="tab.route"
                 >
-                </app-tui-flat-button>
-                <app-tui-flat-button
-                    class="dropdown__artists-button dropdown__item"
-                    buttonSize="m"
-                    routerLink="/home/artists"
-                >
-                </app-tui-flat-button>
+                </button>
+                <div class="main__dropdown-logout-button-wrapper">
+                    <button
+                        class="main__dropdown-logout-button"
+                        tuiButton
+                        type="button"
+                        appearance="action"
+                        size="m"
+                        [textContent]="'Выйти из аккаунта'"
+                        (click)="onLogout()"
+                    >
+                    </button>
+                </div>
+                
             </div>
         </ng-template>
     </tui-avatar>
 </div>
-
-

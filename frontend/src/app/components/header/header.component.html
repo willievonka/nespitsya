@@ -18,7 +18,7 @@
         />
       </div>
     </div>
-    <div *ngIf="!isAuthenticated; then loginButton else accountButton"></div>
+    <ng-container *ngIf="(isAuthenticated$ | async) === false; then loginButton else accountButton"></ng-container>
     <ng-template #loginButton>
       <app-tui-accent-button 
         class="header__login-button" 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { map, Observable } from 'rxjs';
+import { map, Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../../environment';
 
 
@@ -9,6 +9,7 @@ import { environment } from '../../../../environment';
     providedIn: 'root'
 })
 export class AuthService {
+    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.isAuthenticated());
     private readonly _authUrl: string = environment.authUrl;
     
     constructor(private _http: HttpClient) {}
@@ -34,6 +35,7 @@ export class AuthService {
             .pipe(
                 map(response => {
                     localStorage.setItem('JWT_Token', response.token);
+                    this.isAuthenticated$.next(true);
 
                     return true;
                 })
@@ -45,6 +47,7 @@ export class AuthService {
      */
     public logout(): void {
         localStorage.removeItem('JWT_Token');
+        this.isAuthenticated$.next(false);
     }
 
     /**

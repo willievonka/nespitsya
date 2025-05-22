@@ -1,21 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
-import { TuiDropdown } from '@taiga-ui/core';
+import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { TuiAvatar } from '@taiga-ui/kit';
-import { TuiFlatButtonComponent } from '../../../tui-components/tui-flat-button/tui-flat-button.component';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IUser } from '../../../../interfaces/user.interface';
 import { AccountService } from '../../../../children/account.page/services/account.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../children/auth.page/services/auth.service';
 
 
 @Component({
     selector: 'app-account-button',
     imports: [
         CommonModule,
-        TuiFlatButtonComponent,
         TuiAvatar,
+        TuiButton,
         TuiDropdown,
         TuiActiveZone,
         TuiObscured,
@@ -26,8 +26,26 @@ import { CommonModule } from '@angular/common';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountButtonComponent {
-    public user$: Observable<IUser> = inject(AccountService).getUser();
+    public user$: Observable<IUser>;
+    public tabs$: Observable<Array<{ name: string; icon: string; route: string }>>;
     protected open: boolean = false;
+
+    constructor(
+        private _accountService: AccountService, 
+        private _authService: AuthService,
+    ) {
+        this.user$ = this._accountService.getUser();
+        this.tabs$ = this.user$.pipe(
+            map(user => this._accountService.getTabs(user))
+        );
+    }
+
+    /**
+     * Logs the user out by calling the logout method of the AuthService.
+     */
+    public onLogout(): void {
+        this._authService.logout();
+    }
 
     /**
      * Toggles the dropdown open state.

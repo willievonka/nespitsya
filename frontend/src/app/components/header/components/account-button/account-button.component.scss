@@ -1,0 +1,38 @@
+.main {
+    &__avatar {
+        width: 48px;
+        height: 48px;
+        cursor: pointer;
+    }
+
+    &__dropdown {
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        gap: 4px;
+        
+
+        &-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            color: white;
+            border-radius: 10px 8px;
+            line-height: 24px;
+            font-weight: 400;
+        }
+
+        &-logout-button {
+            margin-top: 4px;
+            padding: 8px;
+            line-height: 24px;
+            font-weight: 400;
+            
+            &-wrapper {
+                margin: 0 auto;
+                width: fit-content;
+                border-top: 2px solid rgba(255, 255, 255, 0.15);
+            }
+        }
+    }
+}
