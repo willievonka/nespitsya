@@ -3,16 +3,17 @@ import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { map, Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../../environment';
+import { Router } from '@angular/router';
 
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this.isAuthenticated());
+    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!localStorage.getItem('JWT_Token'));
     private readonly _authUrl: string = environment.authUrl;
     
-    constructor(private _http: HttpClient) {}
+    constructor(private _http: HttpClient, private _router: Router) {}
 
     /**
      * Registers a new user with the provided form data.
@@ -48,13 +49,8 @@ export class AuthService {
     public logout(): void {
         localStorage.removeItem('JWT_Token');
         this.isAuthenticated$.next(false);
-    }
-
-    /**
-     * Checks if the user is authenticated by verifying the presence of a JWT token in local storage.
-     * @returns A boolean indicating whether the user is authenticated.
-     */
-    public isAuthenticated(): boolean {
-        return !!localStorage.getItem('JWT_Token');
+        if (this._router.url.includes('/account')) {
+            this._router.navigate(['/home']);
+        }
     }
 }

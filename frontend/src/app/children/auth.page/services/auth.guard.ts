@@ -1,15 +1,28 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { map, take } from 'rxjs';
 
-export const authGuard: CanActivateFn = (route, state) => {
+
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
     const authService: AuthService = inject(AuthService);
     const router: Router = inject(Router);
+    const requiredAuth: boolean = route.data['requiredAuth'] as boolean;
 
-    if (authService.isAuthenticated()) {
-        return true;
-    }
-    router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
-    
-    return false;
+    return authService.isAuthenticated$.pipe(
+        take(1),
+        map(isAuth => {
+            if (isAuth === requiredAuth) {
+                return true;
+            }
+
+            if (requiredAuth) {
+                router.navigate(['/auth/login']);
+            } else {
+                router.navigate(['/account']);
+            }
+
+            return false;
+        })
+    );
 };
