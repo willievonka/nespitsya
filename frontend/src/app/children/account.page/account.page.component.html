@@ -2,24 +2,25 @@
     <div class="main__left">
         <nav class="main__nav" tuiTabs vertical="right">
             <button
-                *ngFor="let tab of roleTabs[role]"
+                *ngFor="let tab of tabs$ | async"
                 class="main__nav-button"
                 tuiTab
                 type="button"
                 [iconStart]="tab.icon"
-                [routerLink]="tab.path"
+                [routerLink]="tab.route"
                 routerLinkActive="active"
             >
-                {{ tab.label }}
+                {{ tab.name }}
             </button>
         </nav>
         <button
             class="main__logout-button"
             tuiButton
             size="s"
-            appearance="flat"
+            appearance="action"
             type="button"
             iconEnd="log-out"
+            (click)="onLogout()"
         >
             Выйти из аккаунта
         </button>

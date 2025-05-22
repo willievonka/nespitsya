@@ -3,6 +3,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiTabs } from '@taiga-ui/kit';
+import { AccountService } from './services/account.service';
+import { map, Observable } from 'rxjs';
+import { IUser } from '../../interfaces/user.interface';
+import { AuthService } from '../auth.page/services/auth.service';
 
 
 @Component({
@@ -18,30 +22,24 @@ import { TuiTabs } from '@taiga-ui/kit';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountPageComponent {
-    public role: 'user' | 'organizer' | 'admin';
-    public roleTabs: {
-        user: Array<{ path: string; label: string; icon: string }>;
-        organizer: Array<{ path: string; label: string; icon: string }>;
-        admin: Array<{ path: string; label: string; icon: string }>;
-    };
+    public user$: Observable<IUser>;
+    public tabs$: Observable<Array<{ name: string; icon: string; route: string }>>;
 
-    constructor() {
-        this.role = 'user';
+    constructor(
+        private _accountService: AccountService, 
+        private _authService: AuthService
+    ) {
+        this.user$ = this._accountService.getUser();
+        this.tabs$ = this.user$.pipe(
+            map(user => this._accountService.getTabs(user))
+        );
+    }
 
-        this.roleTabs = {
-            user: [
-                { path: 'profile', label: 'Аккаунт', icon: 'circle-user' },
-                { path: 'favorites', label: 'Избранные мероприятия', icon: 'heart' },
-                { path: 'subscriptions', label: 'Подписки на организаторов', icon: 'users' },
-            ],
-            organizer: [
-                { path: 'profile', label: 'Аккаунт', icon: 'circle-user' },
-                { path: 'my-events', label: 'Мои мероприятия', icon: 'heart' },
-                { path: 'create-event', label: 'Создать мероприятие', icon: 'circle-plus' },
-            ],
-            admin: [
-                { path: 'profile', label: 'Аккаунт', icon: 'circle-user' },
-            ],
-        };
+    /**
+     * Logs the user out by calling the AuthService logout method.
+     */
+    public onLogout(): void {
+        this._authService.logout();
+        console.log('Logout');
     }
 }

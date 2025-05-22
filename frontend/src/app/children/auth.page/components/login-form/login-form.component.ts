@@ -3,7 +3,7 @@ import { TuiAccentButtonComponent } from '../../../../components/tui-components/
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,7 +22,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         TuiIcon,
         TuiLink,
         TuiFieldErrorPipe,
-        AsyncPipe,
     ],
     templateUrl: './login-form.component.html',
     styleUrl: './login-form.component.scss',

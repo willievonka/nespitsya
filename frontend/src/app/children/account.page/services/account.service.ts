@@ -32,8 +32,8 @@ export class AccountService {
         tabs.push({ name: 'Аккаунт', icon: 'circle-user', route: '/account/profile' });
         switch (user.role) {
             case 'user':
-                tabs.push({ name: 'Избранные мероприятия', icon: 'heart', route: '/account/favorites' });
-                tabs.push({ name: 'Подписки на организаторов', icon: 'users', route: '/account/subscriptions' });
+                tabs.push({ name: 'Избранные', icon: 'heart', route: '/account/favorites' });
+                tabs.push({ name: 'Подписки', icon: 'users', route: '/account/subscriptions' });
                 break;
             case 'organizer':
                 tabs.push({ name: 'Мои мероприятия', icon: 'heart', route: '/account/my-events' });
