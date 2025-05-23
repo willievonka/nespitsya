@@ -1,1 +1,86 @@
-<p>profile works!</p>
+<div class="main" *ngIf="user$ | async as user">
+    <div class="main__account">
+        <tui-avatar 
+            class="main__account-avatar"
+            [src]="user.image ? user.image : '@tui.user'"
+            size="xxl"
+        />
+        <div class="main__account-text">
+            <h1 class="main__account-text-name">
+                {{ user.username }}
+            </h1>
+            <p class="main__account-text-email">
+                {{ user.email }}
+            </p>
+        </div>
+    </div>
+    <form class="main__password-change" [formGroup]="passwordChangeForm">
+        <h2 class="main__password-change-title">Сменить пароль</h2>
+        <tui-textfield 
+            class="main__password-change-input"
+            tuiTextfieldSize="m"
+        >
+            <input
+                formControlName="currentPassword"
+                placeholder="Текущий пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="main__password-change-input-error"
+            formControlName="currentPassword"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield 
+            class="main__password-change-input"
+            tuiTextfieldSize="m"
+        >
+            <input
+                formControlName="newPassword"
+                placeholder="Новый пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="main__password-change-input-error"
+            formControlName="newPassword"
+            [error]="[] | tuiFieldError | async"
+        />
+        <tui-textfield 
+            class="main__password-change-input"
+            tuiTextfieldSize="m"
+        >
+            <input
+                formControlName="confirmPassword"
+                placeholder="Повторите новый пароль"
+                tuiTextfield 
+                type="password"
+            />
+            <tui-icon tuiPassword/>
+        </tui-textfield>
+        <tui-error
+            class="main__password-change-input-error"
+            formControlName="confirmPassword"
+            [error]="[] | tuiFieldError | async"
+        />
+        <button
+            class="main__password-change-button"
+            tuiButton
+            size="s"
+            appearance="accent"
+            type="button"
+            [textContent]="'Сохранить'"
+            (click)="onChangePassword()"
+        >
+        </button>
+        <tui-error 
+            *ngIf="passwordChangeError"
+            style="margin-top: 16px;"
+            [error]="passwordChangeError"
+        />
+    </form>
+</div>

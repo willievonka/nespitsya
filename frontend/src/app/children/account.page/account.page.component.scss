@@ -2,16 +2,15 @@
     display: flex;
     padding: 0 50px;
     box-sizing: border-box;
+    min-height: 78vh;
 
     &__left {
         display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 2;
         flex-direction: column;
         align-items: flex-start;
         padding-right: 28px;
-        border-right: 1px solid #ADADAD;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        font-weight: bold;
     }
 
     &__nav {

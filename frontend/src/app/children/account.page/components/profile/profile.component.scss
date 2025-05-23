@@ -1,0 +1,59 @@
+h1, h2, p {
+    display: flex;
+    margin: 0;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+
+    &__account {
+        display: flex;
+        margin-bottom: 40px;
+        align-items: center;
+        gap: 12px;
+
+        &-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 100%;
+        }
+
+        &-text-name {
+            font-size: 48px;
+            line-height: 52px;
+            font-weight: bold;
+        }
+
+        &-text-email {
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: bold;
+            color: #adadad;
+        }
+    }
+
+    &__password-change {
+        display: flex;
+        flex-direction: column;
+        width: 480px;
+
+        &-title {
+            font-size: 24px;
+            line-height: 32px;
+            margin-bottom: 16px;
+        }
+
+        &-input-error {
+            margin-bottom: 12px;
+        }
+
+        &-button {
+            width: fit-content;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 12px;
+        }
+    }
+}

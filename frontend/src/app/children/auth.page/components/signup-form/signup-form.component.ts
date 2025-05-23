@@ -62,7 +62,7 @@ export class SignupFormComponent {
 
             return;
         }
-        this._authService.signup(this.signupForm)
+        this._authService.signup(this.signupForm, 'user')
             .pipe(takeUntilDestroyed(this._destroyRef))
             .subscribe({
                 next: (response) => {

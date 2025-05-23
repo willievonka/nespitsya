@@ -28,7 +28,15 @@
             formControlName="password"
             [error]="[] | tuiFieldError | async"
         />
-        <app-tui-accent-button buttonText="Войти"/>
+        <app-tui-accent-button 
+            buttonText="Войти"
+            (click)="onLogin()"
+        />
+        <tui-error 
+            *ngIf="loginError"
+            style="margin-top: 16px;"
+            [error]="loginError"
+        />
     </form>
     <div class="main__footer">
         Нет аккаунта? 

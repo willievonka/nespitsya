@@ -5,6 +5,9 @@ import { TuiAccentButtonComponent } from '../tui-components/tui-accent-button/tu
 import { TuiDropdownComponent } from '../tui-components/tui-dropdown/tui-dropdown.component';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../children/auth.page/services/auth.service';
+import { AccountButtonComponent } from './components/account-button/account-button.component';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Component({
@@ -15,6 +18,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         TuiInputSearchComponent,
         TuiAccentButtonComponent,
         TuiDropdownComponent,
+        AccountButtonComponent,
     ],
     templateUrl: './header.component.html',
     styleUrl: './header.component.scss',
@@ -22,12 +26,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class HeaderComponent {
     public isAuthPage: boolean = false;
+    public isAuthenticated$: BehaviorSubject<boolean>;
 
     private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-    constructor(private _router: Router, private _cdr: ChangeDetectorRef) {
-        this._router.events.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => {
-            this.isAuthPage = this._router.url.includes('/auth');
-            this._cdr.detectChanges();
-        });
+    constructor(private _router: Router, private _cdr: ChangeDetectorRef, private _authService: AuthService) {
+        this.isAuthenticated$ = this._authService.isAuthenticated$;
+        this._router.events
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe(() => {
+                this.isAuthPage = this._router.url.includes('/auth');
+                this._cdr.detectChanges();
+            });
     }
 }
