@@ -4,6 +4,6 @@ export interface IUser {
     username: string;
     email: string;
     role: string;
-    subscriptions: number[];
-    favorites: number[];
+    subscriptions?: number[];
+    favorites?: number[];
 }

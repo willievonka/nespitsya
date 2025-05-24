@@ -4,14 +4,33 @@
             class="main__account-avatar"
             [src]="user.image ? user.image : '@tui.user'"
             size="xxl"
-        />
-        <div class="main__account-text">
-            <h1 class="main__account-text-name">
-                {{ user.username }}
-            </h1>
-            <p class="main__account-text-email">
-                {{ user.email }}
-            </p>
+        >
+            <button
+                class="main__account-avatar-edit"
+                tuiButton
+                appearance="floating"
+                size="xs"
+                iconStart="pen"
+            >
+            </button>
+        </tui-avatar>
+        <div class="main__account-text-wrapper">
+            <div class="main__account-text">
+                <h1 class="main__account-text-name">
+                    {{ user.username }}
+                </h1>
+                <p class="main__account-text-email">
+                    {{ user.email }}
+                </p>
+            </div>
+            <button
+                class="main__account-text-edit-button"
+                tuiButton
+                iconStart="pen"
+                size="s"
+                appearance="action"
+            >
+            </button>
         </div>
     </div>
     <form class="main__password-change" [formGroup]="passwordChangeForm">

@@ -4,7 +4,7 @@ import { EventCardComponent } from './components/event-card/event-card.component
 import { OrganizerCardComponent } from './components/organizer-card/organizer-card.component';
 import { TuiSecondaryButtonComponent } from '../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
-import { IOrganizer } from '../../../../../../interfaces/organizer.interface';
+import { IOrganizer } from '../../../../../../../../interfaces/organizer.interface';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
 import { MapComponent } from './components/map/map.component';
 import { EventPageService } from './services/event-page.service';

@@ -18,19 +18,38 @@ h1, h2, p {
             width: 120px;
             height: 120px;
             border-radius: 100%;
+
+            &-edit {
+                border-radius: 100%;
+                position: relative;
+                margin-top: auto;
+                margin-left: auto;
+                border: 1px solid #C1C1C1;
+            }
         }
 
-        &-text-name {
-            font-size: 48px;
-            line-height: 52px;
-            font-weight: bold;
-        }
+        &-text {
+            &-wrapper {
+                display: flex;
+            }
 
-        &-text-email {
-            font-size: 24px;
-            line-height: 32px;
-            font-weight: bold;
-            color: #adadad;
+            &-name {
+                font-size: 48px;
+                line-height: 52px;
+                font-weight: bold;
+            }
+
+            &-email {
+                font-size: 24px;
+                line-height: 32px;
+                font-weight: bold;
+                color: #adadad;
+            }
+
+            &-edit-button {
+                margin: auto 0;
+                color: #C1C1C1;
+            }
         }
     }
 

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { IUser } from '../../../interfaces/user.interface';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
+import { IEvent } from '../../home.page/interfaces/event.interface';
 
 
 @Injectable({
@@ -44,5 +45,14 @@ export class AccountService {
         }
 
         return tabs;
+    }
+
+    /**
+     * Fetches the list of favorite events for a specific user.
+     * @param user - The user object containing the user's ID.
+     * @returns An observable of an array of favorite events.
+     */
+    public getFavorites(user: IUser): Observable<IEvent[]> {
+        return this._http.get<IEvent[]>(`${this._authUrl}/${user.id}/favorites`);
     }
 }
