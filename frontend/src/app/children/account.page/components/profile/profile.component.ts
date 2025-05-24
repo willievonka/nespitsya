@@ -4,9 +4,10 @@ import { AccountService } from '../../services/account.service';
 import { IUser } from '../../../../interfaces/user.interface';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
 import { AvatarComponent } from './components/avatar/avatar.component';
+import { fieldsMatchValidator } from '../../../../utils/fields-match.validator';
 
 
 @Component({
@@ -28,7 +29,7 @@ import { AvatarComponent } from './components/avatar/avatar.component';
     providers: [
         tuiValidationErrorsProvider({
             required: 'Заполните поле',
-            passwordsNotMatched: 'Пароли не совпадают',
+            fieldsNotMatched: 'Пароли не совпадают',
         }),
     ],
 })
@@ -46,7 +47,7 @@ export class ProfileComponent {
     protected readonly passwordChangeForm: FormGroup = new FormGroup({
         currentPassword: new FormControl('', Validators.required),
         newPassword: new FormControl('', Validators.required),
-        confirmPassword: new FormControl('', Validators.compose([Validators.required, this.passwordsMatch()])),
+        confirmPassword: new FormControl('', Validators.compose([Validators.required, fieldsMatchValidator('newPassword')])),
     });
 
     constructor(private _accountService: AccountService) {
@@ -87,20 +88,5 @@ export class ProfileComponent {
         const newPassword: string = this.passwordChangeForm.get('newPassword')?.value;
 
         console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}`);
-    }
-
-    /**
-     * Custom validator to check if password and passwordRepeat fields match.
-     */
-    public passwordsMatch(): ValidatorFn {
-        return (control: AbstractControl): ValidationErrors | null => {
-            if (!control.parent) {
-                return null;
-            }
-            const password: AbstractControl<string> | null = control.parent.get('newPassword')?.value;
-            const passwordRepeat: AbstractControl<string> | null = control.value;
-
-            return password === passwordRepeat ? null : { passwordsNotMatched: true };
-        };
     }
 }

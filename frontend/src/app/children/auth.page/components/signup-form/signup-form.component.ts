@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
 import { TuiAccentButtonComponent } from '../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiTextfield, TuiError, TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiPassword, TuiFieldErrorPipe, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fieldsMatchValidator } from '../../../../utils/fields-match.validator';
 
 
 @Component({
@@ -31,7 +32,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         tuiValidationErrorsProvider({
             required: 'Заполните поле',
             email: 'Введите корректный адрес электронной почты',
-            passwordsNotMatched: 'Пароли не совпадают',
+            fieldsNotMatched: 'Пароли не совпадают',
         }),
     ],
     
@@ -43,7 +44,7 @@ export class SignupFormComponent {
         email: new FormControl('', Validators.compose([Validators.required,  Validators.email])),
         username: new FormControl('', Validators.required),
         password: new FormControl('', Validators.required),
-        passwordRepeat: new FormControl('', Validators.compose([Validators.required, this.passwordsMatch()])),
+        passwordRepeat: new FormControl('', Validators.compose([Validators.required, fieldsMatchValidator('password')])),
     });
 
     constructor(
@@ -76,20 +77,5 @@ export class SignupFormComponent {
                     this._cdr.detectChanges();
                 },
             });
-    }
-
-    /**
-     * Custom validator to check if password and passwordRepeat fields match.
-     */
-    public passwordsMatch(): ValidatorFn {
-        return (control: AbstractControl): ValidationErrors | null => {
-            if (!control.parent) {
-                return null;
-            }
-            const password: AbstractControl<string> | null = control.parent.get('password')?.value;
-            const passwordRepeat: AbstractControl<string> | null = control.value;
-
-            return password === passwordRepeat ? null : { passwordsNotMatched: true };
-        };
     }
 }
