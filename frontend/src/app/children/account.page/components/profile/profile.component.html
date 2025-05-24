@@ -1,19 +1,9 @@
 <div class="main" *ngIf="user$ | async as user">
     <div class="main__account">
-        <tui-avatar 
+        <app-avatar 
             class="main__account-avatar"
-            [src]="user.image ? user.image : '@tui.user'"
-            size="xxl"
-        >
-            <button
-                class="main__account-avatar-edit"
-                tuiButton
-                appearance="floating"
-                size="xs"
-                iconStart="pen"
-            >
-            </button>
-        </tui-avatar>
+            [user]="user"
+        />
         <div class="main__account-text-wrapper">
             <ng-container *ngIf="usernameEditable$.value; then usernameInputTemplate else usernameTemplate"/>
             <ng-template #usernameTemplate>

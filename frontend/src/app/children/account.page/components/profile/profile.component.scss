@@ -14,20 +14,6 @@ h1, h2, p {
         align-items: center;
         gap: 12px;
 
-        &-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 100%;
-
-            &-edit {
-                border-radius: 100%;
-                position: relative;
-                margin-top: auto;
-                margin-left: auto;
-                border: 1px solid #C1C1C1;
-            }
-        }
-
         &-text {
             &-wrapper {
                 display: flex;

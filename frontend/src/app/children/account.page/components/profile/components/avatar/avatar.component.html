@@ -1,0 +1,51 @@
+<tui-avatar 
+    class="main"
+    [src]="user.image ? user.image : '@tui.user'"
+    size="xxl"
+>
+    <button
+        class="main__edit-button"
+        tuiButton
+        appearance="floating"
+        size="xs"
+        iconStart="pen"
+        [tuiDropdown]="dropdownContent"
+        [tuiDropdownManual]="isOpenDropdown"
+        [tuiObscuredEnabled]="isOpenDropdown"
+        (click)="onDropdownClick()"
+        (tuiActiveZoneChange)="onActiveZone($event)"
+        (tuiObscured)="onObscured($event)"
+    >
+        <ng-template #dropdownContent>
+            <div class="main__dropdown">
+                <button
+                    class="main__dropdown-item"
+                    tuiButton
+                    size="xs"
+                    appearance="action"
+                    [textContent]="'Изменить'"
+                    (click)="onEditClick($event)"
+                >
+                </button>
+                <input
+                    #fileInput
+                    type="file"
+                    accept="image/*"
+                    style="display: none"
+                    (change)="onFileSelected($event)"
+                />
+                <ng-container *ngIf="!user.image; then hasAvatar"/>
+                <ng-template #hasAvatar>
+                    <button
+                        class="main__dropdown-item"
+                        tuiButton
+                        size="xs"
+                        appearance="action"
+                        [textContent]="'Удалить'"
+                    >
+                    </button>
+                </ng-template>
+            </div>
+        </ng-template>
+    </button>
+</tui-avatar>

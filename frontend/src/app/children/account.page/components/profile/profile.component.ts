@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TuiAvatar, TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
+import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { AccountService } from '../../services/account.service';
 import { IUser } from '../../../../interfaces/user.interface';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
+import { AvatarComponent } from './components/avatar/avatar.component';
 
 
 @Component({
@@ -13,13 +14,13 @@ import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        TuiAvatar,
         TuiButton,
         TuiPassword,
         TuiTextfield,
         TuiError,
         TuiIcon,
         TuiFieldErrorPipe,
+        AvatarComponent
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.scss',
@@ -33,8 +34,10 @@ import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
 })
 export class ProfileComponent {
     public user$: Observable<IUser>;
-    public passwordChangeError: string | null = null;
     public usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+    public usernameChangeError: string | null = null;
+    public passwordChangeError: string | null = null;
 
     protected readonly usernameChangeForm: FormGroup = new FormGroup({
         username: new FormControl('', Validators.required),
@@ -74,7 +77,16 @@ export class ProfileComponent {
      *
      */
     public onPasswordChange(): void {
-        console.log('Change password');
+        if (this.passwordChangeForm.invalid) {
+            this.passwordChangeForm.markAllAsTouched();
+            
+            return;
+        }
+
+        const currentPassword: string = this.passwordChangeForm.get('currentPassword')?.value;
+        const newPassword: string = this.passwordChangeForm.get('newPassword')?.value;
+
+        console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}`);
     }
 
     /**
