@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiAvatar, TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { AccountService } from '../../services/account.service';
 import { IUser } from '../../../../interfaces/user.interface';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
@@ -34,6 +34,11 @@ import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
 export class ProfileComponent {
     public user$: Observable<IUser>;
     public passwordChangeError: string | null = null;
+    public usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+    protected readonly usernameChangeForm: FormGroup = new FormGroup({
+        username: new FormControl('', Validators.required),
+    });
 
     protected readonly passwordChangeForm: FormGroup = new FormGroup({
         currentPassword: new FormControl('', Validators.required),
@@ -43,12 +48,32 @@ export class ProfileComponent {
 
     constructor(private _accountService: AccountService) {
         this.user$ = this._accountService.getUser();
+        this.user$.pipe(take(1)).subscribe(user => {
+            this.usernameChangeForm.patchValue({ username: user.username });
+        });
+    }
+
+    // [ ] TODO: Доработать логику изменения имени пользователя и пароля
+
+    /**
+     * 
+     */
+    public onUsernameChange(): void {
+        if (this.usernameChangeForm.invalid) {
+            this.usernameChangeForm.markAllAsTouched();
+            
+            return;
+        }
+
+        const newUsername: string = this.usernameChangeForm.get('username')?.value;
+        console.log(newUsername);
+        this.usernameEditable$.next(false);
     }
 
     /**
      *
      */
-    public onChangePassword(): void {
+    public onPasswordChange(): void {
         console.log('Change password');
     }
 

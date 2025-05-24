@@ -50,6 +50,13 @@ h1, h2, p {
                 margin: auto 0;
                 color: #C1C1C1;
             }
+
+            &-username-change {
+                &-input {
+                    width: 348px;
+                    height: 52px;
+                }
+            }
         }
     }
 
