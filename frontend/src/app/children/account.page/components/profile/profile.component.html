@@ -59,7 +59,7 @@
                     iconStart="check"
                     size="s"
                     appearance="action"
-                    (click)="onUsernameChange()"
+                    (click)="onUsernameChange(user)"
                 >
                 </button>
             </ng-template>
@@ -125,7 +125,7 @@
             appearance="accent"
             type="button"
             [textContent]="'Сохранить'"
-            (click)="onPasswordChange()"
+            (click)="onPasswordChange(user)"
         >
         </button>
         <tui-error 

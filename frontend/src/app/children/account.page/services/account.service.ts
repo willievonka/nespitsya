@@ -47,6 +47,17 @@ export class AccountService {
         return tabs;
     }
 
+
+    /**
+     * Changes the username of the specified user.
+     * @param user - The user whose username is to be changed.
+     * @param newUsername - The new username to set.
+     * @returns An observable of the server response as a string.
+     */
+    public changeUsername(user: IUser, newUsername: string): Observable<string> {
+        return this._http.put<string>(`${this._authUrl}/users/${user.id}`, { username: newUsername });
+    }
+
     /**
      * Fetches the list of favorite events for a specific user.
      * @param user - The user object containing the user's ID.
