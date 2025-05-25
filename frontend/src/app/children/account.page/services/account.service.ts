@@ -66,4 +66,24 @@ export class AccountService {
     public getFavorites(user: IUser): Observable<IEvent[]> {
         return this._http.get<IEvent[]>(`${this._authUrl}/${user.id}/favorites`);
     }
+
+    /**
+     * Adds an event to the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @param eventId - The ID of the event to add to favorites.
+     * @returns An observable of the server response as a string.
+     */
+    public addToFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/${user.id}/favorites`, { eventId });
+    }
+
+    /**
+     * Removes an event from the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @param eventId - The ID of the event to remove from favorites.
+     * @returns An observable of the server response as a string.
+     */
+    public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/${user.id}/favorites`, { body: { eventId } });
+    }
 }

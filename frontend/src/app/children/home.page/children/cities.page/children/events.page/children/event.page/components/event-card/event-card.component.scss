@@ -53,5 +53,14 @@
     &__buttons {
         display: flex;
         gap: 12px;
+
+        &-like {
+            border-radius: 12px;
+            color: white;
+
+            &:checked {
+                color: #FF7043;
+            }
+        }
     }
 }
