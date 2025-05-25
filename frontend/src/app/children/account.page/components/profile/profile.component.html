@@ -11,19 +11,19 @@
                     <h1 class="main__account-text-name">
                         {{ user.username }}
                     </h1>
-                    <p class="main__account-text-email">
-                        {{ user.email }}
-                    </p>
+                    <button
+                        class="main__account-text-edit-button"
+                        tuiButton
+                        iconStart="pen"
+                        size="s"
+                        appearance="action"
+                        (click)="usernameEditable$.next(true)"
+                    >
+                    </button>
                 </div>
-                <button
-                    class="main__account-text-edit-button"
-                    tuiButton
-                    iconStart="pen"
-                    size="s"
-                    appearance="action"
-                    (click)="usernameEditable$.next(true)"
-                >
-                </button>
+                <p class="main__account-text-email">
+                    {{ user.email }}
+                </p>
             </ng-template>
             <ng-template #usernameInputTemplate>
                 <div class="main__account-text">
@@ -49,19 +49,19 @@
                             [error]="[] | tuiFieldError | async"
                         />
                     </form>
-                    <p class="main__account-text-email">
-                        {{ user.email }}
-                    </p>
+                    <button
+                        class="main__account-text-edit-button"
+                        tuiButton
+                        iconStart="check"
+                        size="s"
+                        appearance="action"
+                        (click)="onUsernameChange(user)"
+                    >
+                    </button>
                 </div>
-                <button
-                    class="main__account-text-edit-button"
-                    tuiButton
-                    iconStart="check"
-                    size="s"
-                    appearance="action"
-                    (click)="onUsernameChange(user)"
-                >
-                </button>
+                <p class="main__account-text-email">
+                    {{ user.email }}
+                </p>
             </ng-template>
         </div>
     </div>
