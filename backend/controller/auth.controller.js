@@ -1,57 +1,100 @@
 import db from '../db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import secret from '../config.js'
+import secret from '../config.js';
+import tokenService from '../tokenService.js';
 
 class authController {
-    async registrationUser(req, res) {
+    async register(req, res) {
         try {
-            const { username, password, email, role } = req.body;
-            const image = req.file;
-
-            if (!username || !password || !email || !role) {
-                return res.status(400).json({ message: 'Заполните все обязательные поля!' });
-            }
-
-            const allowedRoles = ['user', 'admin'];
-            if (!allowedRoles.includes(role)) {
-                return res.status(400).json({ message: 'Роль должна быть одной из: user, admin' });
-            }
-
-            const candidateUsername = await db.query('SELECT * FROM users WHERE username = $1', [username]);
-            const candidateEmail = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-
-            if (candidateUsername.rows.length > 0) {
-                return res.status(400).json({ message: 'Пользователь с таким именем уже существует' });
-            }
-
-            if (candidateEmail.rows.length > 0) {
-                return res.status(400).json({ message: 'Пользователь с такой электронной почтой уже существует' });
+            const { email, password, role } = req.body;
+            const candidate = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            if (candidate.rows.length > 0) {
+                return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
             }
 
             const hashPassword = bcrypt.hashSync(password, 7);
-            const imageName = image ? image.filename : '';
-
             const newUser = await db.query(
-                'INSERT INTO users (username, password, role, email, subscribes, favorites, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-                [username, hashPassword, role, email, [], [], imageName]
+                'INSERT INTO users (email, password, role) VALUES ($1, $2, $3) RETURNING *',
+                [email, hashPassword, role]
             );
+            res.json(newUser.rows[0]);
+        } catch (e) {
+            res.status(500).json({ message: 'Ошибка при регистрации' });
+        }
+    }
 
-            const host = req.protocol + '://' + req.get('host');
-            const user = newUser.rows[0];
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
+            const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            if (user.rows.length === 0) {
+                return res.status(400).json({ message: 'Пользователь не найден' });
+            }
 
-            const { password: _, ...userWithoutPassword } = user;
+            const isValidPassword = bcrypt.compareSync(password, user.rows[0].password);
+            if (!isValidPassword) {
+                return res.status(400).json({ message: 'Неверный пароль' });
+            }
 
-            res.json({
-                message: 'Регистрация прошла успешно',
-                user: {
-                    ...userWithoutPassword,
-                    image: user.image ? `${host}/static/${user.image}` : ''
-                }
-            });
+            const payload = {
+                id: user.rows[0].id,
+                email: user.rows[0].email,
+                role: user.rows[0].role
+            };
+
+            const tokens = tokenService.generateTokens(payload);
+            await tokenService.saveToken(user.rows[0].id, tokens.refreshToken);
+
+            let organizerInfo = null;
+            if (payload.role === 'organizer') {
+                const result = await db.query('SELECT * FROM organizers WHERE user_id = $1', [payload.id]);
+                organizerInfo = result.rows[0];
+            }
+
+            res.json({ ...tokens, organizerInfo });
         } catch (e) {
             console.error(e);
-            res.status(500).json({ message: 'Ошибка регистрации' });
+            res.status(500).json({ message: 'Ошибка при входе' });
+        }
+    }
+
+    async refresh(req, res) {
+        try {
+            const { refreshToken } = req.body;
+            if (!refreshToken) {
+                return res.status(401).json({ message: 'Токен не предоставлен' });
+            }
+
+            const userData = jwt.verify(refreshToken, secret.refreshKey);
+            const tokenFromDb = await tokenService.findToken(refreshToken);
+            if (!userData || !tokenFromDb) {
+                return res.status(401).json({ message: 'Недействительный токен' });
+            }
+
+            const user = await db.query('SELECT * FROM users WHERE id = $1', [userData.id]);
+            const payload = {
+                id: user.rows[0].id,
+                email: user.rows[0].email,
+                role: user.rows[0].role
+            };
+
+            const tokens = tokenService.generateTokens(payload);
+            await tokenService.saveToken(payload.id, tokens.refreshToken);
+
+            res.json(tokens);
+        } catch (e) {
+            res.status(403).json({ message: 'Ошибка при обновлении токена' });
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            const { refreshToken } = req.body;
+            await tokenService.removeToken(refreshToken);
+            res.json({ message: 'Выход выполнен' });
+        } catch (e) {
+            res.status(500).json({ message: 'Ошибка при выходе' });
         }
     }
 
@@ -106,45 +149,6 @@ class authController {
         }
     }
 
-    async login(req, res) {
-        try {
-            const { email, password } = req.body;
-            if (!email || !password) {
-                return res.status(400).json({ message: 'Заполните все поля!' });
-            }
-
-            const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-
-            if (userResult.rows.length === 0) {
-                return res.status(400).json({ message: 'Пользователь не найден' });
-            }
-
-            const user = userResult.rows[0];
-
-            const validPassword = bcrypt.compareSync(password, user.password);
-            if (!validPassword) {
-                return res.status(400).json({ message: 'Неверный пароль' });
-            }
-
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role },
-                secret.secretKey,
-                { expiresIn: '24h' }
-            );
-
-            // Если организатор, подгружаем доп. информацию
-            let organizerInfo = null;
-            if (user.role === 'organizer') {
-                const organizerResult = await db.query('SELECT * FROM organizer_info WHERE userId = $1', [user.id]);
-                organizerInfo = organizerResult.rows[0] || null;
-            }
-
-            res.json({ token, organizerInfo });
-        } catch (e) {
-            console.log(e);
-            res.status(500).json({ message: 'Ошибка входа' });
-        }
-    }
 
     async getUserInfo(req, res) {
         try {
@@ -254,7 +258,7 @@ class authController {
     async updateUser(req, res) {
         try {
             const { id } = req.params;
-            const { username, email, role, password } = req.body;
+            const { username, email, role, oldPassword, newPassword } = req.body;
             const image = req.file;
 
             const userResult = await db.query('SELECT * FROM users WHERE id = $1', [id]);
@@ -269,11 +273,28 @@ class authController {
                 return res.status(400).json({ message: 'Недопустимая роль' });
             }
 
+            let updatedPassword = existingUser.password;
+            if (newPassword) {
+                if (!oldPassword) {
+                    return res.status(400).json({ message: 'Укажите старый пароль для смены на новый' });
+                }
+
+                const isPasswordValid = bcrypt.compareSync(oldPassword, existingUser.password);
+                if (!isPasswordValid) {
+                    return res.status(401).json({ message: 'Текущий пароль неверный' });
+                }
+
+                // if (newPassword.length < 6) {
+                //     return res.status(400).json({ message: 'Новый пароль должен быть не короче 6 символов' });
+                // }
+
+                updatedPassword = bcrypt.hashSync(newPassword, 7);
+            }
+
             const updatedUsername = username || existingUser.username;
             const updatedEmail = email || existingUser.email;
             const updatedRole = role || existingUser.role;
             const updatedImage = image ? image.filename : existingUser.image;
-            const updatedPassword = password ? bcrypt.hashSync(password, 7) : existingUser.password;
 
             const updateResult = await db.query(
                 'UPDATE users SET username = $1, email = $2, role = $3, password = $4, image = $5 WHERE id = $6 RETURNING *',
@@ -296,6 +317,7 @@ class authController {
             res.status(500).json({ message: 'Ошибка при обновлении пользователя' });
         }
     }
+
 
     async deleteUser(req, res) {
         try {
@@ -428,19 +450,36 @@ class authController {
             const { userId } = req.params;
             const { eventId } = req.body;
 
-            if (!eventId) {
-                return res.status(400).json({ message: 'eventId обязателен' });
+            // Проверка: ID пользователя и ID события существуют и корректны
+            if (!userId || isNaN(parseInt(userId))) {
+                return res.status(400).json({ message: 'Некорректный userId' });
             }
 
+            if (!eventId || typeof eventId !== 'string') {
+                return res.status(400).json({ message: 'eventId обязателен и должен быть строкой' });
+            }
+
+            // Проверка: пользователь существует
             const userCheck = await db.query('SELECT 1 FROM users WHERE id = $1', [userId]);
             if (userCheck.rowCount === 0) {
                 return res.status(404).json({ message: 'Пользователь не найден' });
             }
 
-            await db.query(
+            // Проверка: событие существует
+            const eventCheck = await db.query('SELECT 1 FROM event WHERE id = $1', [eventId]);
+            if (eventCheck.rowCount === 0) {
+                return res.status(404).json({ message: 'Событие не найдено' });
+            }
+
+            // Добавление в избранное только если такого ещё нет
+            const update = await db.query(
                 'UPDATE users SET favorites = array_append(favorites, $1) WHERE id = $2 AND NOT ($1 = ANY(favorites))',
                 [eventId, userId]
             );
+
+            if (update.rowCount === 0) {
+                return res.status(409).json({ message: 'Ивент уже в избранном или пользователь не найден' });
+            }
 
             return res.json({ message: 'Ивент добавлен в избранное' });
         } catch (e) {
@@ -454,19 +493,29 @@ class authController {
             const { userId } = req.params;
             const { eventId } = req.body;
 
-            if (!eventId) {
-                return res.status(400).json({ message: 'eventId обязателен' });
+            if (!userId || isNaN(parseInt(userId))) {
+                return res.status(400).json({ message: 'Некорректный userId' });
             }
 
+            if (!eventId || typeof eventId !== 'string') {
+                return res.status(400).json({ message: 'eventId обязателен и должен быть строкой' });
+            }
+
+            // Проверка: пользователь существует
             const userCheck = await db.query('SELECT 1 FROM users WHERE id = $1', [userId]);
             if (userCheck.rowCount === 0) {
                 return res.status(404).json({ message: 'Пользователь не найден' });
             }
 
-            await db.query(
+            // Удаление из избранного
+            const update = await db.query(
                 'UPDATE users SET favorites = array_remove(favorites, $1) WHERE id = $2',
                 [eventId, userId]
             );
+
+            if (update.rowCount === 0) {
+                return res.status(409).json({ message: 'Ивент не найден в избранном или пользователь не найден' });
+            }
 
             return res.json({ message: 'Ивент удалён из избранного' });
         } catch (e) {

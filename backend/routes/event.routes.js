@@ -6,6 +6,7 @@ import upload from '../middleware/upload.js'
 const router = new Router();
 
 router.post('/event', roleMiddleware(['organizer']), upload.single('image'), eventController.createEvent);
+router.post('/event/by-ids', eventController.getEventsByIds);
 // router.post('/event', upload.single('image'), eventController.createEvent);
 router.get('/event', eventController.getEvents);
 router.get('/event/date', eventController.getEventsByDateAsc);
