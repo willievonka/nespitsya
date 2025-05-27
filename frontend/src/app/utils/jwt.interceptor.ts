@@ -20,7 +20,7 @@ export const jwtInterceptorFn: HttpInterceptorFn = (req, next) => {
 
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
-            if (error.status === 401) {
+            if (error.status === 401 && error.error?.message === 'access token expired') {
                 const refreshToken: string | null = localStorage.getItem('JWT_Refresh_Token');
                 if (refreshToken) {
                     return http.post<{ accessToken: string, refreshToken: string }>(`${environment.authUrl}/refresh`, { refreshToken })
@@ -39,7 +39,7 @@ export const jwtInterceptorFn: HttpInterceptorFn = (req, next) => {
                             catchError(() => {
                                 localStorage.removeItem('JWT_Access_Token');
                                 localStorage.removeItem('JWT_Refresh_Token');
-                                router.navigate(['/auth/login']);
+                                router.navigate(['/home']);
                                 
                                 return throwError(() => error);
                             })
