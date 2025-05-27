@@ -1,0 +1,23 @@
+.main {
+    width: 120px;
+    height: 120px;
+    border-radius: 100%;
+
+    &__edit-button {
+        border-radius: 100%;
+        position: relative;
+        margin-top: auto;
+        margin-left: auto;
+        border: 1px solid #C1C1C1;
+    }
+
+    &__dropdown {
+        display: flex;
+        padding: 4px;
+        gap: 2px;
+
+        &-item {
+            color: #C1C1C1;
+        }
+    }
+}

@@ -1,11 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TuiAvatar, TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { AccountService } from '../../services/account.service';
 import { IUser } from '../../../../interfaces/user.interface';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
+import { AvatarComponent } from './components/avatar/avatar.component';
+import { fieldsMatchValidator } from '../../../../utils/fields-match.validator';
 
 
 @Component({
@@ -13,13 +15,13 @@ import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        TuiAvatar,
         TuiButton,
         TuiPassword,
         TuiTextfield,
         TuiError,
         TuiIcon,
         TuiFieldErrorPipe,
+        AvatarComponent
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.scss',
@@ -27,43 +29,97 @@ import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
     providers: [
         tuiValidationErrorsProvider({
             required: 'Заполните поле',
-            passwordsNotMatched: 'Пароли не совпадают',
+            fieldsNotMatched: 'Пароли не совпадают',
+            server: (error: string) => error || 'Ошибка сервера',
         }),
     ],
 })
 export class ProfileComponent {
-    public user$: Observable<IUser>;
-    public passwordChangeError: string | null = null;
+    public user$: BehaviorSubject<IUser | null> = new BehaviorSubject<IUser | null>(null);
+    public usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+    public usernameChangeError: string | null = null;
+    public passwordChangeMessage: string | null = null;
+
+    protected readonly usernameChangeForm: FormGroup = new FormGroup({
+        username: new FormControl('', Validators.required),
+    });
 
     protected readonly passwordChangeForm: FormGroup = new FormGroup({
         currentPassword: new FormControl('', Validators.required),
         newPassword: new FormControl('', Validators.required),
-        confirmPassword: new FormControl('', Validators.compose([Validators.required, this.passwordsMatch()])),
+        confirmPassword: new FormControl('', Validators.compose([Validators.required, fieldsMatchValidator('newPassword')])),
     });
 
-    constructor(private _accountService: AccountService) {
-        this.user$ = this._accountService.getUser();
+    constructor(
+        private _accountService: AccountService,
+        private _cdr: ChangeDetectorRef, 
+    ) {
+        this._accountService.getUser().pipe(take(1)).subscribe(user => {
+            this.user$.next(user);
+            this.usernameChangeForm.patchValue({ username: user.username });
+        });
     }
 
+    // [x] TODO: Доработать логику изменения пароля и обработку ошибок
+    
     /**
-     *
+     * Handles the username change process for the given user.
+     * @param user The current user whose username is to be changed.
      */
-    public onChangePassword(): void {
-        console.log('Change password');
+    public onUsernameChange(user: IUser): void {
+        if (this.usernameChangeForm.invalid) {
+            this.usernameChangeForm.markAllAsTouched();
+            
+            return;
+        }
+
+        const newUsername: string = this.usernameChangeForm.get('username')?.value;
+        this._accountService.changeUsername(user, newUsername)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    const updatedUser: IUser = { ...user, username: newUsername };
+                    this.user$.next(updatedUser);
+                    this.usernameChangeForm.get('username')?.setErrors(null);
+                    this.usernameEditable$.next(false);
+                },
+                error: (error) => {
+                    this.usernameChangeForm.get('username')?.setErrors({
+                        server: error.error.message || 'Не удалось изменить имя пользователя'
+                    });
+                    this._cdr.detectChanges();
+                }
+            });
     }
 
+    
     /**
-     * Custom validator to check if password and passwordRepeat fields match.
+     * Handles the password change process for the given user.
+     * @param user The current user whose password is to be changed.
      */
-    public passwordsMatch(): ValidatorFn {
-        return (control: AbstractControl): ValidationErrors | null => {
-            if (!control.parent) {
-                return null;
-            }
-            const password: AbstractControl<string> | null = control.parent.get('newPassword')?.value;
-            const passwordRepeat: AbstractControl<string> | null = control.value;
+    public onPasswordChange(user: IUser): void {
+        if (this.passwordChangeForm.invalid) {
+            this.passwordChangeForm.markAllAsTouched();
+            
+            return;
+        }
 
-            return password === passwordRepeat ? null : { passwordsNotMatched: true };
-        };
+        const currentPassword: string = this.passwordChangeForm.get('currentPassword')?.value;
+        const newPassword: string = this.passwordChangeForm.get('newPassword')?.value;
+        
+        this._accountService.changePassword(user, currentPassword, newPassword)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.passwordChangeMessage = 'Пароль успешно изменен';
+                    this._cdr.detectChanges();
+                    this.passwordChangeForm.reset();
+                },
+                error: (error) => {
+                    this.passwordChangeMessage = error.error.message || 'Не удалось изменить пароль';
+                    this._cdr.detectChanges();
+                }
+            });
     }
 }

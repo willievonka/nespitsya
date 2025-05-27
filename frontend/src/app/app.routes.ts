@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { accountRoutes } from './children/account.page/account.page.routes';
 import { authRoutes } from './children/auth.page/auth.page.routes';
-import { authGuard } from './children/auth.page/services/auth.guard';
+import { authGuard } from './utils/auth.guard';
 
 
 export const routes: Routes = [

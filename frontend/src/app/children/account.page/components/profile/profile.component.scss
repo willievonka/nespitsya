@@ -14,23 +14,38 @@ h1, h2, p {
         align-items: center;
         gap: 12px;
 
-        &-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 100%;
-        }
+        &-text {
+            display: flex;
 
-        &-text-name {
-            font-size: 48px;
-            line-height: 52px;
-            font-weight: bold;
-        }
+            &-wrapper {
+                display: flex;
+                flex-direction: column;
+            }
 
-        &-text-email {
-            font-size: 24px;
-            line-height: 32px;
-            font-weight: bold;
-            color: #adadad;
+            &-name {
+                font-size: 48px;
+                line-height: 52px;
+                font-weight: bold;
+            }
+
+            &-email {
+                font-size: 24px;
+                line-height: 32px;
+                font-weight: bold;
+                color: #adadad;
+            }
+
+            &-edit-button {
+                margin-top: auto;
+                color: #C1C1C1;
+            }
+
+            &-username-change {
+                &-input {
+                    width: 348px;
+                    height: 52px;
+                }
+            }
         }
     }
 

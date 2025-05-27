@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { IUser } from '../../../interfaces/user.interface';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
+import { IEvent } from '../../home.page/interfaces/event.interface';
 
 
 @Injectable({
@@ -44,5 +45,59 @@ export class AccountService {
         }
 
         return tabs;
+    }
+
+
+    /**
+     * Changes the username of the specified user.
+     * @param user - The user whose username is to be changed.
+     * @param newUsername - The new username to set.
+     * @returns An observable of the server response as a string.
+     */
+    public changeUsername(user: IUser, newUsername: string): Observable<string> {
+        return this._http.put<string>(`${this._authUrl}/users/${user.id}`, { username: newUsername });
+    }
+
+    /**
+     * Changes the password of the specified user.
+     * @param user - The user whose password is to be changed.
+     * @param currentPassword - The user's current password.
+     * @param newPassword - The new password to set.
+     * @returns An observable of the server response as a string.
+     */
+    public changePassword(user: IUser, currentPassword: string, newPassword: string): Observable<string> {
+        return this._http.put<string>(`${this._authUrl}/users/${user.id}`, {
+            oldPassword: currentPassword,
+            newPassword: newPassword
+        });
+    }
+
+    /**
+     * Fetches the list of favorite events for a specific user.
+     * @param user - The user object containing the user's ID.
+     * @returns An observable of an array of favorite events.
+     */
+    public getFavorites(user: IUser): Observable<IEvent[]> {
+        return this._http.get<IEvent[]>(`${this._authUrl}/${user.id}/favorites`);
+    }
+
+    /**
+     * Adds an event to the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @param eventId - The ID of the event to add to favorites.
+     * @returns An observable of the server response as a string.
+     */
+    public addToFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/${user.id}/favorites`, { eventId });
+    }
+
+    /**
+     * Removes an event from the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @param eventId - The ID of the event to remove from favorites.
+     * @returns An observable of the server response as a string.
+     */
+    public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/${user.id}/favorites`, { body: { eventId } });
     }
 }

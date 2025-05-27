@@ -4,7 +4,7 @@ import { environment } from '../../../../../../../../../../environment';
 import { IEvent } from '../../../../../../../interfaces/event.interface';
 import { combineLatest, map, Observable } from 'rxjs';
 import { ICity } from '../../../../../../../interfaces/city.interface';
-import { IOrganizer } from '../../../../../../../interfaces/organizer.interface';
+import { IOrganizer } from '../../../../../../../../../interfaces/organizer.interface';
 import { IPlace } from '../../../../../../../interfaces/place.interface';
 
 

@@ -3,7 +3,11 @@ import { TuiIcon, TuiLink } from '@taiga-ui/core';
 import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
-import { TuiSecondaryButtonComponent } from '../../../../../../../../components/tui-components/tui-secondary-button/tui-secondary-button.component';
+import { AuthService } from '../../../../../../../../../auth.page/services/auth.service';
+import { BehaviorSubject, Observable, take } from 'rxjs';
+import { TuiLike } from '@taiga-ui/kit';
+import { AccountService } from '../../../../../../../../../account.page/services/account.service';
+import { IUser } from '../../../../../../../../../../interfaces/user.interface';
 
 
 @Component({
@@ -12,16 +16,18 @@ import { TuiSecondaryButtonComponent } from '../../../../../../../../components/
         CommonModule,
         DatePipe,
         TuiIcon,
+        TuiLike,
         TuiLink,
         TuiChipComponent,
         TuiAccentButtonComponent,
-        TuiSecondaryButtonComponent,
     ],
     templateUrl: './event-card.component.html',
     styleUrl: './event-card.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventCardComponent {
+    @Input()
+    public id: number = 0;
     @Input()
     public backgroundUrl: string = '';
     @Input()
@@ -38,4 +44,38 @@ export class EventCardComponent {
     public tags: Array<{id: number, name: string}> = [];
     @Input()
     public price: number = 0;
+
+    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public user$: Observable<IUser>;
+    public isLiked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+    constructor(private _authService: AuthService, private _accountService: AccountService) {
+        this.isAuthenticated$ = this._authService.isAuthenticated$;
+
+        this.user$ = this._accountService.getUser();
+        this.user$.pipe(take(1)).subscribe(user => {
+            if (user.favorites?.includes(this.id)) {
+                this.isLiked$.next(true);
+            } else {
+                this.isLiked$.next(false);
+            }
+        });
+    }
+
+    /**
+     * Toggles the like status for the current event for the authenticated user.
+     */
+    public toogleLike(): void {
+        this.user$.pipe(take(1)).subscribe(user => {
+            if (this.isLiked$.value) {
+                this._accountService.removeFromFavorites(user, this.id);
+                this.isLiked$.next(false);
+            } else {
+                this._accountService.addToFavorites(user, this.id);
+                this.isLiked$.next(true);
+            }
+        });
+    }
+
+
 }

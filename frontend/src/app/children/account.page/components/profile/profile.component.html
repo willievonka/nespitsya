@@ -1,17 +1,68 @@
 <div class="main" *ngIf="user$ | async as user">
     <div class="main__account">
-        <tui-avatar 
+        <app-avatar 
             class="main__account-avatar"
-            [src]="user.image ? user.image : '@tui.user'"
-            size="xxl"
+            [user]="user"
         />
-        <div class="main__account-text">
-            <h1 class="main__account-text-name">
-                {{ user.username }}
-            </h1>
-            <p class="main__account-text-email">
-                {{ user.email }}
-            </p>
+        <div class="main__account-text-wrapper">
+            <ng-container *ngIf="usernameEditable$.value; then usernameInputTemplate else usernameTemplate"/>
+            <ng-template #usernameTemplate>
+                <div class="main__account-text">
+                    <h1 class="main__account-text-name">
+                        {{ user.username }}
+                    </h1>
+                    <button
+                        class="main__account-text-edit-button"
+                        tuiButton
+                        iconStart="pen"
+                        size="s"
+                        appearance="action"
+                        (click)="usernameEditable$.next(true)"
+                    >
+                    </button>
+                </div>
+                <p class="main__account-text-email">
+                    {{ user.email }}
+                </p>
+            </ng-template>
+            <ng-template #usernameInputTemplate>
+                <div class="main__account-text">
+                    <form 
+                        class="main__account-text-username-change"
+                        #usernameInput
+                        [formGroup]="usernameChangeForm"
+                    >
+                        <tui-textfield 
+                            class="main__account-text-username-change-input"
+                            tuiTextfieldSize="l"
+                        >
+                            <input
+                                formControlName="username"
+                                placeholder="Новое имя"
+                                tuiTextfield 
+                                type="text"
+                            />
+                        </tui-textfield>
+                        <tui-error
+                            class="main__account-text-username-change-error"
+                            formControlName="username"
+                            [error]="[] | tuiFieldError | async"
+                        />
+                    </form>
+                    <button
+                        class="main__account-text-edit-button"
+                        tuiButton
+                        iconStart="check"
+                        size="s"
+                        appearance="action"
+                        (click)="onUsernameChange(user)"
+                    >
+                    </button>
+                </div>
+                <p class="main__account-text-email">
+                    {{ user.email }}
+                </p>
+            </ng-template>
         </div>
     </div>
     <form class="main__password-change" [formGroup]="passwordChangeForm">
@@ -74,13 +125,13 @@
             appearance="accent"
             type="button"
             [textContent]="'Сохранить'"
-            (click)="onChangePassword()"
+            (click)="onPasswordChange(user)"
         >
         </button>
         <tui-error 
-            *ngIf="passwordChangeError"
-            style="margin-top: 16px;"
-            [error]="passwordChangeError"
+            *ngIf="passwordChangeMessage"
+            style="margin-top: 8px;"
+            [error]="passwordChangeMessage"
         />
     </form>
 </div>

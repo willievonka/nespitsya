@@ -1,1 +1,8 @@
-<p>favorites works!</p>
+<div
+    class="main"
+    *ngIf="user$ | async as user"
+>
+    <div>
+        {{ user.favorites?.length === 0 ? 'Нет избранных мероприятий' : 'Избранные мероприятия' }}
+    </div>
+</div>
