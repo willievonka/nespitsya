@@ -1,3 +1,4 @@
 export default {
-    secretKey: 'SECRET_KEY_RANDOM'
-}
+    secretKey: 'ACCESS_SECRET_KEY',
+    refreshKey: 'REFRESH_SECRET_KEY'
+};

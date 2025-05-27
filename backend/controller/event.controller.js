@@ -12,7 +12,6 @@ class EventController {
         try {
             const { description, title, placeId, cityId, dateStart, dateEnd, price, artists, tags } = req.body;
             const organizer = req.user.id
-            // const organizer = 7 // ВРЕМЕННО!!!
             const image = req.file?.filename;
 
             if (!description || !title || !placeId || !cityId || !dateStart || !dateEnd || !price || !image) {
@@ -520,6 +519,26 @@ class EventController {
         } catch (error) {
             console.error("Ошибка при получении событий по диапазону дат:", error);
             res.status(500).json({ message: "Ошибка сервера" });
+        }
+    }
+
+    async getEventsByIds(req, res) {
+        try {
+            const { eventIds } = req.body;
+
+            if (!Array.isArray(eventIds) || eventIds.length === 0) {
+                return res.status(400).json({ message: 'eventIds должен быть непустым массивом' });
+            }
+
+            const eventsResult = await db.query(
+                'SELECT * FROM event WHERE id = ANY($1)',
+                [eventIds]
+            );
+
+            res.json(eventsResult.rows);
+        } catch (e) {
+            console.error(e);
+            res.status(500).json({ message: 'Ошибка при получении ивентов' });
         }
     }
 
