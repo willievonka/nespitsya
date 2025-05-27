@@ -51,14 +51,9 @@ export class EventCardComponent {
 
     constructor(private _authService: AuthService, private _accountService: AccountService) {
         this.isAuthenticated$ = this._authService.isAuthenticated$;
-
         this.user$ = this._accountService.getUser();
         this.user$.pipe(take(1)).subscribe(user => {
-            if (user.favorites?.includes(this.id)) {
-                this.isLiked$.next(true);
-            } else {
-                this.isLiked$.next(false);
-            }
+            this.isLiked$.next(!!user.favorites?.includes(this.id));
         });
     }
 
@@ -68,14 +63,12 @@ export class EventCardComponent {
     public toogleLike(): void {
         this.user$.pipe(take(1)).subscribe(user => {
             if (this.isLiked$.value) {
-                this._accountService.removeFromFavorites(user, this.id.toString()).pipe(take(1)).subscribe();
+                this._accountService.removeFromFavorites(user, this.id).pipe(take(1)).subscribe();
                 this.isLiked$.next(false);
             } else {
-                this._accountService.addToFavorites(user, this.id.toString()).pipe(take(1)).subscribe();
+                this._accountService.addToFavorites(user, this.id).pipe(take(1)).subscribe();
                 this.isLiked$.next(true);
             }
         });
     }
-
-
 }

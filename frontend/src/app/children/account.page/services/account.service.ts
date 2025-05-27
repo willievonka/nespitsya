@@ -22,7 +22,6 @@ export class AccountService {
     public getUser(): Observable<IUser> {
         return this._http.get<IUser>(this._authUrl + '/user');
     }
-
     
     /**
      * Generates a list of tabs based on the user's role.
@@ -48,7 +47,6 @@ export class AccountService {
         return tabs;
     }
 
-
     /**
      * Changes the username of the specified user.
      * @param user - The user whose username is to be changed.
@@ -73,7 +71,6 @@ export class AccountService {
         });
     }
 
-    
     /**
      * Retrieves events by their IDs.
      * @param idList - An array of event IDs to fetch.
@@ -89,8 +86,8 @@ export class AccountService {
      * @param eventId - The ID of the event to add to favorites.
      * @returns An observable of the server response as a string.
      */
-    public addToFavorites(user: IUser, eventId: string): Observable<string> {
-        return this._http.post<string>(`${this._authUrl}/users/${user.id}/favorites`, { eventId });
+    public addToFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/users/${user.id}/favorites`, { eventId: eventId.toString() });
     }
 
     /**
@@ -99,7 +96,7 @@ export class AccountService {
      * @param eventId - The ID of the event to remove from favorites.
      * @returns An observable of the server response as a string.
      */
-    public removeFromFavorites(user: IUser, eventId: string): Observable<string> {
-        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites`, { body: { eventId } });
+    public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites`, { body: { eventId: eventId.toString() } });
     }
 }
