@@ -68,10 +68,10 @@ export class EventCardComponent {
     public toogleLike(): void {
         this.user$.pipe(take(1)).subscribe(user => {
             if (this.isLiked$.value) {
-                this._accountService.removeFromFavorites(user, this.id);
+                this._accountService.removeFromFavorites(user, this.id.toString()).pipe(take(1)).subscribe();
                 this.isLiked$.next(false);
             } else {
-                this._accountService.addToFavorites(user, this.id);
+                this._accountService.addToFavorites(user, this.id.toString()).pipe(take(1)).subscribe();
                 this.isLiked$.next(true);
             }
         });

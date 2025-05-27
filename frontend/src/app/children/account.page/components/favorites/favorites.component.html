@@ -5,4 +5,12 @@
     <div>
         {{ user.favorites?.length === 0 ? 'Нет избранных мероприятий' : 'Избранные мероприятия' }}
     </div>
+
+    <div
+        *ngIf="events$ | async as events"
+    >
+        <div *ngFor="let event of events">
+            {{ event.title }}
+        </div>
+    </div>
 </div>

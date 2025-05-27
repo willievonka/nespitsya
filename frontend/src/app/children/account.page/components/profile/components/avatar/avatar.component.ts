@@ -60,6 +60,8 @@ export class AvatarComponent {
         this.isOpenDropdown = active && this.isOpenDropdown;
     }
 
+    // [ ] TODO: Сделать логику изменения аватара
+
     /**
      * Handles the click event on the edit button to trigger the file input.
      * @param event - The click event.

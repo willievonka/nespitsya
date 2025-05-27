@@ -11,6 +11,7 @@ import { IEvent } from '../../home.page/interfaces/event.interface';
 })
 export class AccountService {
     private readonly _authUrl: string = environment.authUrl;
+    private readonly _apiUrl: string = environment.apiUrl;
 
     constructor(private _http: HttpClient) {}
     
@@ -72,13 +73,14 @@ export class AccountService {
         });
     }
 
+    
     /**
-     * Fetches the list of favorite events for a specific user.
-     * @param user - The user object containing the user's ID.
-     * @returns An observable of an array of favorite events.
+     * Retrieves events by their IDs.
+     * @param idList - An array of event IDs to fetch.
+     * @returns An observable of an array of events.
      */
-    public getFavorites(user: IUser): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._authUrl}/${user.id}/favorites`);
+    public getEventsByIds(idList: number[]): Observable<IEvent[]> {
+        return this._http.post<IEvent[]>(`${this._apiUrl}/event/by-ids`, { eventIds: idList });
     }
 
     /**
@@ -87,8 +89,8 @@ export class AccountService {
      * @param eventId - The ID of the event to add to favorites.
      * @returns An observable of the server response as a string.
      */
-    public addToFavorites(user: IUser, eventId: number): Observable<string> {
-        return this._http.post<string>(`${this._authUrl}/${user.id}/favorites`, { eventId });
+    public addToFavorites(user: IUser, eventId: string): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/users/${user.id}/favorites`, { eventId });
     }
 
     /**
@@ -97,7 +99,7 @@ export class AccountService {
      * @param eventId - The ID of the event to remove from favorites.
      * @returns An observable of the server response as a string.
      */
-    public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
-        return this._http.delete<string>(`${this._authUrl}/${user.id}/favorites`, { body: { eventId } });
+    public removeFromFavorites(user: IUser, eventId: string): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites`, { body: { eventId } });
     }
 }
