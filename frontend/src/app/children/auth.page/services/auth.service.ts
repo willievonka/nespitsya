@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
     providedIn: 'root'
 })
 export class AuthService {
-    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!localStorage.getItem('JWT_Token'));
+    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!localStorage.getItem('JWT_Access_Token'));
     private readonly _authUrl: string = environment.authUrl;
     
     constructor(private _http: HttpClient, private _router: Router) {}
@@ -32,10 +32,11 @@ export class AuthService {
      * @returns An Observable emitting a boolean indicating the success of the login.
      */
     public login(form: FormGroup): Observable<boolean> {
-        return this._http.post<{ token: string }>(this._authUrl + '/login', form.value)
+        return this._http.post<{ accessToken: string, refreshToken: string }>(this._authUrl + '/login', form.value)
             .pipe(
                 map(response => {
-                    localStorage.setItem('JWT_Token', response.token);
+                    localStorage.setItem('JWT_Access_Token', response.accessToken);
+                    localStorage.setItem('JWT_Refresh_Token', response.refreshToken);
                     this.isAuthenticated$.next(true);
 
                     return true;
@@ -47,7 +48,8 @@ export class AuthService {
      * Logs out the user by removing the JWT token from local storage.
      */
     public logout(): void {
-        localStorage.removeItem('JWT_Token');
+        localStorage.removeItem('JWT_Access_Token');
+        localStorage.removeItem('JWT_Refresh_Token');
         this.isAuthenticated$.next(false);
         if (this._router.url.includes('/account')) {
             this._router.navigate(['/home']);

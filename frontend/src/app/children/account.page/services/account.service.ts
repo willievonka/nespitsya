@@ -59,6 +59,20 @@ export class AccountService {
     }
 
     /**
+     * Changes the password of the specified user.
+     * @param user - The user whose password is to be changed.
+     * @param currentPassword - The user's current password.
+     * @param newPassword - The new password to set.
+     * @returns An observable of the server response as a string.
+     */
+    public changePassword(user: IUser, currentPassword: string, newPassword: string): Observable<string> {
+        return this._http.put<string>(`${this._authUrl}/users/${user.id}`, {
+            oldPassword: currentPassword,
+            newPassword: newPassword
+        });
+    }
+
+    /**
      * Fetches the list of favorite events for a specific user.
      * @param user - The user object containing the user's ID.
      * @returns An observable of an array of favorite events.

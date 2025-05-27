@@ -60,7 +60,6 @@ export class ProfileComponent {
     }
 
     // [ ] TODO: Доработать логику изменения пароля и обработку ошибок
-
     
     /**
      * Handles the username change process for the given user.
@@ -89,8 +88,10 @@ export class ProfileComponent {
             });
     }
 
+    
     /**
-     *
+     * Handles the password change process for the given user.
+     * @param user The current user whose password is to be changed.
      */
     public onPasswordChange(user: IUser): void {
         if (this.passwordChangeForm.invalid) {
@@ -102,6 +103,16 @@ export class ProfileComponent {
         const currentPassword: string = this.passwordChangeForm.get('currentPassword')?.value;
         const newPassword: string = this.passwordChangeForm.get('newPassword')?.value;
         
-        console.log(`User: ${user}, Current Password: ${currentPassword}, New Password: ${newPassword}`);
+        this._accountService.changePassword(user, currentPassword, newPassword)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.passwordChangeError = null;
+                    this.passwordChangeForm.reset();
+                },
+                error: (error) => {
+                    this.passwordChangeError = error.error.message || 'Не удалось изменить пароль';
+                }
+            });
     }
 }
