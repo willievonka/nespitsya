@@ -129,9 +129,9 @@
         >
         </button>
         <tui-error 
-            *ngIf="passwordChangeError"
-            style="margin-top: 16px;"
-            [error]="passwordChangeError"
+            *ngIf="passwordChangeMessage"
+            style="margin-top: 8px;"
+            [error]="passwordChangeMessage"
         />
     </form>
 </div>

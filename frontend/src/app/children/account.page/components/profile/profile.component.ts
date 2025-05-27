@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { TuiFieldErrorPipe, TuiPassword, tuiValidationErrorsProvider } from '@taiga-ui/kit';
 import { AccountService } from '../../services/account.service';
 import { IUser } from '../../../../interfaces/user.interface';
@@ -30,6 +30,7 @@ import { fieldsMatchValidator } from '../../../../utils/fields-match.validator';
         tuiValidationErrorsProvider({
             required: 'Заполните поле',
             fieldsNotMatched: 'Пароли не совпадают',
+            server: (error: string) => error || 'Ошибка сервера',
         }),
     ],
 })
@@ -38,7 +39,7 @@ export class ProfileComponent {
     public usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     public usernameChangeError: string | null = null;
-    public passwordChangeError: string | null = null;
+    public passwordChangeMessage: string | null = null;
 
     protected readonly usernameChangeForm: FormGroup = new FormGroup({
         username: new FormControl('', Validators.required),
@@ -51,7 +52,8 @@ export class ProfileComponent {
     });
 
     constructor(
-        private _accountService: AccountService, 
+        private _accountService: AccountService,
+        private _cdr: ChangeDetectorRef, 
     ) {
         this._accountService.getUser().pipe(take(1)).subscribe(user => {
             this.user$.next(user);
@@ -59,7 +61,7 @@ export class ProfileComponent {
         });
     }
 
-    // [ ] TODO: Доработать логику изменения пароля и обработку ошибок
+    // [x] TODO: Доработать логику изменения пароля и обработку ошибок
     
     /**
      * Handles the username change process for the given user.
@@ -79,11 +81,14 @@ export class ProfileComponent {
                 next: () => {
                     const updatedUser: IUser = { ...user, username: newUsername };
                     this.user$.next(updatedUser);
-                    this.usernameChangeError = null;
+                    this.usernameChangeForm.get('username')?.setErrors(null);
                     this.usernameEditable$.next(false);
                 },
                 error: (error) => {
-                    this.usernameChangeError = error.error.message || 'Не удалось изменить имя пользователя';
+                    this.usernameChangeForm.get('username')?.setErrors({
+                        server: error.error.message || 'Не удалось изменить имя пользователя'
+                    });
+                    this._cdr.detectChanges();
                 }
             });
     }
@@ -107,11 +112,13 @@ export class ProfileComponent {
             .pipe(take(1))
             .subscribe({
                 next: () => {
-                    this.passwordChangeError = null;
+                    this.passwordChangeMessage = 'Пароль успешно изменен';
+                    this._cdr.detectChanges();
                     this.passwordChangeForm.reset();
                 },
                 error: (error) => {
-                    this.passwordChangeError = error.error.message || 'Не удалось изменить пароль';
+                    this.passwordChangeMessage = error.error.message || 'Не удалось изменить пароль';
+                    this._cdr.detectChanges();
                 }
             });
     }
