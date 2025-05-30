@@ -35,11 +35,11 @@ import { fieldsMatchValidator } from '../../../../utils/fields-match.validator';
     ],
 })
 export class ProfileComponent {
-    public user$: BehaviorSubject<IUser | null> = new BehaviorSubject<IUser | null>(null);
-    public usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
     public usernameChangeError: string | null = null;
     public passwordChangeMessage: string | null = null;
+
+    protected user$: BehaviorSubject<IUser | null> = new BehaviorSubject<IUser | null>(null);
+    protected usernameEditable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     protected readonly usernameChangeForm: FormGroup = new FormGroup({
         username: new FormControl('', Validators.required),

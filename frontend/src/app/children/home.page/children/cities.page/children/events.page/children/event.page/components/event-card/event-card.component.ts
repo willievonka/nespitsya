@@ -45,9 +45,9 @@ export class EventCardComponent {
     @Input()
     public price: number = 0;
 
-    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public user$: Observable<IUser>;
-    public isLiked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    protected isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    protected isLiked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor(private _authService: AuthService, private _accountService: AccountService) {
         this.isAuthenticated$ = this._authService.isAuthenticated$;
