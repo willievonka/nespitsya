@@ -108,4 +108,24 @@ export class AccountService {
     public removeAllFromFavorites(user: IUser): Observable<string> {
         return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites/clear`);
     }
+
+    /**
+     * Subscribes the user to an organizer.
+     * @param user - The user object containing the user's ID.
+     * @param organizerId - The ID of the organizer to subscribe to.
+     * @returns An observable of the server response as a string.
+     */
+    public subscribeToOrganizer(user: IUser, organizerId: number): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/users/${user.id}/subscribes`, { organizerId: organizerId.toString() });
+    }
+
+    /**
+     * Unsubscribes the user from an organizer.
+     * @param user - The user object containing the user's ID.
+     * @param organizerId - The ID of the organizer to unsubscribe from.
+     * @returns An observable of the server response as a string.
+     */
+    public unsubscribeFromOrganizer(user: IUser, organizerId: number): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/subscribes`, { body: { organizerId: organizerId.toString() } });
+    }
 }
