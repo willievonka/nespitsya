@@ -1,0 +1,17 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+
+    &__events {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    &__event {
+        &-delete-button {
+            z-index: 10;
+        }
+    }
+}

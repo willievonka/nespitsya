@@ -6,7 +6,7 @@ h1, h2, p {
 .main {
     display: flex;
     flex-direction: column;
-    padding: 12px;
+    padding: 0 12px;
 
     &__account {
         display: flex;

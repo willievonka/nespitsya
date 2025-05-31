@@ -15,20 +15,17 @@
         <app-tui-event-card
             class="main__event"
             *ngFor="let event of events"
+            [id]="event.id"
             [image]="event.image"
             [title]="event.title"
             [place]="event.place"
             [date]="event.dateStart"
             [price]="event.price"
             [tags]="event.tags"
+            [user]="user"
             routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
-        >
-            <button
-                class="main__event-delete-button"
-                tuiButton
-            >
-            </button>
-        </app-tui-event-card>
+            (removed)="onEventRemoved($event)"
+        />
     </div>
     <button
         class="main__delete-all-events-button"
