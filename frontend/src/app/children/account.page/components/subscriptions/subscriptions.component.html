@@ -1,1 +1,21 @@
-<p>subscriptions works!</p>
+<div class="main" *ngIf="user$ | async as user">
+    <div *ngIf="organizers$ | async as organizers">
+        <ng-container *ngIf="organizers.length === 0; else orgsList">
+            <h1 class="main__title">Нет подписок</h1>
+        </ng-container>
+        <ng-template #orgsList>
+            <div class="main__events">
+                <app-organizer-card
+                    class="main__event"
+                    *ngFor="let org of organizers"
+                    [id]="org.id"
+                    [image]="org.image"
+                    [name]="org.username"
+                    [subsCount]="org.subsCount"
+                    [eventsCount]="org.eventsCount"
+                    routerLink="/home/cities/"
+                />
+            </div>
+        </ng-template>
+    </div>
+</div>

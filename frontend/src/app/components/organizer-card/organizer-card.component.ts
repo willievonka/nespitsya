@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { CommonModule } from '@angular/common';
 import { TuiAppearance, TuiButton, TuiFallbackSrcPipe } from '@taiga-ui/core';
-import { AccountService } from '../../../../../../../../../account.page/services/account.service';
+import { AccountService } from '../../children/account.page/services/account.service';
 import { BehaviorSubject, Observable, take } from 'rxjs';
-import { IUser } from '../../../../../../../../../../interfaces/user.interface';
-import { AuthService } from '../../../../../../../../../auth.page/services/auth.service';
+import { IUser } from '../../interfaces/user.interface';
+import { AuthService } from '../../children/auth.page/services/auth.service';
 import { RouterLink } from '@angular/router';
 
 

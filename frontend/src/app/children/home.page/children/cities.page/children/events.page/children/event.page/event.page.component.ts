@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TuiBreadcrumbsComponent } from '../../../../../../components/tui-components/tui-breadcrumbs/tui-breadcrumbs.component';
-import { EventCardComponent } from './components/event-card/event-card.component';
-import { OrganizerCardComponent } from './components/organizer-card/organizer-card.component';
+import { OrganizerCardComponent } from '../../../../../../../../components/organizer-card/organizer-card.component';
 import { IEvent } from '../../../../../../interfaces/event.interface';
 import { IOrganizer } from '../../../../../../../../interfaces/organizer.interface';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
@@ -12,6 +11,7 @@ import { map, Observable, switchMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ICity } from '../../../../../../interfaces/city.interface';
 import { IPlace } from '../../../../../../interfaces/place.interface';
+import { EventCardComponent } from './components/event-card/event-card.component';
 
 
 @Component({

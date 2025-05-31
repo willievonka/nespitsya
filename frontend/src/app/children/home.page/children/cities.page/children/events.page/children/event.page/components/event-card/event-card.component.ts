@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 import { CommonModule, DatePipe } from '@angular/common';
-import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { AuthService } from '../../../../../../../../../auth.page/services/auth.service';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { TuiLike } from '@taiga-ui/kit';
 import { AccountService } from '../../../../../../../../../account.page/services/account.service';
 import { IUser } from '../../../../../../../../../../interfaces/user.interface';
+import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
+import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 
 
 @Component({

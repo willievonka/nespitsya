@@ -31,7 +31,7 @@
             tuiButton
             size="xs"
             appearance="outline"
-            [textContent]="(isSubscribed$ | async) ? 'Отписаться' : 'Подписаться'"
+            [textContent]="(isSubscribed$ | async) ? 'Вы подписаны' : 'Подписаться'"
             (click)="toogleSubscribe($event)"
         >
         </button>

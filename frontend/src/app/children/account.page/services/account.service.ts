@@ -4,6 +4,7 @@ import { IUser } from '../../../interfaces/user.interface';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
 import { IEvent } from '../../home.page/interfaces/event.interface';
+import { IOrganizer } from '../../../interfaces/organizer.interface';
 
 
 @Injectable({
@@ -76,8 +77,8 @@ export class AccountService {
      * @param idList - An array of event IDs to fetch.
      * @returns An observable of an array of events.
      */
-    public getEventsByIds(idList: number[]): Observable<IEvent[]> {
-        return this._http.post<IEvent[]>(`${this._apiUrl}/event/by-ids`, { eventIds: idList });
+    public getEventsByIds(ids: number[]): Observable<IEvent[]> {
+        return this._http.post<IEvent[]>(`${this._apiUrl}/event/by-ids`, { eventIds: ids });
     }
 
     /**
@@ -107,6 +108,15 @@ export class AccountService {
      */
     public removeAllFromFavorites(user: IUser): Observable<string> {
         return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites/clear`);
+    }
+
+    /**
+     * Retrieves organizers by their IDs.
+     * @param ids - An array of organizer IDs to fetch.
+     * @returns An observable of an array of organizers.
+     */
+    public getOrgsByIds(ids: number[]): Observable<IOrganizer[]> {
+        return this._http.post<IOrganizer[]>(`${this._apiUrl}/organizer/by-ids`, { organizerIds: ids });
     }
 
     /**
