@@ -30,10 +30,11 @@
           tuiButton
           appearance="textfield"
           size="m"
-          [textContent]="'Место'"
           [iconEnd]="isPlaceDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
           (click)="isPlaceDropdownOpen = !isPlaceDropdownOpen"
         >
+        <span tuiFade>Место</span>
+        <tui-badge appearance="neutral">{{ placeCounter }}</tui-badge>
         </button>
         <ng-template #placeDropdownContent>
           <div class="events-page__filter-dropdown">
@@ -62,10 +63,11 @@
           tuiButton
           appearance="textfield"
           size="m"
-          [textContent]="'Тип'"
           [iconEnd]="isTypeDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
           (click)="isTypeDropdownOpen = !isTypeDropdownOpen"
         >
+        <span tuiFade>Тип</span>
+        <tui-badge appearance="neutral">{{ typeCounter }}</tui-badge>
         </button>
         <ng-template #typeDropdownContent>
           <div class="events-page__filter-dropdown">
@@ -94,10 +96,11 @@
           tuiButton
           appearance="textfield"
           size="m"
-          [textContent]="'Дата'"
           [iconEnd]="isDateDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
           (click)="isDateDropdownOpen = !isDateDropdownOpen"
         >
+        <span tuiFade>Дата</span>
+        <tui-badge appearance="neutral">{{ dateCounter }}</tui-badge>
         </button>
         <ng-template #dateDropdownContent>
           <div class="events-page__filter-dropdown">

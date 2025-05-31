@@ -11,7 +11,7 @@ import { EventsListComponent } from './components/events-list/events-list.compon
 import { TEventsList } from './types/events-list.type';
 import { IEvent } from '../../../../interfaces/event.interface';
 import { TuiButton } from '@taiga-ui/core';
-import { TuiCheckbox } from '@taiga-ui/kit';
+import { TuiCheckbox,TuiBadge } from '@taiga-ui/kit';
 import { FormsModule } from '@angular/forms';
 
 
@@ -26,12 +26,34 @@ import { FormsModule } from '@angular/forms';
         TuiOutlineButtonComponent,
         TuiButton,
         TuiCheckbox,
+        TuiBadge,
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventsPageComponent {
+    /**
+     * Returns the number of checked place tabs.
+     */
+    public get placeCounter(): number {
+        return this.placeTabs.filter(tab => tab.checked).length;
+    }
+
+    /**
+     * Returns the number of checked type tabs.
+     */
+    public get typeCounter(): number {
+        return this.typeTabs.filter(tab => tab.checked).length;
+    }
+
+    /**
+     * Returns the number of checked date tabs.
+     */
+    public get dateCounter(): number {
+        return this.dateTabs.filter(tab => tab.checked).length;
+    }
+
     public city$: Observable<ICity>;
     public events$: Observable<TEventsList>;
     public eventsNumber$: Observable<number>;
