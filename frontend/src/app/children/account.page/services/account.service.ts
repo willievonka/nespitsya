@@ -99,4 +99,13 @@ export class AccountService {
     public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
         return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites`, { body: { eventId: eventId.toString() } });
     }
+
+    /**
+     * Removes all events from the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @returns An observable of the server response as a string.
+     */
+    public removeAllFromFavorites(user: IUser): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites/clear`);
+    }
 }

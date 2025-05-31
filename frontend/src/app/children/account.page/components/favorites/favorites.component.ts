@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BehaviorSubject, Observable, switchMap, take } from 'rxjs';
+import { BehaviorSubject, Observable, of, switchMap, take } from 'rxjs';
 import { IUser } from '../../../../interfaces/user.interface';
 import { AccountService } from '../../services/account.service';
 import { CommonModule } from '@angular/common';
@@ -30,9 +30,12 @@ export class FavoritesComponent {
         this.user$.pipe(take(1)).subscribe(user => {
             this._favoritesIds$.next(user.favorites || []);
         });
-
+        
         this.events$ = this._favoritesIds$.pipe(
-            switchMap(ids => this._accountService.getEventsByIds(ids))
+            switchMap(ids => ids.length
+                ? this._accountService.getEventsByIds(ids)
+                : of([] as IEvent[])
+            )
         );
     }
 
@@ -44,5 +47,18 @@ export class FavoritesComponent {
         this._favoritesIds$.next(
             this._favoritesIds$.value.filter(id => id !== eventId)
         );
+    }
+
+    
+    /**
+     * Removes all events from the user's favorites list.
+     * @param user The user whose favorites will be cleared.
+     */
+    public onAllEventsRemoved(user: IUser): void {
+        this._accountService.removeAllFromFavorites(user)
+            .pipe(take(1))
+            .subscribe(() => {
+                this._favoritesIds$.next([]);
+            });
     }
 }
