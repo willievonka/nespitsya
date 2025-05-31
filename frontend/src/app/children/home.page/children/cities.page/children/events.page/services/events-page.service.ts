@@ -39,6 +39,22 @@ export class EventsPageService {
         );
     }
 
+    /**
+     * Получить события по дате для города
+     * @param cityId - ID города
+     * @param date - дата в формате YYYY-MM-DD
+     */
+    public getEventsByDate(cityId: string, date: string): Observable<TEventsList> {
+        return this._http.get<TEventsList>(`${this._apiUrl}/event/date-range?cityId=${cityId}&from=${date}&to=${date}`).pipe(
+            catchError(e => {
+                if (e.status === 404) {
+                    return of([]);
+                }
+                throw e;
+            })
+        );
+    }
+
 
     /**
      * Generates breadcrumbs for navigation based on the provided city.

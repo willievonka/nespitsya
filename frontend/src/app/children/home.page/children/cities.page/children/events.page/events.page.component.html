@@ -24,10 +24,21 @@
     </div>
     <div class="events-page__filter-wrapper">
         <!-- [ ] TODO: реализовать фильтры -->
+    <div class="events-page__filter">
+        <label for="dateFilter">Фильтр по дате:</label>
+        <input
+      id="dateFilter"
+      type="date"
+    [(ngModel)]="selectedDate"
+    name="selectedDate"
+      (change)="onDateFilterChange()"
+      class="events-page__filter-date-input"
+        />
     </div>
-    <app-events-list 
-        class="events-page__events-list" 
-        *ngIf="events$ | async as events" 
+    </div>
+    <app-events-list
+        class="events-page__events-list"
+        *ngIf="events$ | async as events"
         [eventsList]="events"
     />
 </div>
