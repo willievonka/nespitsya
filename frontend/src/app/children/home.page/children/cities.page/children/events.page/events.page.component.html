@@ -16,22 +16,41 @@
             <ng-template ngPluralCase="few">{{ eventsNumber }} результата</ng-template>
             <ng-template ngPluralCase="many">{{ eventsNumber }} результатов</ng-template>
         </div>
-        <app-tui-outline-button buttonText="ДОБАВИТЬ" buttonSize="xs" buttonIconRight="@tui.arrow-up-right" />
+        <app-tui-outline-button 
+            buttonText="ДОБАВИТЬ" 
+            buttonSize="xs" 
+            buttonIconRight="@tui.arrow-up-right" 
+        />
     </div>
     <div class="events-page__filter-wrapper">
-        <!-- [ ] TODO: реализовать фильтры -->
+        <!-- [x] TODO: реализовать фильтры -->
         <app-filter 
             [label]="'Место'"
             [tabs]="placeTabs"
+            (filterChange)="onPlaceChange($event)"
         />
         <app-filter 
             [label]="'Тип'"
             [tabs]="typeTabs"
+            (filterChange)="onTypeChange($event)"
         />
         <app-date-filter 
             [label]="'Дата'"
             [dates]="dateList"
+            (dateChange)="onDateChange($event)"
         />
     </div>
-    <app-events-list class="events-page__events-list" *ngIf="events$ | async as events" [eventsList]="events" />
+    <app-events-list 
+        class="events-page__events-list" 
+        *ngIf="events$ | async as events" 
+        [eventsList]="events" 
+    />
+    <h1
+        class="events-page__no-events"  
+        *ngIf="events$ | async as events"
+        style="margin: 0;" 
+        [hidden]="events.length > 0"
+    >
+        Нет подходящих событий
+    </h1>
 </div>

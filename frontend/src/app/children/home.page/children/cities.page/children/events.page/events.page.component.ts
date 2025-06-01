@@ -5,7 +5,7 @@ import { TuiOutlineButtonComponent } from './components/tui-components/tui-outli
 import { CityDeclensionPipe } from '../../../../pipes/city-declension/city-declension.pipe';
 import { EventsPageService } from './services/events-page.service';
 import { ICity } from '../../../../interfaces/city.interface';
-import { map, Observable, startWith } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, startWith } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { EventsListComponent } from './components/events-list/events-list.component';
 import { TEventsList } from './types/events-list.type';
@@ -15,6 +15,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IFilterTab } from './types/filter-tab.interface';
 import { IEvent } from '../../../../interfaces/event.interface';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
+import { TuiDayRange } from '@taiga-ui/cdk';
+import { EventsFilterService } from './services/events-filter.service';
 
 
 @Component({
@@ -43,36 +45,76 @@ export class EventsPageComponent {
     protected typeTabs: IFilterTab[] = [];
     protected dateList: Date[] = [];
 
+    private _selectedDate$: BehaviorSubject<TuiDayRange | null> = new BehaviorSubject<TuiDayRange | null>(null);
+    private _selectedPlaces$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+    private _selectedTypes$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+
     constructor(
         private readonly _eventsPageService: EventsPageService,
         private readonly _route: ActivatedRoute,
-        private readonly _destroyRef: DestroyRef
+        private readonly _destroyRef: DestroyRef,
+        private readonly _filterService: EventsFilterService
     ) {
         const cityId: string = this._route.snapshot.paramMap.get('city-id') || '';
 
         this.city$ = this._eventsPageService.getCity(cityId);
-        this.events$ = this._eventsPageService.getEvents(cityId);
+        const allEvents$: Observable<TEventsList> = this._eventsPageService.getEvents(cityId).pipe(startWith([]));
+
+        this.events$ = combineLatest([
+            allEvents$,
+            this._selectedDate$,
+            this._selectedPlaces$,
+            this._selectedTypes$
+        ]).pipe(
+            map(([events, date, places, types]: [TEventsList, TuiDayRange | null, string[], string[]]) =>
+                this._filterService.filterEvents(events, date, places, types)
+            )
+        );
+
         this.eventsNumber$ = this.events$.pipe(
             map(events => events.reduce((total, group) => total + group.events.length, 0))
         );
         this.breadcrumbsItems$ = this._eventsPageService.getBreadcrumbs(this.city$);
 
-        this.initTypeTabs();
-        this.initPlaceTabs();
-        this.initDateList();
+        this.initTypeTabs(allEvents$);
+        this.initPlaceTabs(allEvents$);
+        this.initDateList(allEvents$);
     }
 
     /**
-     * Initializes filter tabs by extracting unique values from events using the provided extractor function.
+     * Handles the change of the selected date range.
+     * @param range The new selected date range or null.
+     */
+    public onDateChange(range: TuiDayRange | null): void {
+        this._selectedDate$.next(range);
+    }
+    /**
+     * Handles the change of the selected places.
+     * @param selected The array of selected place names.
+     */
+    public onPlaceChange(selected: string[]): void {
+        this._selectedPlaces$.next(selected);
+    }
+    /**
+     * Handles the change of the selected event types.
+     * @param selected The array of selected type names.
+     */
+    public onTypeChange(selected: string[]): void {
+        this._selectedTypes$.next(selected);
+    }
+
+    /**
+     * Initializes filter tabs by extracting unique values from events using the provided extractor and assigns them using the assign callback.
+     * @param allEvents$ Observable emitting the list of event groups.
      * @param extractor Function to extract an array of string values from an event.
-     * @param assign Function to assign the generated tabs array.
+     * @param assign Callback to assign the generated tabs array.
      */
     private initTabs(
+        allEvents$: Observable<TEventsList>,
         extractor: (event: IEvent) => string[] | undefined,
         assign: (tabs: IFilterTab[]) => void
     ): void {
-        this.events$.pipe(
-            startWith([]),
+        allEvents$.pipe(
             map(events => {
                 const values: Set<string> = new Set<string>();
                 events.forEach(group => {
@@ -80,7 +122,7 @@ export class EventsPageComponent {
                         extractor(event)?.forEach(val => values.add(val));
                     });
                 });
-
+                
                 return Array.from(values);
             }),
             takeUntilDestroyed(this._destroyRef)
@@ -90,10 +132,12 @@ export class EventsPageComponent {
     }
 
     /**
-     * Initializes the typeTabs array with unique event tag names.
+     * Initializes the typeTabs array with unique event type names.
+     * @param allEvents$ Observable emitting the list of event groups.
      */
-    private initTypeTabs(): void {
+    private initTypeTabs(allEvents$: Observable<TEventsList>): void {
         this.initTabs(
+            allEvents$,
             event => event.tags?.map(tag => tag.name),
             tabs => this.typeTabs = tabs
         );
@@ -101,9 +145,11 @@ export class EventsPageComponent {
 
     /**
      * Initializes the placeTabs array with unique event place names.
+     * @param allEvents$ Observable emitting the list of event groups.
      */
-    private initPlaceTabs(): void {
+    private initPlaceTabs(allEvents$: Observable<TEventsList>): void {
         this.initTabs(
+            allEvents$,
             event => event.place ? [event.place] : [],
             tabs => this.placeTabs = tabs
         );
@@ -111,10 +157,10 @@ export class EventsPageComponent {
 
     /**
      * Initializes the dateList array with unique event start dates.
+     * @param allEvents$ Observable emitting the list of event groups.
      */
-    private initDateList(): void {
-        this.events$.pipe(
-            startWith([]),
+    private initDateList(allEvents$: Observable<TEventsList>): void {
+        allEvents$.pipe(
             map(events => {
                 const dates: Set<Date> = new Set<Date>();
                 events.forEach(group => {
@@ -124,7 +170,7 @@ export class EventsPageComponent {
                         }
                     });
                 });
-
+                
                 return Array.from(dates).sort();
             }),
             takeUntilDestroyed(this._destroyRef)

@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import { TuiButton, TuiDropdown, TuiScrollbar, tuiScrollbarOptionsProvider } from '@taiga-ui/core';
 import { TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import { IFilterTab } from '../../types/filter-tab.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { buildForm, getSelectedTabs, sortTabs } from './utils/filter.utils';
 
 
 @Component({
@@ -32,6 +34,8 @@ import { IFilterTab } from '../../types/filter-tab.interface';
 export class FilterComponent {
     @Input()
     public label: string = 'Фильтр';
+    @Output()
+    public filterChange: EventEmitter<string[]> = new EventEmitter<string[]>();
     
     /**
      * Sets the filter tabs and updates the form controls accordingly.
@@ -41,13 +45,8 @@ export class FilterComponent {
     @Input()
     public set tabs(tabs: IFilterTab[]) {
         const selectAll: IFilterTab = { name: 'Выбрать все', checked: false };
-        const sortedTabs: IFilterTab[] = (tabs ?? [])
-            .slice()
-            .sort(
-                (a, b) => a.name.localeCompare(b.name, 'ru')
-            );
-        this._tabs = [selectAll, ...sortedTabs];
-        this.rebuildForm();
+        this._tabs = [selectAll, ...sortTabs(tabs)];
+        this.form = buildForm(this._tabs);
         this.initSubscriptions();
     }
     /**
@@ -74,11 +73,13 @@ export class FilterComponent {
     protected form: FormGroup = new FormGroup({});
     protected open: boolean = false;
     private _tabs: IFilterTab[] = [];
+
+    constructor(private _destroyRef: DestroyRef) {}
     
     /**
      * Toggles the dropdown open state.
      */
-    protected toogleDropdown(): void {
+    protected toggleDropdown(): void {
         this.open = !this.open;
     }
  
@@ -101,31 +102,32 @@ export class FilterComponent {
     }
 
     /**
-     * Rebuilds the form controls based on the current filter tabs.
-     */
-    private rebuildForm(): void {
-        Object.keys(this.form.controls).forEach(key => this.form.removeControl(key));
-        this._tabs.forEach(tab => {
-            this.form.addControl(tab.name, new FormControl(tab.checked));
-        });
-    }
-
-    /**
      * Initializes subscriptions for the select all and individual tab checkboxes.
      */
     private initSubscriptions(): void {
-        this.selectAllControl?.valueChanges.subscribe(checked => this.setAllChecked(checked));
+        this.selectAllControl?.valueChanges
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe(checked => this.setAllChecked(checked));
+
         this._tabs
             .filter(tab => tab.name !== 'Выбрать все')
             .forEach(tab => {
-                this.form.get(tab.name)?.valueChanges.subscribe(() => this.syncSelectAll());
+                this.form.get(tab.name)?.valueChanges
+                    .pipe(takeUntilDestroyed(this._destroyRef))
+                    .subscribe(() => {
+                        this.syncSelectAll();
+                        this.emitSelected();
+                    });
             });
+
+        this.selectAllControl?.valueChanges
+            .pipe(takeUntilDestroyed(this._destroyRef))
+            .subscribe(() => this.emitSelected());
     }
 
     /**
-     * Handles the "Select All" checkbox change event.
-     * Sets all filter tabs (except "Выбрать все") to the checked state.
-     * @param checked - The new checked state of the "Select All" checkbox.
+     * Sets all filter tab checkboxes to the specified checked state.
+     * @param checked - Boolean indicating whether to check or uncheck all tabs.
      */
     private setAllChecked(checked: boolean): void {
         this._tabs.forEach(tab => {
@@ -133,15 +135,23 @@ export class FilterComponent {
                 this.form.get(tab.name)?.setValue(checked, { emitEvent: false });
             }
         });
+        this.emitSelected();
     }
 
     /**
-     * Synchronizes the "Select All" checkbox state based on the state of other checkboxes.
+     * Synchronizes the "Select All" checkbox state based on the state of individual tab checkboxes.
      */
     private syncSelectAll(): void {
         const allChecked: boolean = this._tabs
             .filter(tab => tab.name !== 'Выбрать все')
             .every(tab => this.form.get(tab.name)?.value === true);
-        this.form.get('Выбрать все')?.setValue(allChecked, { emitEvent: false });
+        this.selectAllControl?.setValue(allChecked, { emitEvent: false });
+    }
+
+    /**
+     * Emits the currently selected filter tab names via the filterChange EventEmitter.
+     */
+    private emitSelected(): void {
+        this.filterChange.emit(getSelectedTabs(this.form, this._tabs));
     }
 }

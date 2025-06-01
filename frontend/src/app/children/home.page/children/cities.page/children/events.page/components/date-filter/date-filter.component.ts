@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TuiActiveZone, TuiDay, TuiDayRange, TuiObscured } from '@taiga-ui/cdk';
 import { TuiButton, TuiCalendar, TuiDropdown, TuiMarkerHandler } from '@taiga-ui/core';
 import { TuiChevron } from '@taiga-ui/kit';
+import { getMarkerHandler, mapAndSortDates } from './utils/date-filter.utils';
 
 
 const calendarDot: [string] = ['var(--tui-status-neutral)'];
@@ -12,7 +12,6 @@ const calendarDot: [string] = ['var(--tui-status-neutral)'];
     selector: 'app-date-filter',
     imports: [
         CommonModule,
-        ReactiveFormsModule,
         TuiButton,
         TuiCalendar,
         TuiChevron,
@@ -27,6 +26,9 @@ const calendarDot: [string] = ['var(--tui-status-neutral)'];
 export class DateFilterComponent {
     @Input()
     public label: string = 'Дата';
+
+    @Output()
+    public dateChange: EventEmitter<TuiDayRange | null> = new EventEmitter<TuiDayRange | null>();
     
     /**
      * Sets the list of dates as Date objects and converts them to TuiDay instances.
@@ -35,9 +37,8 @@ export class DateFilterComponent {
     // eslint-disable-next-line @typescript-eslint/member-ordering
     @Input()
     public set dates(dates: Date[]) {
-        this._dates = (dates ?? [])
-            .map(date => new TuiDay(date.getFullYear(), date.getMonth(), date.getDate()))
-            .sort((a, b) => a.daySameOrBefore(b) ? -1 : 1);
+        this._dates = mapAndSortDates(dates);
+        this.markerHandler = getMarkerHandler(this._dates, calendarDot);
     }
 
     /**
@@ -63,12 +64,11 @@ export class DateFilterComponent {
         return new TuiDay(now.getFullYear(), now.getMonth(), now.getDate());
     }
     
-    protected form: FormGroup = new FormGroup({});
     protected open: boolean = false;
     protected value: TuiDayRange | null = null;
     protected hoveredItem: TuiDay | null = null;
     private _dates: TuiDay[] = [];
-    protected readonly markerHandler: TuiMarkerHandler = (day: TuiDay) => this._dates.some(d => d.daySame(day)) ? calendarDot : [];
+    protected markerHandler: TuiMarkerHandler = () => [];
     
     /**
      * Handles the click event on a day in the calendar.
@@ -77,15 +77,16 @@ export class DateFilterComponent {
     protected onDayClick(day: TuiDay): void {
         if (!this.value?.isSingleDay) {
             this.value = new TuiDayRange(day, day);
+        } else {
+            this.value = TuiDayRange.sort(this.value.from, day);
         }
- 
-        this.value = TuiDayRange.sort(this.value.from, day);
+        this.dateChange.emit(this.value);
     }
 
     /**
      * Toggles the dropdown open state.
      */
-    protected toogleDropdown(): void {
+    protected toggleDropdown(): void {
         this.open = !this.open;
     }
  
