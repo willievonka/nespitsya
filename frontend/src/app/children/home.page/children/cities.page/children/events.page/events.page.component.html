@@ -8,37 +8,39 @@
             {{ city.name | cityDeclension }}
         </span>
     </h1>
-    <div class="events-page__search-results-container" *ngIf="eventsNumber$ | async as eventsNumber">
-        <!-- [x] TODO: переделать отображение количества ивентов -->
-        <div class="events-page__search-results" [ngPlural]="eventsNumber">
-            <ng-template ngPluralCase="=0">Нет результатов</ng-template>
-            <ng-template ngPluralCase="one">{{ eventsNumber }} результат</ng-template>
-            <ng-template ngPluralCase="few">{{ eventsNumber }} результата</ng-template>
-            <ng-template ngPluralCase="many">{{ eventsNumber }} результатов</ng-template>
+    <div class="events-page__utils">
+        <div class="events-page__search-results-container" *ngIf="eventsNumber$ | async as eventsNumber">
+            <!-- [x] TODO: переделать отображение количества ивентов -->
+            <div class="events-page__search-results" [ngPlural]="eventsNumber">
+                <ng-template ngPluralCase="=0">Нет результатов</ng-template>
+                <ng-template ngPluralCase="one">{{ eventsNumber }} результат</ng-template>
+                <ng-template ngPluralCase="few">{{ eventsNumber }} результата</ng-template>
+                <ng-template ngPluralCase="many">{{ eventsNumber }} результатов</ng-template>
+            </div>
+            <app-tui-outline-button 
+                buttonText="ДОБАВИТЬ" 
+                buttonSize="xs" 
+                buttonIconRight="@tui.arrow-up-right" 
+            />
         </div>
-        <app-tui-outline-button 
-            buttonText="ДОБАВИТЬ" 
-            buttonSize="xs" 
-            buttonIconRight="@tui.arrow-up-right" 
-        />
-    </div>
-    <div class="events-page__filter-wrapper">
-        <!-- [x] TODO: реализовать фильтры -->
-        <app-filter 
-            [label]="'Место'"
-            [tabs]="placeTabs"
-            (filterChange)="onPlaceChange($event)"
-        />
-        <app-filter 
-            [label]="'Тип'"
-            [tabs]="typeTabs"
-            (filterChange)="onTypeChange($event)"
-        />
-        <app-date-filter 
-            [label]="'Дата'"
-            [dates]="dateList"
-            (dateChange)="onDateChange($event)"
-        />
+        <div class="events-page__filter-wrapper">
+            <!-- [x] TODO: реализовать фильтры -->
+            <app-filter 
+                [label]="'Место'"
+                [tabs]="placeTabs"
+                (filterChange)="onPlaceChange($event)"
+            />
+            <app-filter 
+                [label]="'Тип'"
+                [tabs]="typeTabs"
+                (filterChange)="onTypeChange($event)"
+            />
+            <app-date-filter 
+                [label]="'Дата'"
+                [dates]="dateList"
+                (dateChange)="onDateChange($event)"
+            />
+        </div>
     </div>
     <app-events-list 
         class="events-page__events-list" 
