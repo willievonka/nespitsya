@@ -1,0 +1,25 @@
+.main {
+    &__button {
+        color: white;
+    }
+
+    &__dropdown {
+        display: flex;
+        flex-direction: column;
+        max-height: 252px;
+        gap: 8px;
+        
+        &-wrapper {
+            padding: 8px;
+            padding-right: 4px;
+            overflow-y: auto;
+        }
+
+        &-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 24px;
+        }
+    }
+}

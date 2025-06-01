@@ -1,6 +1,6 @@
 <div class="events-page">
     <div *ngIf="breadcrumbsItems$ | async as breadcrumbsItems">
-        <app-tui-breadcrumbs [items]="breadcrumbsItems"/>
+        <app-tui-breadcrumbs [items]="breadcrumbsItems" />
     </div>
     <h1 class="events-page__title">
         События в<br>
@@ -16,116 +16,18 @@
             <ng-template ngPluralCase="few">{{ eventsNumber }} результата</ng-template>
             <ng-template ngPluralCase="many">{{ eventsNumber }} результатов</ng-template>
         </div>
-        <app-tui-outline-button
-            buttonText="ДОБАВИТЬ"
-            buttonSize="xs"
-            buttonIconRight="@tui.arrow-up-right"
-        />
+        <app-tui-outline-button buttonText="ДОБАВИТЬ" buttonSize="xs" buttonIconRight="@tui.arrow-up-right" />
     </div>
     <div class="events-page__filter-wrapper">
-      <!-- [ ] TODO: реализовать фильтры -->
-      <div class="events-page__filter-place">
-        <button
-          class="events-page__filter-button"
-          tuiButton
-          appearance="textfield"
-          size="m"
-          [iconEnd]="isPlaceDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
-          (click)="isPlaceDropdownOpen = !isPlaceDropdownOpen"
-        >
-        <span tuiFade>Место</span>
-        <tui-badge appearance="neutral">{{ placeCounter }}</tui-badge>
-        </button>
-        <ng-template #placeDropdownContent>
-          <div class="events-page__filter-dropdown">
-              <div
-              *ngFor="let tab of placeTabs"
-              class="events-page__filter-dropdown-item"
-              >
-              <input
-              tuiCheckbox
-              [(ngModel)]="tab.checked"
-              type="checkbox"
-              [size]="'m'"
-              />
-              <span class="events-page__filter-dropdown-item-label">{{ tab.name }}</span>
-              </div>
-          </div>
-        </ng-template>
-        <ng-container *ngIf="isPlaceDropdownOpen">
-          <ng-container *ngTemplateOutlet="placeDropdownContent"></ng-container>
-        </ng-container>
-      </div>
-
-      <div class="events-page__filter-type">
-        <button
-          class="events-page__filter-button"
-          tuiButton
-          appearance="textfield"
-          size="m"
-          [iconEnd]="isTypeDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
-          (click)="isTypeDropdownOpen = !isTypeDropdownOpen"
-        >
-        <span tuiFade>Тип</span>
-        <tui-badge appearance="neutral">{{ typeCounter }}</tui-badge>
-        </button>
-        <ng-template #typeDropdownContent>
-          <div class="events-page__filter-dropdown">
-              <div
-              *ngFor="let tab of typeTabs"
-              class="events-page__filter-dropdown-item"
-              >
-              <input
-              tuiCheckbox
-              [(ngModel)]="tab.checked"
-              type="checkbox"
-              [size]="'m'"
-              />
-              <span class="events-page__filter-dropdown-item-label">{{ tab.name }}</span>
-              </div>
-          </div>
-        </ng-template>
-        <ng-container *ngIf="isTypeDropdownOpen">
-          <ng-container *ngTemplateOutlet="typeDropdownContent"></ng-container>
-        </ng-container>
-      </div>
-
-      <div class="events-page__filter-date">
-        <button
-          class="events-page__filter-button"
-          tuiButton
-          appearance="textfield"
-          size="m"
-          [iconEnd]="isDateDropdownOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
-          (click)="isDateDropdownOpen = !isDateDropdownOpen"
-        >
-        <span tuiFade>Дата</span>
-        <tui-badge appearance="neutral">{{ dateCounter }}</tui-badge>
-        </button>
-        <ng-template #dateDropdownContent>
-          <div class="events-page__filter-dropdown">
-              <div
-              *ngFor="let tab of dateTabs"
-              class="events-page__filter-dropdown-item"
-              >
-              <input
-              tuiCheckbox
-              [(ngModel)]="tab.checked"
-              type="checkbox"
-              [size]="'m'"
-              />
-              <span class="events-page__filter-dropdown-item-label">{{ tab.name }}</span>
-              </div>
-          </div>
-        </ng-template>
-        <ng-container *ngIf="isDateDropdownOpen">
-          <ng-container *ngTemplateOutlet="dateDropdownContent"></ng-container>
-        </ng-container>
-      </div>
+        <!-- [ ] TODO: реализовать фильтры -->
+        <app-filter 
+            [label]="'Место'"
+            [tabs]="placeTabs"
+        />
+        <app-filter 
+            [label]="'Тип'"
+            [tabs]="typeTabs"
+        />
     </div>
-    <app-events-list
-        class="events-page__events-list"
-        *ngIf="events$ | async as events"
-        [eventsList]="events"
-    />
+    <app-events-list class="events-page__events-list" *ngIf="events$ | async as events" [eventsList]="events" />
 </div>

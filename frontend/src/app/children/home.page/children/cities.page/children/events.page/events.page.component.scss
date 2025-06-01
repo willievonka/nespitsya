@@ -36,33 +36,9 @@
         }
     }
 
-    &__filter-wrapper{
+    &__filter-wrapper {
       display: flex;
       flex-direction: row;
       gap: 12px;
-    }
-
-    &__filter-dropdown {
-        margin-top: 12px;
-        display: flex;
-        flex-direction: column;
-        border-radius: 12px;
-        background-color: #333333;
-        border-color: #2C2C2E;
-        width: fit-content;
-        padding: 8px;
-        gap: 8px;
-
-        &-item {
-          display: flex;
-          align-items: center;
-          padding: 8px;
-          gap: 10px;
-
-          &-label {
-            font-size: 16px;
-            color: #FFFFFF;
-          }
-        }
     }
 }

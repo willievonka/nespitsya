@@ -1,0 +1,36 @@
+<button
+    class="main__button"
+    type="button"
+    tuiButton
+    size="m"
+    appearance="outline"
+    tuiChevron
+    [tuiAppearanceMode]="isAnyChecked ? 'checked' : null"
+    [textContent]="label"
+    [tuiDropdown]="dropdownContent"
+    [tuiDropdownManual]="open"
+    [tuiObscuredEnabled]="open"
+    (click)="toogleDropdown()"
+    (tuiActiveZoneChange)="handleActiveZone($event)"
+    (tuiObscured)="handleObscured($event)"
+>
+    <ng-template #dropdownContent>
+        <div class="main__dropdown-wrapper" [formGroup]="form">
+            <tui-scrollbar>
+                <div class="main__dropdown">
+                    <label
+                        *ngFor="let tab of tabs"
+                        class="main__dropdown-item"
+                    >
+                        <input
+                            type="checkbox"
+                            tuiCheckbox
+                            [formControlName]="tab.name"
+                        />
+                        {{ tab.name }}
+                    </label>
+                </div>
+            </tui-scrollbar>
+        </div>
+    </ng-template>
+</button>
