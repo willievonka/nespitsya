@@ -53,14 +53,25 @@ h1, h2, h3 {
         color: rgba($color: #E38163, $alpha: 1);
     }
 
+    &__footer {
+        display: flex;
+        flex-direction: row;
+        margin-top: auto;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     &__tags {
         display: flex;
-        margin-top: auto;
-        flex-direction: row;
         justify-content: flex-start;
         align-items: flex-start;
         flex-wrap: wrap;
         gap: 8px;
+    }
+
+    &__delete-button {
+        color: white;
+        z-index: 10;
     }
 }
 

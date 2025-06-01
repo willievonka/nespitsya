@@ -25,16 +25,12 @@
                 <div class="event-page__organizer-info" *ngIf="organizer$ | async as organizer">
                     <app-organizer-card
                         class="event-page__organizer-card"
+                        [id]="organizer.id"
                         [image]="organizer.image"
                         [name]="organizer.username"
                         [subsCount]="organizer.subsCount"
                         [eventsCount]="organizer.eventsCount"
-                    />
-                    <app-tui-secondary-button
-                        class="event-page__organizer-button"
-                        buttonText="Подписаться"
-                        size="xs"
-                    />               
+                    />             
                 </div>
             </div>
             <div class="event-page__location">

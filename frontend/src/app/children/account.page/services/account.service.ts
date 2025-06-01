@@ -4,6 +4,8 @@ import { IUser } from '../../../interfaces/user.interface';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
 import { IEvent } from '../../home.page/interfaces/event.interface';
+import { IOrganizer } from '../../../interfaces/organizer.interface';
+import { IAccountTab } from '../interfaces/account-tab.interface';
 
 
 @Injectable({
@@ -11,6 +13,7 @@ import { IEvent } from '../../home.page/interfaces/event.interface';
 })
 export class AccountService {
     private readonly _authUrl: string = environment.authUrl;
+    private readonly _apiUrl: string = environment.apiUrl;
 
     constructor(private _http: HttpClient) {}
     
@@ -21,15 +24,14 @@ export class AccountService {
     public getUser(): Observable<IUser> {
         return this._http.get<IUser>(this._authUrl + '/user');
     }
-
     
     /**
      * Generates a list of tabs based on the user's role.
      * @param user - The user object containing role information.
      * @returns An array of tab objects with name, icon, and route properties.
      */
-    public getTabs(user: IUser): Array<{name: string, icon: string, route: string}> {
-        const tabs: Array<{name: string, icon: string, route: string}> = [];
+    public getTabs(user: IUser): IAccountTab[] {
+        const tabs: IAccountTab[] = [];
         tabs.push({ name: 'Аккаунт', icon: 'circle-user', route: '/account/profile' });
         switch (user.role) {
             case 'user':
@@ -46,7 +48,6 @@ export class AccountService {
 
         return tabs;
     }
-
 
     /**
      * Changes the username of the specified user.
@@ -73,12 +74,12 @@ export class AccountService {
     }
 
     /**
-     * Fetches the list of favorite events for a specific user.
-     * @param user - The user object containing the user's ID.
-     * @returns An observable of an array of favorite events.
+     * Retrieves events by their IDs.
+     * @param idList - An array of event IDs to fetch.
+     * @returns An observable of an array of events.
      */
-    public getFavorites(user: IUser): Observable<IEvent[]> {
-        return this._http.get<IEvent[]>(`${this._authUrl}/${user.id}/favorites`);
+    public getEventsByIds(ids: number[]): Observable<IEvent[]> {
+        return this._http.post<IEvent[]>(`${this._apiUrl}/event/by-ids`, { eventIds: ids });
     }
 
     /**
@@ -88,7 +89,7 @@ export class AccountService {
      * @returns An observable of the server response as a string.
      */
     public addToFavorites(user: IUser, eventId: number): Observable<string> {
-        return this._http.post<string>(`${this._authUrl}/${user.id}/favorites`, { eventId });
+        return this._http.post<string>(`${this._authUrl}/users/${user.id}/favorites`, { eventId: eventId.toString() });
     }
 
     /**
@@ -98,6 +99,44 @@ export class AccountService {
      * @returns An observable of the server response as a string.
      */
     public removeFromFavorites(user: IUser, eventId: number): Observable<string> {
-        return this._http.delete<string>(`${this._authUrl}/${user.id}/favorites`, { body: { eventId } });
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites`, { body: { eventId: eventId.toString() } });
+    }
+
+    /**
+     * Removes all events from the user's list of favorites.
+     * @param user - The user object containing the user's ID.
+     * @returns An observable of the server response as a string.
+     */
+    public removeAllFromFavorites(user: IUser): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/favorites/clear`);
+    }
+
+    /**
+     * Retrieves organizers by their IDs.
+     * @param ids - An array of organizer IDs to fetch.
+     * @returns An observable of an array of organizers.
+     */
+    public getOrgsByIds(ids: number[]): Observable<IOrganizer[]> {
+        return this._http.post<IOrganizer[]>(`${this._apiUrl}/organizer/by-ids`, { organizerIds: ids });
+    }
+
+    /**
+     * Subscribes the user to an organizer.
+     * @param user - The user object containing the user's ID.
+     * @param organizerId - The ID of the organizer to subscribe to.
+     * @returns An observable of the server response as a string.
+     */
+    public subscribeToOrganizer(user: IUser, organizerId: number): Observable<string> {
+        return this._http.post<string>(`${this._authUrl}/users/${user.id}/subscribes`, { organizerId: organizerId.toString() });
+    }
+
+    /**
+     * Unsubscribes the user from an organizer.
+     * @param user - The user object containing the user's ID.
+     * @param organizerId - The ID of the organizer to unsubscribe from.
+     * @returns An observable of the server response as a string.
+     */
+    public unsubscribeFromOrganizer(user: IUser, organizerId: number): Observable<string> {
+        return this._http.delete<string>(`${this._authUrl}/users/${user.id}/subscribes`, { body: { organizerId: organizerId.toString() } });
     }
 }

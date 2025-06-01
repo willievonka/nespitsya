@@ -17,12 +17,10 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
             }
 
             if (requiredAuth) {
-                router.navigate(['/auth/login']);
-            } else {
-                router.navigate(['/account']);
+                return router.createUrlTree(['/auth/login']);
             }
-
-            return false;
+            
+            return router.createUrlTree(['/account']);
         })
     );
 };

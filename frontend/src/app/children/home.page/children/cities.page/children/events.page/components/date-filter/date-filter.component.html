@@ -1,0 +1,28 @@
+<button
+    class="main__button"
+    type="button"
+    tuiButton
+    size="m"
+    appearance="outline"
+    tuiChevron
+    [tuiAppearanceMode]="isAnyChecked ? 'checked' : null"
+    [textContent]="label"
+    [tuiDropdown]="dropdownContent"
+    [tuiDropdownManual]="open"
+    [tuiObscuredEnabled]="open"
+    (click)="toggleDropdown()"
+    (tuiActiveZoneChange)="handleActiveZone($event)"
+    (tuiObscured)="handleObscured($event)"
+>
+    <ng-template #dropdownContent>
+        <tui-calendar
+            class="main__calendar" 
+            [showAdjacent]="true"
+            [markerHandler]="markerHandler"
+            [min]="today"
+            [value]="value"
+            [(hoveredItem)]="hoveredItem"
+            (dayClick)="onDayClick($event)"
+        />
+    </ng-template>
+</button>

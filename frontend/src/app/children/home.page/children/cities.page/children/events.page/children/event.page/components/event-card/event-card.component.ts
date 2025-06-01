@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TuiIcon, TuiLink } from '@taiga-ui/core';
-import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 import { CommonModule, DatePipe } from '@angular/common';
-import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
 import { AuthService } from '../../../../../../../../../auth.page/services/auth.service';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { TuiLike } from '@taiga-ui/kit';
 import { AccountService } from '../../../../../../../../../account.page/services/account.service';
 import { IUser } from '../../../../../../../../../../interfaces/user.interface';
+import { TuiAccentButtonComponent } from '../../../../../../../../../../components/tui-components/tui-accent-button/tui-accent-button.component';
+import { TuiChipComponent } from '../../../../../../../../../../components/tui-components/tui-chip/tui-chip.component';
 
 
 @Component({
@@ -45,20 +45,15 @@ export class EventCardComponent {
     @Input()
     public price: number = 0;
 
-    public isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public user$: Observable<IUser>;
-    public isLiked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    protected isAuthenticated$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    protected isLiked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor(private _authService: AuthService, private _accountService: AccountService) {
         this.isAuthenticated$ = this._authService.isAuthenticated$;
-
         this.user$ = this._accountService.getUser();
         this.user$.pipe(take(1)).subscribe(user => {
-            if (user.favorites?.includes(this.id)) {
-                this.isLiked$.next(true);
-            } else {
-                this.isLiked$.next(false);
-            }
+            this.isLiked$.next(!!user.favorites?.includes(this.id));
         });
     }
 
@@ -68,14 +63,12 @@ export class EventCardComponent {
     public toogleLike(): void {
         this.user$.pipe(take(1)).subscribe(user => {
             if (this.isLiked$.value) {
-                this._accountService.removeFromFavorites(user, this.id);
+                this._accountService.removeFromFavorites(user, this.id).pipe(take(1)).subscribe();
                 this.isLiked$.next(false);
             } else {
-                this._accountService.addToFavorites(user, this.id);
+                this._accountService.addToFavorites(user, this.id).pipe(take(1)).subscribe();
                 this.isLiked$.next(true);
             }
         });
     }
-
-
 }

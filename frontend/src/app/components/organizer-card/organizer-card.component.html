@@ -1,13 +1,17 @@
-<div class="main">
+<button 
+    class="main" 
+    tuiButton
+    appearance="secondary"
+    size="xl"
+    [routerLink]="['/home/cities']"
+>
     <tui-avatar
         class="main__avatar" 
         [src]="image| tuiFallbackSrc: '@tui.user' | async"
     />
     <div class="main__info">
         <!-- [ ] TODO: сделать редирект на страницу орга -->
-        <a href="#" tuiLink>
-            <h3 class="main__title">{{ name }}</h3>
-        </a>
+        <h3 class="main__title">{{ name }}</h3>
         <div class="main__subs-count info-count" [ngPlural]="subsCount">
             <ng-template ngPluralCase="=0">Нет подписчиков</ng-template>
             <ng-template ngPluralCase="one">{{ subsCount }} подписчик</ng-template>
@@ -21,4 +25,15 @@
             <ng-template ngPluralCase="many">{{ eventsCount }} событий</ng-template>
         </div>
     </div>
-</div>
+    <ng-container *ngIf="isAuthenticated$ | async">
+        <button
+            class="main__subscribe-button"
+            tuiButton
+            size="xs"
+            appearance="outline"
+            [textContent]="(isSubscribed$ | async) ? 'Вы подписаны' : 'Подписаться'"
+            (click)="toogleSubscribe($event)"
+        >
+        </button>
+    </ng-container>
+</button>

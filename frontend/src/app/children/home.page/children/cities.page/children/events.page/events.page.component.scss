@@ -30,9 +30,22 @@
         &-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             min-height: 44px;
             max-width: 452px;
             gap: 12px;
         }
+    }
+
+    &__utils {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+    }
+
+    &__filter-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
     }
 }

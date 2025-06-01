@@ -1,8 +1,35 @@
-<div
-    class="main"
-    *ngIf="user$ | async as user"
->
-    <div>
-        {{ user.favorites?.length === 0 ? 'Нет избранных мероприятий' : 'Избранные мероприятия' }}
+<div class="main" *ngIf="user$ | async as user">
+    <div *ngIf="events$ | async as events">
+        <ng-container *ngIf="events.length === 0; else eventsList">
+            <h1 class="main__title">Нет избранных мероприятий</h1>
+        </ng-container>
+        <ng-template #eventsList>
+            <div class="main__events">
+                <app-tui-event-card
+                    class="main__event"
+                    *ngFor="let event of events"
+                    [id]="event.id"
+                    [image]="event.image"
+                    [title]="event.title"
+                    [place]="event.place"
+                    [date]="event.dateStart"
+                    [price]="event.price"
+                    [tags]="event.tags"
+                    [user]="user"
+                    routerLink="/home/cities/{{ event.cityId }}/{{ event.id }}"
+                    (removed)="onEventRemoved($event)"
+                />
+            </div>
+            <button
+                class="main__delete-all-events-button"
+                tuiButton
+                size="m"
+                appearance="secondary"
+                iconStart="trash"
+                [textContent]="'Очистить избранные'"
+                (click)="onAllEventsRemoved(user)"
+            >
+            </button>
+        </ng-template>
     </div>
 </div>
