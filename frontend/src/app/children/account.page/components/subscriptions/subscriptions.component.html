@@ -4,9 +4,9 @@
             <h1 class="main__title">Нет подписок</h1>
         </ng-container>
         <ng-template #orgsList>
-            <div class="main__events">
+            <div class="main__orgs">
                 <app-organizer-card
-                    class="main__event"
+                    class="main__org"
                     *ngFor="let org of organizers"
                     [id]="org.id"
                     [image]="org.image"
