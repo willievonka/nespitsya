@@ -3,7 +3,7 @@ import secret from './config.js';
 import db from './db.js';
 
 const generateTokens = (payload) => {
-    const accessToken = jwt.sign(payload, secret.secretKey, { expiresIn: '15s' });
+    const accessToken = jwt.sign(payload, secret.secretKey, { expiresIn: '15m' });
     const refreshToken = jwt.sign(payload, secret.refreshKey, { expiresIn: '30d' });
 
     return { accessToken, refreshToken };

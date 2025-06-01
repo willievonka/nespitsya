@@ -17,7 +17,7 @@ router.post('/logout', authController.logout);
 router.put('/users/:id', upload.single('image'), authController.updateUser);
 router.delete('/users/:id', authController.deleteUser);
 router.delete('/users/:userId/favorites' , authController.removeFavorite);
-router.delete('/users/:userId/subscribes');
+router.delete('/users/:userId/subscribes', authController.removeSubscribe);
 router.delete('/users/:userId/favorites/clear', authController.clearFavorites);
 router.delete('/users/:userId/subscribes/clear', authController.clearSubscribes);
 

@@ -531,16 +531,63 @@ class EventController {
             }
 
             const eventsResult = await db.query(
-                'SELECT * FROM event WHERE id = ANY($1)',
+                `SELECT 
+                e.*, 
+                p.name AS place, 
+                eo.id_organizer AS "organizerId",
+                e."dateStart" AS "dateStart",
+                e."dateEnd" AS "dateEnd"
+             FROM event e
+             JOIN place p ON e."placeId" = p.id
+             LEFT JOIN event_organizer eo ON e.id = eo.id_event
+             WHERE e.id = ANY($1)
+             ORDER BY 
+                CASE WHEN e."dateStart" IS NULL THEN 1 ELSE 0 END,
+                e."dateStart" ASC`,
                 [eventIds]
             );
 
-            res.json(eventsResult.rows);
+            const host = req.protocol + '://' + req.get('host');
+
+            // Загружаем теги одним запросом
+            const tagResult = await db.query(
+                `SELECT 
+                et.id_event, 
+                t.id AS tag_id, 
+                t.name AS tag_name 
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1)`,
+                [eventIds]
+            );
+
+            // Группируем теги по событию
+            const tagsMap = {};
+            tagResult.rows.forEach(row => {
+                if (!tagsMap[row.id_event]) tagsMap[row.id_event] = [];
+                tagsMap[row.id_event].push({ id: row.tag_id, name: row.tag_name });
+            });
+
+            const enrichedEvents = eventsResult.rows.map(event => {
+                const { organizerid, dateStart, dateEnd, ...rest } = event;
+                return {
+                    ...rest,
+                    dateStart,
+                    dateEnd,
+                    image: event.image ? `${host}/static/${event.image}` : '',
+                    place: event.place,
+                    organizerId: organizerid,
+                    tags: tagsMap[event.id] || []
+                };
+            });
+
+            res.json(enrichedEvents);
         } catch (e) {
             console.error(e);
             res.status(500).json({ message: 'Ошибка при получении ивентов' });
         }
     }
+
 
     async updateEvent(req, res) {
         try {

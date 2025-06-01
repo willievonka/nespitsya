@@ -7,20 +7,52 @@ import tokenService from '../tokenService.js';
 class authController {
     async register(req, res) {
         try {
-            const { email, password, role } = req.body;
-            const candidate = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-            if (candidate.rows.length > 0) {
-                return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
+            const { username, password, email, role } = req.body;
+            const image = req.file;
+
+            if (!username || !password || !email || !role) {
+                return res.status(400).json({ message: 'Заполните все обязательные поля!' });
+            }
+
+            const allowedRoles = ['user', 'admin'];
+            if (!allowedRoles.includes(role)) {
+                return res.status(400).json({ message: 'Роль должна быть одной из: user, admin' });
+            }
+
+            const candidateUsername = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+            const candidateEmail = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+
+            if (candidateUsername.rows.length > 0) {
+                return res.status(400).json({ message: 'Пользователь с таким именем уже существует' });
+            }
+
+            if (candidateEmail.rows.length > 0) {
+                return res.status(400).json({ message: 'Пользователь с такой электронной почтой уже существует' });
             }
 
             const hashPassword = bcrypt.hashSync(password, 7);
+            const imageName = image ? image.filename : '';
+
             const newUser = await db.query(
-                'INSERT INTO users (email, password, role) VALUES ($1, $2, $3) RETURNING *',
-                [email, hashPassword, role]
+                'INSERT INTO users (username, password, role, email, subscribes, favorites, image) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [username, hashPassword, role, email, [], [], imageName]
             );
-            res.json(newUser.rows[0]);
+
+            const host = req.protocol + '://' + req.get('host');
+            const user = newUser.rows[0];
+
+            const { password: _, ...userWithoutPassword } = user;
+
+            res.json({
+                message: 'Регистрация прошла успешно',
+                user: {
+                    ...userWithoutPassword,
+                    image: user.image ? `${host}/static/${user.image}` : ''
+                }
+            });
         } catch (e) {
-            res.status(500).json({ message: 'Ошибка при регистрации' });
+            console.error(e);
+            res.status(500).json({ message: 'Ошибка регистрации' });
         }
     }
 
@@ -168,7 +200,7 @@ class authController {
             const userId = decoded.id;
 
             const userResult = await db.query(
-                'SELECT id, username, email, role, subscribes, favorites, image FROM users WHERE id = $1',
+                'SELECT id, username, email, role, favorites, image FROM users WHERE id = $1',
                 [userId]
             );
 
@@ -177,10 +209,26 @@ class authController {
             }
 
             const user = userResult.rows[0];
+
+            // Получаем список organizer_id, на которых подписан пользователь
+            const subscribesResult = await db.query(
+                'SELECT organizer_id FROM organizer_subscriptions WHERE user_id = $1',
+                [user.id]
+            );
+            const subscribes = subscribesResult.rows.map(row => row.organizer_id);
+
             const host = req.protocol + '://' + req.get('host');
             const imageUrl = user.image ? `${host}/static/${user.image}` : '';
 
-            let responseData = { ...user, image: imageUrl };
+            const responseData = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                subscribes,
+                favorites: user.favorites || [],
+                image: imageUrl
+            };
 
             if (user.role === 'organizer') {
                 const organizerResult = await db.query(
@@ -207,19 +255,41 @@ class authController {
 
     async getUsers(req, res) {
         try {
-            const usersResult = await db.query('SELECT id, username, email, role, subscribes, favorites, image FROM users');
+            // Получаем всех пользователей
+            const usersResult = await db.query(
+                'SELECT id, username, email, role, favorites, image FROM users'
+            );
+
+            // Получаем все подписки: user_id -> [organizer_id, ...]
+            const subscriptionsResult = await db.query(
+                'SELECT user_id, array_agg(organizer_id) AS subscribes FROM organizer_subscriptions GROUP BY user_id'
+            );
+
+            const subscriptionsMap = {};
+            subscriptionsResult.rows.forEach(row => {
+                subscriptionsMap[row.user_id] = row.subscribes;
+            });
 
             const host = req.protocol + '://' + req.get('host');
 
             const users = usersResult.rows.map(user => {
                 const imageUrl = user.image ? `${host}/static/${user.image}` : '';
-                const baseUser = { ...user, image: imageUrl };
+                const baseUser = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    image: imageUrl
+                };
 
                 if (user.role === 'user') {
-                    return baseUser;
+                    return {
+                        ...baseUser,
+                        subscribes: subscriptionsMap[user.id] || [],
+                        favorites: user.favorites || []
+                    };
                 } else {
-                    const { subscribes, favorites, ...rest } = baseUser;
-                    return rest;
+                    return baseUser;
                 }
             });
 
@@ -236,7 +306,7 @@ class authController {
             const { id } = req.params;
 
             const userResult = await db.query(
-                'SELECT id, username, email, role, subscribes, favorites, image FROM users WHERE id = $1',
+                'SELECT id, username, email, role, favorites, image FROM users WHERE id = $1',
                 [id]
             );
 
@@ -245,15 +315,32 @@ class authController {
             }
 
             const user = userResult.rows[0];
+
+            const subscribesResult = await db.query(
+                'SELECT organizer_id FROM organizer_subscriptions WHERE user_id = $1',
+                [user.id]
+            );
+            const subscribes = subscribesResult.rows.map(row => row.organizer_id);
+
             const host = req.protocol + '://' + req.get('host');
             const imageUrl = user.image ? `${host}/static/${user.image}` : '';
 
-            res.json({ ...user, image: imageUrl });
+            res.json({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                subscribes,
+                favorites: user.favorites || [],
+                image: imageUrl
+            });
         } catch (e) {
             console.error(e);
             res.status(500).json({ message: 'Ошибка при получении пользователя' });
         }
     }
+
+
 
     async updateUser(req, res) {
         try {
@@ -342,41 +429,55 @@ class authController {
             const { userId } = req.params;
             const { organizerId } = req.body;
 
-            if (!userId || !organizerId) {
-                return res.status(400).json({ message: 'userId и organizerId обязательны' });
-            }
-
             const parsedUserId = parseInt(userId, 10);
             const parsedOrganizerId = parseInt(organizerId, 10);
 
-            if (isNaN(parsedUserId) || isNaN(parsedOrganizerId)) {
-                return res.status(400).json({ message: 'userId и organizerId должны быть числами' });
+            if (!parsedUserId || !parsedOrganizerId || isNaN(parsedUserId) || isNaN(parsedOrganizerId)) {
+                return res.status(400).json({ message: 'userId и organizerId обязательны и должны быть корректными числами' });
             }
 
-            const userCheck = await db.query('SELECT 1 FROM users WHERE id = $1', [parsedUserId]);
+            if (parsedUserId === parsedOrganizerId) {
+                return res.status(400).json({ message: 'Нельзя подписаться на самого себя' });
+            }
+
+            // Проверка на существование пользователя и организатора
+            const [userCheck, organizerCheck] = await Promise.all([
+                db.query('SELECT 1 FROM users WHERE id = $1', [parsedUserId]),
+                db.query('SELECT 1 FROM users WHERE id = $1 AND role = $2', [parsedOrganizerId, 'organizer'])
+            ]);
+
             if (userCheck.rowCount === 0) {
                 return res.status(404).json({ message: 'Пользователь не найден' });
             }
 
-            const organizerCheck = await db.query(
-                'SELECT 1 FROM users WHERE id = $1 AND role = $2',
-                [parsedOrganizerId, 'organizer']
-            );
             if (organizerCheck.rowCount === 0) {
-                return res.status(404).json({ message: 'Организатор не найден' });
+                return res.status(404).json({ message: 'Организатор не найден или не имеет роль organizer' });
             }
 
-            await db.query(
-                'UPDATE users SET subscribes = array_append(subscribes, $1) WHERE id = $2 AND NOT ($1 = ANY(subscribes))',
-                [parsedOrganizerId, parsedUserId]
+            // Проверка на существующую подписку
+            const existingSub = await db.query(
+                'SELECT 1 FROM organizer_subscriptions WHERE user_id = $1 AND organizer_id = $2',
+                [parsedUserId, parsedOrganizerId]
             );
 
-            return res.json({ message: 'Организатор добавлен в подписки' });
+            if (existingSub.rowCount > 0) {
+                return res.status(409).json({ message: 'Вы уже подписаны на этого организатора' });
+            }
+
+            // Добавление подписки
+            await db.query(
+                'INSERT INTO organizer_subscriptions (user_id, organizer_id) VALUES ($1, $2)',
+                [parsedUserId, parsedOrganizerId]
+            );
+
+            res.json({ message: 'Подписка оформлена' });
         } catch (e) {
-            console.error(e);
-            res.status(500).json({ message: 'Ошибка при добавлении подписки' });
+            console.error('Ошибка при добавлении подписки:', e);
+            res.status(500).json({ message: 'Внутренняя ошибка сервера' });
         }
     }
+
+
 
 
     async removeSubscribe(req, res) {
@@ -384,64 +485,44 @@ class authController {
             const { userId } = req.params;
             const { organizerId } = req.body;
 
-            if (!userId || !organizerId) {
-                return res.status(400).json({ message: 'userId и organizerId обязательны' });
-            }
-
             const parsedUserId = parseInt(userId, 10);
             const parsedOrganizerId = parseInt(organizerId, 10);
 
-            if (isNaN(parsedUserId) || isNaN(parsedOrganizerId)) {
-                return res.status(400).json({ message: 'userId и organizerId должны быть числами' });
+            if (!parsedUserId || !parsedOrganizerId) {
+                return res.status(400).json({ message: 'userId и organizerId обязательны и должны быть числами' });
             }
 
-            const userCheck = await db.query('SELECT 1 FROM users WHERE id = $1', [parsedUserId]);
-            if (userCheck.rowCount === 0) {
-                return res.status(404).json({ message: 'Пользователь не найден' });
-            }
+            await db.query(`
+            DELETE FROM organizer_subscriptions 
+            WHERE user_id = $1 AND organizer_id = $2
+        `, [parsedUserId, parsedOrganizerId]);
 
-            const organizerCheck = await db.query(
-                'SELECT 1 FROM users WHERE id = $1 AND role = $2',
-                [parsedOrganizerId, 'organizer']
-            );
-            if (organizerCheck.rowCount === 0) {
-                return res.status(404).json({ message: 'Организатор не найден' });
-            }
-
-            await db.query(
-                'UPDATE users SET subscribes = array_remove(subscribes, $1) WHERE id = $2',
-                [parsedOrganizerId, parsedUserId]
-            );
-
-            return res.json({ message: 'Организатор удалён из подписок' });
+            res.json({ message: 'Подписка удалена' });
         } catch (e) {
             console.error(e);
             res.status(500).json({ message: 'Ошибка при удалении подписки' });
         }
     }
 
+
     async clearSubscribes(req, res) {
         try {
             const { userId } = req.params;
-
             const parsedUserId = parseInt(userId, 10);
+
             if (isNaN(parsedUserId)) {
                 return res.status(400).json({ message: 'userId должен быть числом' });
             }
 
-            const userCheck = await db.query('SELECT 1 FROM users WHERE id = $1', [parsedUserId]);
-            if (userCheck.rowCount === 0) {
-                return res.status(404).json({ message: 'Пользователь не найден' });
-            }
+            await db.query('DELETE FROM organizer_subscriptions WHERE user_id = $1', [parsedUserId]);
 
-            await db.query('UPDATE users SET subscribes = ARRAY[]::integer[] WHERE id = $1', [parsedUserId]);
-
-            res.json({ message: 'Подписки очищены' });
+            res.json({ message: 'Все подписки удалены' });
         } catch (e) {
             console.error(e);
             res.status(500).json({ message: 'Ошибка при очистке подписок' });
         }
     }
+
 
 
 
