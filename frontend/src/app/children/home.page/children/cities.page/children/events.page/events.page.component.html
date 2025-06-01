@@ -28,6 +28,10 @@
             [label]="'Тип'"
             [tabs]="typeTabs"
         />
+        <app-date-filter 
+            [label]="'Дата'"
+            [dates]="dateList"
+        />
     </div>
     <app-events-list class="events-page__events-list" *ngIf="events$ | async as events" [eventsList]="events" />
 </div>

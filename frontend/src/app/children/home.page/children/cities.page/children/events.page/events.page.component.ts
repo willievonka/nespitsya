@@ -14,6 +14,8 @@ import { FilterComponent } from './components/filter/filter.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IFilterTab } from './types/filter-tab.interface';
 import { IEvent } from '../../../../interfaces/event.interface';
+import { DateFilterComponent } from './components/date-filter/date-filter.component';
+
 
 @Component({
     selector: 'app-events.page',
@@ -24,7 +26,8 @@ import { IEvent } from '../../../../interfaces/event.interface';
         TuiBreadcrumbsComponent,
         CityDeclensionPipe,
         TuiOutlineButtonComponent,
-        FilterComponent
+        FilterComponent,
+        DateFilterComponent
     ],
     templateUrl: './events.page.component.html',
     styleUrl: './events.page.component.scss',
@@ -38,7 +41,7 @@ export class EventsPageComponent {
 
     protected placeTabs: IFilterTab[] = [];
     protected typeTabs: IFilterTab[] = [];
-    protected dateTabs: IFilterTab[] = [];
+    protected dateList: Date[] = [];
 
     constructor(
         private readonly _eventsPageService: EventsPageService,
@@ -56,6 +59,7 @@ export class EventsPageComponent {
 
         this.initTypeTabs();
         this.initPlaceTabs();
+        this.initDateList();
     }
 
     /**
@@ -103,5 +107,29 @@ export class EventsPageComponent {
             event => event.place ? [event.place] : [],
             tabs => this.placeTabs = tabs
         );
+    }
+
+    /**
+     * Initializes the dateList array with unique event start dates.
+     */
+    private initDateList(): void {
+        this.events$.pipe(
+            startWith([]),
+            map(events => {
+                const dates: Set<Date> = new Set<Date>();
+                events.forEach(group => {
+                    group.events.forEach(event => {
+                        if (event.dateStart) {
+                            dates.add(new Date(event.dateStart));
+                        }
+                    });
+                });
+
+                return Array.from(dates).sort();
+            }),
+            takeUntilDestroyed(this._destroyRef)
+        ).subscribe(dateList => {
+            this.dateList = dateList;
+        });
     }
 }

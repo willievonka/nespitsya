@@ -5,6 +5,7 @@ import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
 import { IEvent } from '../../home.page/interfaces/event.interface';
 import { IOrganizer } from '../../../interfaces/organizer.interface';
+import { IAccountTab } from '../interfaces/account-tab.interface';
 
 
 @Injectable({
@@ -29,8 +30,8 @@ export class AccountService {
      * @param user - The user object containing role information.
      * @returns An array of tab objects with name, icon, and route properties.
      */
-    public getTabs(user: IUser): Array<{name: string, icon: string, route: string}> {
-        const tabs: Array<{name: string, icon: string, route: string}> = [];
+    public getTabs(user: IUser): IAccountTab[] {
+        const tabs: IAccountTab[] = [];
         tabs.push({ name: 'Аккаунт', icon: 'circle-user', route: '/account/profile' });
         switch (user.role) {
             case 'user':

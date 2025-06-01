@@ -7,6 +7,7 @@ import { AccountService } from './services/account.service';
 import { map, Observable } from 'rxjs';
 import { IUser } from '../../interfaces/user.interface';
 import { AuthService } from '../auth.page/services/auth.service';
+import { IAccountTab } from './interfaces/account-tab.interface';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { AuthService } from '../auth.page/services/auth.service';
 })
 export class AccountPageComponent {
     public user$: Observable<IUser>;
-    public tabs$: Observable<Array<{ name: string; icon: string; route: string }>>;
+    public tabs$: Observable<IAccountTab[]>;
 
     constructor(
         private _accountService: AccountService, 
