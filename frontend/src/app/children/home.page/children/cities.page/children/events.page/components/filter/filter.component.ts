@@ -41,7 +41,12 @@ export class FilterComponent {
     @Input()
     public set tabs(tabs: IFilterTab[]) {
         const selectAll: IFilterTab = { name: 'Выбрать все', checked: false };
-        this._tabs = [selectAll, ...(tabs ?? [])];
+        const sortedTabs: IFilterTab[] = (tabs ?? [])
+            .slice()
+            .sort(
+                (a, b) => a.name.localeCompare(b.name, 'ru')
+            );
+        this._tabs = [selectAll, ...sortedTabs];
         this.rebuildForm();
         this.initSubscriptions();
     }
