@@ -102,22 +102,23 @@ class EventController {
     async getEvents(req, res) {
         try {
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN place p ON e."placeId" = p.id
-                LEFT JOIN event_organizer eo ON e.id = eo.id_event
-            `);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN place p ON e."placeId" = p.id
+            LEFT JOIN event_organizer eo ON e.id = eo.id_event
+        `);
             if (!rows.length) return res.json([]);
 
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
-                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-                 FROM event_tag et
-                 JOIN tag t ON et.id_tag = t.id
-                 WHERE et.id_event = ANY($1::int[])
-                 GROUP BY et.id_event`,
+                `SELECT et.id_event,
+                    json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name) AS tags
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1::int[])
+             GROUP BY et.id_event`,
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
@@ -145,18 +146,18 @@ class EventController {
     async getEventsFromCity(req, res) {
         try {
             const { id } = req.params;
-            const countEvents = parseInt(req.query.countEvents) || 10; // по умолчанию 10
+            const countEvents = parseInt(req.query.countEvents) || 10;
 
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN place p ON e."placeId" = p.id
-                LEFT JOIN event_organizer eo ON e.id = eo.id_event
-                WHERE e."cityId" = $1 AND e."dateStart" > NOW()
-                ORDER BY e."dateStart" ASC
-                LIMIT $2
-            `, [id, countEvents]);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN place p ON e."placeId" = p.id
+            LEFT JOIN event_organizer eo ON e.id = eo.id_event
+            WHERE e."cityId" = $1 AND e."dateStart" > NOW()
+            ORDER BY e."dateStart" ASC
+            LIMIT $2
+        `, [id, countEvents]);
 
             if (!rows.length)
                 return res.status(404).json({ message: "В этом городе нет будущих событий" });
@@ -164,11 +165,12 @@ class EventController {
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
-                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-                 FROM event_tag et
-                 JOIN tag t ON et.id_tag = t.id
-                 WHERE et.id_event = ANY($1::int[])
-                 GROUP BY et.id_event`,
+                `SELECT et.id_event,
+                    json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name) AS tags
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1::int[])
+             GROUP BY et.id_event`,
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
@@ -197,24 +199,25 @@ class EventController {
         try {
             const { id } = req.params;
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN event_artist ea ON e.id = ea.id_event
-                JOIN place p ON e."placeId" = p.id
-                LEFT JOIN event_organizer eo ON e.id = eo.id_event
-                WHERE ea.id_artist = $1
-            `, [id]);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN event_artist ea ON e.id = ea.id_event
+            JOIN place p ON e."placeId" = p.id
+            LEFT JOIN event_organizer eo ON e.id = eo.id_event
+            WHERE ea.id_artist = $1
+        `, [id]);
             if (!rows.length) return res.status(404).json({ message: "У этого артиста нет событий" });
 
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
-                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-                 FROM event_tag et
-                 JOIN tag t ON et.id_tag = t.id
-                 WHERE et.id_event = ANY($1::int[])
-                 GROUP BY et.id_event`,
+                `SELECT et.id_event,
+                    json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name) AS tags
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1::int[])
+             GROUP BY et.id_event`,
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
@@ -243,23 +246,24 @@ class EventController {
         try {
             const { id } = req.params;
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN event_organizer eo ON e.id = eo.id_event
-                JOIN place p ON e."placeId" = p.id
-                WHERE eo.id_organizer = $1
-            `, [id]);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN event_organizer eo ON e.id = eo.id_event
+            JOIN place p ON e."placeId" = p.id
+            WHERE eo.id_organizer = $1
+        `, [id]);
             if (!rows.length) return res.status(404).json({ message: "У этого организатора нет событий" });
 
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
-                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-                 FROM event_tag et
-                 JOIN tag t ON et.id_tag = t.id
-                 WHERE et.id_event = ANY($1::int[])
-                 GROUP BY et.id_event`,
+                `SELECT et.id_event,
+                    json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name) AS tags
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1::int[])
+             GROUP BY et.id_event`,
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
@@ -288,24 +292,25 @@ class EventController {
         try {
             const { id } = req.params;
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN event_tag et ON e.id = et.id_event
-                JOIN place p ON e."placeId" = p.id
-                LEFT JOIN event_organizer eo ON e.id = eo.id_event
-                WHERE et.id_tag = $1
-            `, [id]);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN event_tag et ON e.id = et.id_event
+            JOIN place p ON e."placeId" = p.id
+            LEFT JOIN event_organizer eo ON e.id = eo.id_event
+            WHERE et.id_tag = $1
+        `, [id]);
             if (!rows.length) return res.status(404).json({ message: "Событий с этим тегом нет" });
 
             const host = req.protocol + '://' + req.get('host');
             const ids = rows.map(e => e.id);
             const { rows: tagsRes } = await db.query(
-                `SELECT et.id_event, json_agg(json_build_object('id', t.id, 'name', t.name)) AS tags
-                 FROM event_tag et
-                 JOIN tag t ON et.id_tag = t.id
-                 WHERE et.id_event = ANY($1::int[])
-                 GROUP BY et.id_event`,
+                `SELECT et.id_event,
+                    json_agg(json_build_object('id', t.id, 'name', t.name) ORDER BY t.name) AS tags
+             FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = ANY($1::int[])
+             GROUP BY et.id_event`,
                 [ids]
             );
             const tagsMap = Object.fromEntries(tagsRes.map(r => [r.id_event, r.tags]));
@@ -334,20 +339,23 @@ class EventController {
         try {
             const { id } = req.params;
             const { rows } = await db.query(`
-                SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
-                       e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
-                FROM event e
-                JOIN place p ON e."placeId" = p.id
-                LEFT JOIN event_organizer eo ON e.id = eo.id_event
-                WHERE e.id = $1
-            `, [id]);
+            SELECT e.*, p.name AS place, eo.id_organizer AS organizerId,
+                   e."dateStart" AS "dateStart", e."dateEnd" AS "dateEnd"
+            FROM event e
+            JOIN place p ON e."placeId" = p.id
+            LEFT JOIN event_organizer eo ON e.id = eo.id_event
+            WHERE e.id = $1
+        `, [id]);
             if (!rows.length) return res.status(404).json({ message: "Событие не найдено" });
 
             const event = rows[0];
             const host = req.protocol + '://' + req.get('host');
             const { organizerid, dateStart, dateEnd, ...rest } = event;
             const { rows: tagsRes } = await db.query(
-                `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
+                `SELECT t.id, t.name FROM event_tag et
+             JOIN tag t ON et.id_tag = t.id
+             WHERE et.id_event = $1
+             ORDER BY t.name`,
                 [id]
             );
             const enrichedEvent = {
@@ -379,21 +387,23 @@ class EventController {
             }
 
             const { rows } = await db.query(`
-                SELECT * FROM event
-                ${whereClause}
-                ORDER BY 
-                    CASE WHEN "dateStart" IS NULL THEN 1 ELSE 0 END,
-                    "dateStart" ASC,
-                    "cityId" ASC
-            `, params);
+            SELECT * FROM event
+            ${whereClause}
+            ORDER BY 
+                CASE WHEN "dateStart" IS NULL THEN 1 ELSE 0 END,
+                "dateStart" ASC,
+                "cityId" ASC
+        `, params);
 
             const grouped = {};
             const host = req.protocol + '://' + req.get('host');
 
             for (const event of rows) {
-
                 const { rows: tagsRes } = await db.query(
-                    `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
+                    `SELECT t.id, t.name FROM event_tag et
+                 JOIN tag t ON et.id_tag = t.id
+                 WHERE et.id_event = $1
+                 ORDER BY t.name`,
                     [event.id]
                 );
                 event.tags = tagsRes;
@@ -437,156 +447,48 @@ class EventController {
 
             res.json(result);
         } catch (error) {
-            console.error("Ошибка при получении событий по дате:", error);
-            res.status(500).json({ message: "Ошибка сервера" });
-        }
-    }
-
-    async getEventsByDateRange(req, res) {
-        try {
-            const { from, to, cityId } = req.query;
-
-            if (!from || !to) {
-                return res.status(400).json({ message: "Необходимо указать параметры from и to" });
-            }
-
-            const params = [from, to];
-            let whereClause = '"dateStart" BETWEEN $1 AND $2';
-
-            if (cityId) {
-                params.push(cityId);
-                whereClause += ` AND "cityId" = $3`;
-            }
-
-            const { rows } = await db.query(`
-                SELECT * FROM event
-                WHERE ${whereClause}
-                ORDER BY 
-                    CASE WHEN "dateStart" IS NULL THEN 1 ELSE 0 END,
-                    "dateStart" ASC,
-                    "cityId" ASC
-            `, params);
-
-            const grouped = {};
-            const host = req.protocol + '://' + req.get('host');
-
-            for (const event of rows) {
-
-                const { rows: tagsRes } = await db.query(
-                    `SELECT t.id, t.name FROM event_tag et JOIN tag t ON et.id_tag = t.id WHERE et.id_event = $1`,
-                    [event.id]
-                );
-                event.tags = tagsRes;
-
-                const { rows: placeRows } = await db.query(
-                    `SELECT name FROM place WHERE id = $1`,
-                    [event.placeId]
-                );
-                event.place = placeRows[0]?.name || null;
-
-                if (event.image) {
-                    event.image = `${host}/static/${event.image}`;
-                }
-
-                let dateOnly = null;
-                if (event.dateStart) {
-                    dateOnly = new Date(event.dateStart).toISOString().split('T')[0];
-                }
-
-                if (!grouped[dateOnly]) {
-                    grouped[dateOnly] = [];
-                }
-
-                grouped[dateOnly].push(event);
-            }
-
-            const result = Object.keys(grouped)
-                .sort((a, b) => {
-                    if (a === 'null') return 1;
-                    if (b === 'null') return -1;
-                    return new Date(a) - new Date(b);
-                })
-                .map(date => ({
-                    date: date === 'null' ? null : date,
-                    events: grouped[date].sort((a, b) => {
-                        if (!a.dateStart) return 1;
-                        if (!b.dateStart) return -1;
-                        return new Date(a.dateStart) - new Date(b.dateStart);
-                    })
-                }));
-
-            res.json(result);
-        } catch (error) {
-            console.error("Ошибка при получении событий по диапазону дат:", error);
+            console.error("Ошибка при получении событий:", error);
             res.status(500).json({ message: "Ошибка сервера" });
         }
     }
 
     async getEventsByIds(req, res) {
         try {
-            const { eventIds } = req.body;
-
-            if (!Array.isArray(eventIds) || eventIds.length === 0) {
-                return res.status(400).json({ message: 'eventIds должен быть непустым массивом' });
+            const { ids } = req.body; // ожидается массив id
+            if (!Array.isArray(ids) || ids.length === 0) {
+                return res.status(400).json({ error: "Неверный формат ids" });
             }
 
-            const eventsResult = await db.query(
-                `SELECT 
-                e.*, 
-                p.name AS place, 
-                eo.id_organizer AS "organizerId",
-                e."dateStart" AS "dateStart",
-                e."dateEnd" AS "dateEnd"
-             FROM event e
-             JOIN place p ON e."placeId" = p.id
-             LEFT JOIN event_organizer eo ON e.id = eo.id_event
-             WHERE e.id = ANY($1)
-             ORDER BY 
-                CASE WHEN e."dateStart" IS NULL THEN 1 ELSE 0 END,
-                e."dateStart" ASC`,
-                [eventIds]
-            );
+            const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+            const result = await pool.query(`SELECT * FROM event WHERE id IN (${placeholders})`, ids);
 
-            const host = req.protocol + '://' + req.get('host');
-
-            // Загружаем теги одним запросом
-            const tagResult = await db.query(
-                `SELECT 
-                et.id_event, 
-                t.id AS tag_id, 
-                t.name AS tag_name 
-             FROM event_tag et
-             JOIN tag t ON et.id_tag = t.id
-             WHERE et.id_event = ANY($1)`,
-                [eventIds]
-            );
-
-            // Группируем теги по событию
-            const tagsMap = {};
-            tagResult.rows.forEach(row => {
-                if (!tagsMap[row.id_event]) tagsMap[row.id_event] = [];
-                tagsMap[row.id_event].push({ id: row.tag_id, name: row.tag_name });
-            });
-
-            const enrichedEvents = eventsResult.rows.map(event => {
-                const { organizerid, dateStart, dateEnd, ...rest } = event;
-                return {
-                    ...rest,
-                    dateStart,
-                    dateEnd,
-                    image: event.image ? `${host}/static/${event.image}` : '',
-                    place: event.place,
-                    organizerId: organizerid,
-                    tags: tagsMap[event.id] || []
-                };
-            });
-
-            res.json(enrichedEvents);
-        } catch (e) {
-            console.error(e);
-            res.status(500).json({ message: 'Ошибка при получении ивентов' });
+            res.json(result.rows);
+        } catch (error) {
+            console.error("Ошибка при получении событий по ids:", error);
+            res.status(500).json({ error: "Ошибка при получении событий по ids" });
         }
     }
+
+    async getEventsByDateRange(req, res) {
+        try {
+            const { startDate, endDate } = req.query;
+
+            if (!startDate || !endDate) {
+                return res.status(400).json({ error: "Необходимо указать startDate и endDate" });
+            }
+
+            const result = await pool.query(
+                `SELECT * FROM event WHERE date BETWEEN $1 AND $2`,
+                [startDate, endDate]
+            );
+
+            res.json(result.rows);
+        } catch (error) {
+            console.error("Ошибка при получении событий по диапазону дат:", error);
+            res.status(500).json({ error: "Ошибка при получении событий по датам" });
+        }
+    }
+
 
 
     async updateEvent(req, res) {
